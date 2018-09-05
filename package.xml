@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sick_scan2</name>
+  <version>2.0.0</version>
+  <description>
+    A ROS2 driver for the SICK TiM series of laser scanners.
+    This package is based on the sick_scan-Repository.
+  </description>
+
+  <maintainer email="michael.lehning@lehning.de">Michael Lehning</maintainer>
+  <author email="michael.lehning@lehning.de">Michael Lehning</author>
+  <author email="ros@jochen.sprickerhof.de">Jochen Sprickerhof</author>
+  <author email="martin.guenther@dfki.de">Martin Günther</author>
+
+  <license>BSD</license>
+  <url type="website">http://wiki.ros.org/sick_scan2</url>
+  <url type="repository">https://github.com/SICKAG/sick_scan2</url>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+
+  <exec_depend>rclcpp</exec_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>diagnostic_updater</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>pcl_ros</build_depend>
+
+
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>dynamic_reconfigure</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+  <build_type>ament_cmake</build_type>
+</export>
+
+</package>
+
+
