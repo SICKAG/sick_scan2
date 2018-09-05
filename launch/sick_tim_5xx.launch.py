@@ -46,7 +46,7 @@ def generate_launch_description():
     print ("# ROS2 Driver for SICK SCANNER (SET YOUR SETTING ACCORDING TO YOUR SETUP!")
     print ("##########################################################################")
     print ("Your Settings:")
-    hostname = '192.168.0.61'
+    hostname = '192.168.0.71'
     port = "2112";
     name = "sick_tim_5xx"
 
