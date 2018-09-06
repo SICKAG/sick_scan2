@@ -90,7 +90,7 @@ In the following instructions, replace `<rosdistro>` with the name of your ROS d
 source /opt/ros/$ROS_DISTRO/setup.bash
 mkdir -p ~/sick_scan_ws/src/
 cd ~/sick_scan_ws/src/
-git clone git://github.com/SICKAG/sick_scan2.git
+git clone https://github.com/SICKAG/sick_scan2.git
 cd ..
 colcon build --symlink-install
 source ~/sick_scan_ws/install/setup.bash
