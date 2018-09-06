@@ -90,7 +90,7 @@ In the following instructions, replace `<rosdistro>` with the name of your ROS d
 source /opt/ros/$ROS_DISTRO/setup.bash
 mkdir -p ~/sick_scan_ws/src/
 cd ~/sick_scan_ws/src/
-git clone --single-branch git://github.com/SICKAG/sick_scan2.git
+git clone git://github.com/SICKAG/sick_scan2.git
 cd ..
 colcon build --symlink-install
 source ~/sick_scan_ws/install/setup.bash
@@ -100,11 +100,28 @@ source ~/sick_scan_ws/install/setup.bash
 
 ```bash
 cd ~/sick_scan_ws
-ros2 launch sick_scan2 sick_tim_5xx.launch.py
+```
+Attention: Replace the ip address for "__hostname" with your scanner ip address.
+Default ip address of scanner is 192.168.0.1.
+In this example we use the ip address 192.168.0.71
+```
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx
+```
+Start a second terminal window 
+```
+cd ~/sick_scan_ws
+source ./install/setup.bash
+ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 world laser
+```
+Start a third terminal window
+```
+cd ~/sick_scan_ws
+source ./install/setup.bash
 rviz2 ./install/sick_scan2/share/sick_scan2/launch/rviz/tim_5xx.rviz
-
 ```
 
+The result shoud look like this:
+![rviz2_scan](doc/rviz2_scan.png)
 ## Keywords
 
 TiM5xx 
