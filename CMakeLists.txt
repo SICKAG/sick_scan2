@@ -13,7 +13,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 # TODO: Remove compiler warning from the code - currently suppressed
-add_compile_options(-Wno-sign-compare -Wno-unused-variable)
+add_compile_options(-Wno-sign-compare )
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()

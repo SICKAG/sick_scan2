@@ -328,7 +328,8 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
         delete s;  // disconnect scanner
         if (useTCP)
         {
-          RCLCPP_INFO(node->get_logger(),"hostname: %s Port %s", hostname.c_str(), port.c_str());
+          RCLCPP_INFO(node->get_logger(),"hostname: %s", hostname.c_str());
+          RCLCPP_INFO(node->get_logger(),"Port    : %s", port.c_str());
 
           s = new sick_scan::SickScanCommonTcp(hostname, port, timelimit, parser, colaDialectId);
         }
