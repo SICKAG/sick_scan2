@@ -29,10 +29,7 @@ ROS Device Driver for Sick Laserscanner - supported scanner types:
 
 ##  Start Node
 
-Use the following command to start ROS node:
-
-For TiM551, TiM561, TiM571:
-ros2 launch sick_scan2 sick_tim_5xx.launch.py
+See quick start for further hints.
 
 ## Sopas mode
 This driver supports both COLA-B (binary) and COLA-A (ASCII) communication with the laser scanner. Binary mode is activated by default. Since this mode generates less network traffic.
