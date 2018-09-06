@@ -100,6 +100,7 @@ source ~/sick_scan_ws/install/setup.bash
 
 ```bash
 cd ~/sick_scan_ws
+source ./install/setup.bash
 ```
 Attention: Replace the ip address for "__hostname" with your scanner ip address.
 Default ip address of scanner is 192.168.0.1.
