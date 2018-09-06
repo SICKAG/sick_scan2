@@ -38,7 +38,11 @@ There are two ways to prevent this:
 1. [Recommended] Set the communication mode with the SOPAS ET software to binary and save this setting in the scanner's EEPROM.
 2. Use the parameter "use_binary_protocol" to overwrite the default settings of the driver.
 3. Setting "use_binary_protocol" to "False" activates COLA-A and disables COLA-B (default)
-
+### Known issue
+If the scanner has not been set to binary Sopas in the EEPROM, the automatic restart of the TCP-IP connection does not work after the protocol change. The driver stops in this state: 
+![Wrong SOPAS Mode](doc/sopas_mode_start_up.png)
+#### Workaround
+restart the driver node.
 
 ## Bugs and feature requests
 
