@@ -170,7 +170,7 @@ int main(int argc, char **argv)
     setMainNode(node);
     rclcpp::Logger node_logger = node->get_logger();
 
-    node->set_parameter_if_not_set("ABC",1000);
+    node->declare_parameter("ABC", 1000);
 	char nameId[] = "__name:=";
 	char nameVal[MAX_NAME_LEN] = { 0 };
 	char **argv_tmp; // argv_tmp[0][0] argv_tmp[0] identisch ist zu (*argv_tmp)
