@@ -179,7 +179,7 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
         callParamName +=  paramArr[i];
         if (tag.compare(callParamName) == 0)
         {
-          node->set_parameter_if_not_set(paramArr[i], val);
+          node->declare_parameter(paramArr[i], val);
           std::string s = "Set param " + paramArr[i] + " to " + val;
           RCLCPP_INFO(node->get_logger(),s.c_str());
 
@@ -222,9 +222,9 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   bool useTCP = true;
 
 
-  node->set_parameter_if_not_set("name",scannerName);
-  node->set_parameter_if_not_set("hostname",hostname);
-  node->set_parameter_if_not_set("port",port);
+  node->declare_parameter("name",scannerName);
+  node->declare_parameter("hostname",hostname);
+  node->declare_parameter("port",port);
 
   int timelimit = 5;
 #if TODO
