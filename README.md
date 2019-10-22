@@ -83,7 +83,7 @@ restart the driver node.
 
 ## Installation
 
-In the following instructions, replace `<rosdistro>` with the name of your ROS distro (e.g., `bouncy`).
+In the following instructions, replace `<rosdistro>` with the name of your ROS distro (e.g., `dashing`).
 
 ### From source
 
