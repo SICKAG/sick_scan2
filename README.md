@@ -124,6 +124,23 @@ rviz2 ./install/sick_scan2/share/sick_scan2/launch/rviz/tim_5xx.rviz
 
 The result shoud look like this:
 ![rviz2_scan](doc/rviz2_scan.png)
+
+## Developing with CLion IDE
+
+* Change to workspace directory, e.g.:
+```
+cd ~/sick_scan_ws
+source ./install/setup.bash
+```
+
+* Start clion-Shell-Script with directory containing 'CMakeLists.txt', e.g.
+  (see https://groups.google.com/forum/#!topic/ros-sig-ng-ros/UMjVH047nVc, Answer from G. Viola)
+```
+~/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/182.4323.58/bin/clion.sh ./src/sick_scan2
+```
+  Comment: Please modify the path to your local installation.
+
+
 ## Keywords
 
 TiM5xx 
