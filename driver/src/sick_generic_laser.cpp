@@ -221,10 +221,21 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
 
   bool useTCP = true;
 
+  std::map<std::string,std::string> paramTagValMap;
 
-  node->declare_parameter("name",scannerName);
-  node->declare_parameter("hostname",hostname);
-  node->declare_parameter("port",port);
+  paramTagValMap["name"] = scannerName;
+  paramTagValMap["hostname"] = hostname;
+  paramTagValMap["port"] = port;
+
+  for(std::map<std::string,std::string>::iterator iter = paramTagValMap.begin(); iter != paramTagValMap.end(); ++iter)
+  {
+    std::string paramName =  iter->first;
+    std::string dummyVal;
+    if (false == node->get_parameter(paramName, dummyVal))
+    {
+      node->declare_parameter(paramName, iter->second);
+    }
+  }
 
   int timelimit = 5;
 #if TODO
