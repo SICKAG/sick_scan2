@@ -3,8 +3,8 @@
 * \brief Laser Scanner communication main routine
 *
 * Copyright (C) 2013, Osnabrück University
-* Copyright (C) 2017, Ing.-Buero Dr. Michael Lehning, Hildesheim
-* Copyright (C) 2017, SICK AG, Waldkirch
+* Copyright (C) 2017-2019, Ing.-Buero Dr. Michael Lehning, Hildesheim
+* Copyright (C) 2017-2019, SICK AG, Waldkirch
 *
 * All rights reserved.
 *
@@ -38,7 +38,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 *
-*  Last modified: 28th May 2018
+*  Last modified: 23rd Oct 2019
 *
 *      Authors:
 *         Michael Lehning <michael.lehning@lehning.de>
@@ -94,6 +94,7 @@
 #endif
 
 #define deg2rad_const (0.017453292519943295769236907684886f)
+
 #include "sick_scan/tcp/colaa.hpp"
 #include "sick_scan/tcp/colab.hpp"
 
@@ -107,15 +108,34 @@
 */
 void swap_endian(unsigned char *ptr, int numBytes)
 {
-	unsigned char *buf = (ptr);
-	unsigned char tmpChar;
-	for (int i = 0; i < numBytes / 2; i++)
-	{
-		tmpChar = buf[numBytes - 1 - i];
-		buf[numBytes - 1 - i] = buf[i];
-		buf[i] = tmpChar;
-	}
+  unsigned char *buf = (ptr);
+  unsigned char tmpChar;
+  for (int i = 0; i < numBytes / 2; i++)
+  {
+    tmpChar = buf[numBytes - 1 - i];
+    buf[numBytes - 1 - i] = buf[i];
+    buf[i] = tmpChar;
+  }
 }
+
+/*!
+ * <todo> doku.
+\brief Universal swapping function
+\param ptr: Pointer to datablock
+\param numBytes : size of variable in bytes
+*/
+
+std::vector<unsigned char> stringToVector(std::string s)
+{
+  std::vector<unsigned char> result;
+  for (int j = 0; j < s.length(); j++)
+  {
+    result.push_back(s[j]);
+  }
+  return result;
+
+}
+
 
 /*!
 \brief return diagnostic error code (small helper function)
@@ -142,39 +162,39 @@ static int getDiagnosticErrorCode() // workaround due to compiling error under V
 \param len: Number of bytes which should be copied
 \return result of copy action as std::string
 */
-const std::string binScanfGetStringFromVec(std::vector<unsigned char>* replyDummy, int off, long len)
+const std::string binScanfGetStringFromVec(std::vector<unsigned char> *replyDummy, int off, long len)
 {
-	std::string s;
-	s = "";
-	for (int i = 0; i < len; i++)
-	{
-		char ch = (char)((*replyDummy)[i + off]);
-		s += ch;
-	}
-	return(s);
+  std::string s;
+  s = "";
+  for (int i = 0; i < len; i++)
+  {
+    char ch = (char) ((*replyDummy)[i + off]);
+    s += ch;
+  }
+  return (s);
 }
 
 namespace sick_scan
 {
-	/*!
-	\brief calculate crc-code for last byte of binary message
-		   XOR-calucation is done ONLY over message content (i.e. skipping the first 8 Bytes holding 0x02020202 <Length Information as 4-byte long>)
-	\param msgBlock: message content
-	\param len: Length of message content in byte
-	\return XOR-calucation abount message content (msgBlock[0] ^ msgBlock[1] .... msgBlock[len-1]
-	*/
-	unsigned char sick_crc8(unsigned char *msgBlock, int len)
-	{
-		unsigned char xorVal = 0x00;
-		int off = 0;
-		for (int i = off; i < len; i++)
-		{
+  /*!
+  \brief calculate crc-code for last byte of binary message
+       XOR-calucation is done ONLY over message content (i.e. skipping the first 8 Bytes holding 0x02020202 <Length Information as 4-byte long>)
+  \param msgBlock: message content
+  \param len: Length of message content in byte
+  \return XOR-calucation abount message content (msgBlock[0] ^ msgBlock[1] .... msgBlock[len-1]
+  */
+  unsigned char sick_crc8(unsigned char *msgBlock, int len)
+  {
+    unsigned char xorVal = 0x00;
+    int off = 0;
+    for (int i = off; i < len; i++)
+    {
 
-			unsigned char val = msgBlock[i];
-			xorVal ^= val;
-		}
-		return(xorVal);
-	}
+      unsigned char val = msgBlock[i];
+      xorVal ^= val;
+    }
+    return (xorVal);
+  }
 
 	/*!
 	\brief Converts a SOPAS command to a human readable string
@@ -276,98 +296,98 @@ namespace sick_scan
 		return result;
 	}
 
-	/*!
-	\brief Convert little endian to big endian (should be replaced by swap-routine)
-	\param *vecArr Pointer to 4 byte block
-	\return swapped 4-byte-value as long
-	*/
-	unsigned long SickScanCommon::convertBigEndianCharArrayToUnsignedLong(const unsigned char *vecArr)
-	{
-		unsigned long val = 0;
-		for (int i = 0; i < 4; i++)
-		{
-			val = val << 8;
-			val |= vecArr[i];
-		}
-		return(val);
-	}
+  /*!
+  \brief Convert little endian to big endian (should be replaced by swap-routine)
+  \param *vecArr Pointer to 4 byte block
+  \return swapped 4-byte-value as long
+  */
+  unsigned long SickScanCommon::convertBigEndianCharArrayToUnsignedLong(const unsigned char *vecArr)
+  {
+    unsigned long val = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      val = val << 8;
+      val |= vecArr[i];
+    }
+    return (val);
+  }
 
 
-	/*!
-	\brief Check block for correct framing and starting sequence of a binary message
-	\param reply Pointer to datablock
-	\return length of message (-1 if message format is not correct)
-	*/
-	int sick_scan::SickScanCommon::checkForBinaryAnswer(const std::vector<unsigned char>* reply)
-	{
-		int retVal = -1;
+  /*!
+  \brief Check block for correct framing and starting sequence of a binary message
+  \param reply Pointer to datablock
+  \return length of message (-1 if message format is not correct)
+  */
+  int sick_scan::SickScanCommon::checkForBinaryAnswer(const std::vector<unsigned char> *reply)
+  {
+    int retVal = -1;
 
-		if (reply == NULL)
-		{
-		}
-		else
-		{
-			if (reply->size() < 8)
-			{
-				retVal = -1;
-			}
-			else
-			{
-				const unsigned char *ptr = &((*reply)[0]);
-				unsigned binId = convertBigEndianCharArrayToUnsignedLong(ptr);
-				unsigned cmdLen = convertBigEndianCharArrayToUnsignedLong(ptr + 4);
-				if (binId == 0x02020202)
-				{
-					int replyLen = reply->size();
-					if (replyLen == 8 + cmdLen + 1)
-					{
-						retVal = cmdLen;
-					}
-				}
-			}
-		}
-		return(retVal);
+    if (reply == NULL)
+    {
+    }
+    else
+    {
+      if (reply->size() < 8)
+      {
+        retVal = -1;
+      }
+      else
+      {
+        const unsigned char *ptr = &((*reply)[0]);
+        unsigned binId = convertBigEndianCharArrayToUnsignedLong(ptr);
+        unsigned cmdLen = convertBigEndianCharArrayToUnsignedLong(ptr + 4);
+        if (binId == 0x02020202)
+        {
+          int replyLen = reply->size();
+          if (replyLen == 8 + cmdLen + 1)
+          {
+            retVal = cmdLen;
+          }
+        }
+      }
+    }
+    return (retVal);
 
-	}
+  }
 
 
-	/*!
-	\brief Reboot scanner (todo: this does not work if the scanner is set to binary mode) Fix me!
-	\return Result of rebooting attempt
-	*/
-	bool SickScanCommon::rebootScanner()
-	{
-		/*
-		 * Set Maintenance access mode to allow reboot to be sent
-		 */
-		std::vector<unsigned char> access_reply;
-		// changed from "03" to "3"
-		int result = sendSOPASCommand("\x02sMN SetAccessMode 3 F4724744\x03\0", &access_reply);
-		if (result != 0)
-		{
-			printf("SOPAS - Error setting access mode");
-			return false;
-		}
-		std::string access_reply_str = replyToString(access_reply);
-		if (access_reply_str != "sAN SetAccessMode 1")
-		{
-			// printf_STREAM("SOPAS - Error setting access mode, unexpected response : " << access_reply_str);
-			return false;
-		}
+  /*!
+  \brief Reboot scanner (todo: this does not work if the scanner is set to binary mode) Fix me!
+  \return Result of rebooting attempt
+  */
+  bool SickScanCommon::rebootScanner()
+  {
+    /*
+     * Set Maintenance access mode to allow reboot to be sent
+     */
+    std::vector<unsigned char> access_reply;
+    // changed from "03" to "3"
+    int result = sendSOPASCommand("\x02sMN SetAccessMode 3 F4724744\x03\0", &access_reply);
+    if (result != 0)
+    {
+      printf("SOPAS - Error setting access mode");
+      return false;
+    }
+    std::string access_reply_str = replyToString(access_reply);
+    if (access_reply_str != "sAN SetAccessMode 1")
+    {
+      printf("SOPAS - Error setting access mode, unexpected response : %s", access_reply_str.c_str());
+      return false;
+    }
 
-		/*
-		 * Send reboot command
-		 */
-		std::vector<unsigned char> reboot_reply;
-		result = sendSOPASCommand("\x02sMN mSCreboot\x03\0", &reboot_reply);
-		if (result != 0)
-		{
+    /*
+     * Send reboot command
+     */
+    std::vector<unsigned char> reboot_reply;
+    result = sendSOPASCommand("\x02sMN mSCreboot\x03\0", &reboot_reply);
+    if (result != 0)
+    {
 			printf("SOPAS - Error rebooting scanner");
-			return false;
-		}
-		std::string reboot_reply_str = replyToString(reboot_reply);
-		if (reboot_reply_str != "sAN mSCreboot")
-		{
+      return false;
+    }
+    std::string reboot_reply_str = replyToString(reboot_reply);
+    if (reboot_reply_str != "sAN mSCreboot")
+    {
 			printf("SOPAS - Error rebooting scanner, unexpected response : %s ", reboot_reply_str.c_str());
 			return false;
 		}
@@ -392,149 +412,149 @@ namespace sick_scan
 	}
 
 
-	/*!
-	\brief Generate expected answer string from the command string
-	\param requestStr command string (either as ASCII or BINARY)
-	\return expected answer string
-	 */
-	std::string SickScanCommon::generateExpectedAnswerString(const std::vector<unsigned char> requestStr)
-	{
-		std::string expectedAnswer = "";
-		int i = 0;
-		char cntWhiteCharacter = 0;
-		int initalTokenCnt = 2; // number of initial token to identify command
-		std::map<std::string, int> specialTokenLen;
-		char firstToken[1024] = { 0 };
-		specialTokenLen["sRI"] = 1; // for SRi-Command only the first token identify the command
-		std::string tmpStr = "";
-		int cnt0x02 = 0;
-		bool isBinary = false;
-		for (int i = 0; i < 4; i++)
-		{
-			if (i < requestStr.size())
-			{
-				if (requestStr[i] == 0x02)
-				{
-					cnt0x02++;
-				}
+  /*!
+  \brief Generate expected answer string from the command string
+  \param requestStr command string (either as ASCII or BINARY)
+  \return expected answer string
+   */
+  std::string SickScanCommon::generateExpectedAnswerString(const std::vector<unsigned char> requestStr)
+  {
+    std::string expectedAnswer = "";
+    int i = 0;
+    char cntWhiteCharacter = 0;
+    int initalTokenCnt = 2; // number of initial token to identify command
+    std::map<std::string, int> specialTokenLen;
+    char firstToken[1024] = {0};
+    specialTokenLen["sRI"] = 1; // for SRi-Command only the first token identify the command
+    std::string tmpStr = "";
+    int cnt0x02 = 0;
+    bool isBinary = false;
+    for (int i = 0; i < 4; i++)
+    {
+      if (i < requestStr.size())
+      {
+        if (requestStr[i] == 0x02)
+        {
+          cnt0x02++;
+        }
 
-			}
-		}
+      }
+    }
 
-		int iStop = requestStr.size();  // copy string until end of string
-		if (cnt0x02 == 4)
-		{
+    int iStop = requestStr.size();  // copy string until end of string
+    if (cnt0x02 == 4)
+    {
 
-			int cmdLen = 0;
-			for (int i = 0; i < 4; i++)
-			{
-				cmdLen |= cmdLen << 8;
-				cmdLen |= requestStr[i + 4];
-			}
-			iStop = cmdLen + 8;
-			isBinary = true;
+      int cmdLen = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        cmdLen |= cmdLen << 8;
+        cmdLen |= requestStr[i + 4];
+      }
+      iStop = cmdLen + 8;
+      isBinary = true;
 
-		}
-		int iStart = (isBinary == true) ? 8 : 0;
-		for (int i = iStart; i < iStop; i++)
-		{
-			tmpStr += (char)requestStr[i];
-		}
-		if (isBinary)
-		{
-			tmpStr = "\x2" + tmpStr;
-		}
-		if (sscanf(tmpStr.c_str(), "\x2%s", firstToken) == 1)
-		{
-			if (specialTokenLen.find(firstToken) != specialTokenLen.end())
-			{
-				initalTokenCnt = specialTokenLen[firstToken];
+    }
+    int iStart = (isBinary == true) ? 8 : 0;
+    for (int i = iStart; i < iStop; i++)
+    {
+      tmpStr += (char) requestStr[i];
+    }
+    if (isBinary)
+    {
+      tmpStr = "\x2" + tmpStr;
+    }
+    if (sscanf(tmpStr.c_str(), "\x2%s", firstToken) == 1)
+    {
+      if (specialTokenLen.find(firstToken) != specialTokenLen.end())
+      {
+        initalTokenCnt = specialTokenLen[firstToken];
 
-			}
-		}
+      }
+    }
 
-		for (int i = iStart; i < iStop; i++)
-		{
-			if ((requestStr[i] == ' ') || (requestStr[i] == '\x3'))
-			{
-				cntWhiteCharacter++;
-			}
-			if (cntWhiteCharacter >= initalTokenCnt)
-			{
-				break;
-			}
-			if (requestStr[i] == '\x2')
-			{
-			}
-			else
-			{
-				expectedAnswer += requestStr[i];
-			}
-		}
+    for (int i = iStart; i < iStop; i++)
+    {
+      if ((requestStr[i] == ' ') || (requestStr[i] == '\x3'))
+      {
+        cntWhiteCharacter++;
+      }
+      if (cntWhiteCharacter >= initalTokenCnt)
+      {
+        break;
+      }
+      if (requestStr[i] == '\x2')
+      {
+      }
+      else
+      {
+        expectedAnswer += requestStr[i];
+      }
+    }
 
-		/*!
-		 * Map that defines expected answer identifiers
-		 */
-		std::map<std::string, std::string> keyWordMap;
-		keyWordMap["sWN"] = "sWA";
-		keyWordMap["sRN"] = "sRA";
-		keyWordMap["sRI"] = "sRA";
-		keyWordMap["sMN"] = "sAN";
-		keyWordMap["sEN"] = "sEA";
+    /*!
+     * Map that defines expected answer identifiers
+     */
+    std::map<std::string, std::string> keyWordMap;
+    keyWordMap["sWN"] = "sWA";
+    keyWordMap["sRN"] = "sRA";
+    keyWordMap["sRI"] = "sRA";
+    keyWordMap["sMN"] = "sAN";
+    keyWordMap["sEN"] = "sEA";
 
-		for (std::map<std::string, std::string>::iterator it = keyWordMap.begin(); it != keyWordMap.end(); it++)
-		{
+    for (std::map<std::string, std::string>::iterator it = keyWordMap.begin(); it != keyWordMap.end(); it++)
+    {
 
-			std::string keyWord = it->first;
-			std::string newKeyWord = it->second;
+      std::string keyWord = it->first;
+      std::string newKeyWord = it->second;
 
-			size_t pos = expectedAnswer.find(keyWord);
-			if (pos == std::string::npos)
-			{
+      size_t pos = expectedAnswer.find(keyWord);
+      if (pos == std::string::npos)
+      {
 
-			}
-			else
-			{
-				if (pos == 0)  // must be 0, if keyword has been found
-				{
-					expectedAnswer.replace(pos, keyWord.length(), newKeyWord);
-				}
-				else
-				{
+      }
+      else
+      {
+        if (pos == 0)  // must be 0, if keyword has been found
+        {
+          expectedAnswer.replace(pos, keyWord.length(), newKeyWord);
+        }
+        else
+        {
 					printf("Unexpected position of key identifier.\n");
-				}
-			}
+        }
+      }
 
-		}
-		return(expectedAnswer);
+    }
+    return (expectedAnswer);
 
-	}
+  }
 
-	/*!
-	\brief send command and check answer
-	\param requestStr: Sopas-Command
-	\param *reply: Antwort-String
-	\param cmdId: Command index to derive the correct error message (optional)
-	\return error code
-	*/
-	int SickScanCommon::sendSopasAndCheckAnswer(std::string requestStr, std::vector<unsigned char> *reply, int cmdId = -1)
-	{
-		std::vector<unsigned char> requestStringVec;
-		for (int i = 0; i < requestStr.length(); i++)
-		{
-			requestStringVec.push_back(requestStr[i]);
-		}
-		int retCode = sendSopasAndCheckAnswer(requestStringVec, reply, cmdId);
-		return(retCode);
-	}
+  /*!
+  \brief send command and check answer
+  \param requestStr: Sopas-Command
+  \param *reply: Antwort-String
+  \param cmdId: Command index to derive the correct error message (optional)
+  \return error code
+  */
+  int SickScanCommon::sendSopasAndCheckAnswer(std::string requestStr, std::vector<unsigned char> *reply, int cmdId = -1)
+  {
+    std::vector<unsigned char> requestStringVec;
+    for (int i = 0; i < requestStr.length(); i++)
+    {
+      requestStringVec.push_back(requestStr[i]);
+    }
+    int retCode = sendSopasAndCheckAnswer(requestStringVec, reply, cmdId);
+    return (retCode);
+  }
 
-	/*!
-	\brief send command and check answer
-	\param requestStr: Sopas-Command given as byte-vector
-	\param *reply: Antwort-String
-	\param cmdId: Command index to derive the correct error message (optional)
-	\return error code
-	*/
+  /*!
+  \brief send command and check answer
+  \param requestStr: Sopas-Command given as byte-vector
+  \param *reply: Antwort-String
+  \param cmdId: Command index to derive the correct error message (optional)
+  \return error code
+  */
 	int SickScanCommon::sendSopasAndCheckAnswer(std::vector<unsigned char> requestStr, std::vector<unsigned char> *reply, int cmdId = -1)
 	{
 
@@ -598,44 +618,44 @@ namespace sick_scan
 
 	}
 
-	/*!
-	\brief set timeout in milliseconds
-	\param timeOutInMs in milliseconds
-	\sa getReadTimeOutInMs
-	*/
-	void SickScanCommon::setReadTimeOutInMs(int timeOutInMs)
-	{
-		readTimeOutInMs = timeOutInMs;
-	}
+  /*!
+  \brief set timeout in milliseconds
+  \param timeOutInMs in milliseconds
+  \sa getReadTimeOutInMs
+  */
+  void SickScanCommon::setReadTimeOutInMs(int timeOutInMs)
+  {
+    readTimeOutInMs = timeOutInMs;
+  }
 
-	/*!
-	\brief get timeout in milliseconds
-	\return timeout in milliseconds
-	\sa setReadTimeOutInMs
-	*/
-	int SickScanCommon::getReadTimeOutInMs()
-	{
-		return(readTimeOutInMs);
-	}
+  /*!
+  \brief get timeout in milliseconds
+  \return timeout in milliseconds
+  \sa setReadTimeOutInMs
+  */
+  int SickScanCommon::getReadTimeOutInMs()
+  {
+    return (readTimeOutInMs);
+  }
 
-	/*!
-	\brief get protocol type as enum
-	\return enum type of type SopasProtocol
-	\sa setProtocolType
-	*/
-	int SickScanCommon::getProtocolType(void)
-	{
-		return m_protocolId;
-	}
+  /*!
+  \brief get protocol type as enum
+  \return enum type of type SopasProtocol
+  \sa setProtocolType
+  */
+  int SickScanCommon::getProtocolType(void)
+  {
+    return m_protocolId;
+  }
 
-	/*!
-	\brief set protocol type as enum
-	\sa getProtocolType
-	*/
-	void SickScanCommon::setProtocolType(SopasProtocol cola_dialect_id)
-	{
-		m_protocolId = cola_dialect_id;
-	}
+  /*!
+  \brief set protocol type as enum
+  \sa getProtocolType
+  */
+  void SickScanCommon::setProtocolType(SopasProtocol cola_dialect_id)
+  {
+    m_protocolId = cola_dialect_id;
+  }
 
 
 	/*!
@@ -663,118 +683,157 @@ namespace sick_scan
 	}
 
 
-	/*!
-	\brief init command tables and define startup sequence
-	\return exit code
-	*/
-	int SickScanCommon::init_cmdTables()
-	{
-		sopasCmdVec.resize(SickScanCommon::CMD_END);
-		sopasCmdMaskVec.resize(SickScanCommon::CMD_END);  // you for cmd with variable content. sprintf should print into corresponding sopasCmdVec
-		sopasCmdErrMsg.resize(SickScanCommon::CMD_END);  // you for cmd with variable content. sprintf should print into corresponding sopasCmdVec
-		sopasReplyVec.resize(SickScanCommon::CMD_END);
-		sopasReplyBinVec.resize(SickScanCommon::CMD_END);
-		sopasReplyStrVec.resize(SickScanCommon::CMD_END);
+  /*!
+  \brief init command tables and define startup sequence
+  \return exit code
+  */
+  int SickScanCommon::init_cmdTables()
+  {
+    sopasCmdVec.resize(SickScanCommon::CMD_END);
+    sopasCmdMaskVec.resize(
+        SickScanCommon::CMD_END);  // you for cmd with variable content. sprintf should print into corresponding sopasCmdVec
+    sopasCmdErrMsg.resize(
+        SickScanCommon::CMD_END);  // you for cmd with variable content. sprintf should print into corresponding sopasCmdVec
+    sopasReplyVec.resize(SickScanCommon::CMD_END);
+    sopasReplyBinVec.resize(SickScanCommon::CMD_END);
+    sopasReplyStrVec.resize(SickScanCommon::CMD_END);
 
-		std::string unknownStr = "Command or Error message not defined";
-		for (int i = 0; i < SickScanCommon::CMD_END; i++)
-		{
-			sopasCmdVec[i] = unknownStr;
-			sopasCmdMaskVec[i] = unknownStr;  // for cmd with variable content. sprintf should print into corresponding sopasCmdVec
-			sopasCmdErrMsg[i] = unknownStr;
-			sopasReplyVec[i] = unknownStr;
-			sopasReplyStrVec[i] = unknownStr;
-		}
+    std::string unknownStr = "Command or Error message not defined";
+    for (int i = 0; i < SickScanCommon::CMD_END; i++)
+    {
+      sopasCmdVec[i] = unknownStr;
+      sopasCmdMaskVec[i] = unknownStr;  // for cmd with variable content. sprintf should print into corresponding sopasCmdVec
+      sopasCmdErrMsg[i] = unknownStr;
+      sopasReplyVec[i] = unknownStr;
+      sopasReplyStrVec[i] = unknownStr;
+    }
 
-		sopasCmdVec[CMD_DEVICE_IDENT_LEGACY] = "\x02sRI 0\x03\0";
-		sopasCmdVec[CMD_DEVICE_IDENT] = "\x02sRN DeviceIdent\x03\0";
-		sopasCmdVec[CMD_SERIAL_NUMBER] = "\x02sRN SerialNumber\x03\0";
-		sopasCmdVec[CMD_FIRMWARE_VERSION] = "\x02sRN FirmwareVersion\x03\0";
-		sopasCmdVec[CMD_DEVICE_STATE] = "\x02sRN SCdevicestate\x03\0";
-		sopasCmdVec[CMD_OPERATION_HOURS] = "\x02sRN ODoprh\x03\0";
-		sopasCmdVec[CMD_POWER_ON_COUNT] = "\x02sRN ODpwrc\x03\0";
-		sopasCmdVec[CMD_LOCATION_NAME] = "\x02sRN LocationName\x03\0";
-		sopasCmdVec[CMD_ACTIVATE_STANDBY] = "\x02sMN LMCstandby\x03";
-		sopasCmdVec[CMD_SET_ACCESS_MODE_3] = "\x02sMN SetAccessMode 3 F4724744\x03\0";
-		sopasCmdVec[CMD_GET_OUTPUT_RANGES] = "\x02sRN LMPoutputRange\x03";
-		sopasCmdVec[CMD_RUN] = "\x02sMN Run\x03\0";
-		sopasCmdVec[CMD_STOP_SCANDATA] = "\x02sEN LMDscandata 0\x03";
-		sopasCmdVec[CMD_START_SCANDATA] = "\x02sEN LMDscandata 1\x03";
+    sopasCmdVec[CMD_DEVICE_IDENT_LEGACY] = "\x02sRI 0\x03\0";
+    sopasCmdVec[CMD_DEVICE_IDENT] = "\x02sRN DeviceIdent\x03\0";
+    sopasCmdVec[CMD_REBOOT] = "\x02sMN mSCreboot\x03";
+    sopasCmdVec[CMD_WRITE_EEPROM] = "\x02sMN mEEwriteall\x03";
+    sopasCmdVec[CMD_SERIAL_NUMBER] = "\x02sRN SerialNumber\x03\0";
+    sopasCmdVec[CMD_FIRMWARE_VERSION] = "\x02sRN FirmwareVersion\x03\0";
+    sopasCmdVec[CMD_DEVICE_STATE] = "\x02sRN SCdevicestate\x03\0";
+    sopasCmdVec[CMD_OPERATION_HOURS] = "\x02sRN ODoprh\x03\0";
+    sopasCmdVec[CMD_POWER_ON_COUNT] = "\x02sRN ODpwrc\x03\0";
+    sopasCmdVec[CMD_LOCATION_NAME] = "\x02sRN LocationName\x03\0";
+    sopasCmdVec[CMD_ACTIVATE_STANDBY] = "\x02sMN LMCstandby\x03";
+    sopasCmdVec[CMD_SET_ACCESS_MODE_3] = "\x02sMN SetAccessMode 3 F4724744\x03\0";
+    sopasCmdVec[CMD_SET_ACCESS_MODE_3_SAFETY_SCANNER] = "\x02sMN SetAccessMode 3 6FD62C05\x03\0";
+    sopasCmdVec[CMD_GET_OUTPUT_RANGES] = "\x02sRN LMPoutputRange\x03";
+    sopasCmdVec[CMD_RUN] = "\x02sMN Run\x03\0";
+    sopasCmdVec[CMD_STOP_SCANDATA] = "\x02sEN LMDscandata 0\x03";
+    sopasCmdVec[CMD_START_SCANDATA] = "\x02sEN LMDscandata 1\x03";
+    sopasCmdVec[CMD_START_RADARDATA] = "\x02sEN LMDradardata 1\x03";
+    sopasCmdVec[CMD_ACTIVATE_NTP_CLIENT] ="\x02sWN TSCRole 1\x03";
+    sopasCmdVec[CMD_SET_NTP_INTERFACE_ETH]= "\x02sWN TSCTCInterface 0\x03";
 
-		sopasCmdVec[CMD_START_RADARDATA] = "\x02sEN LMDradardata 1\x03";
-
-		/*
-		 * Radar specific commands
-		 */
-		sopasCmdVec[CMD_SET_TRANSMIT_RAWTARGETS_ON] = "\x02sWN TransmitTargets 1\x03";  // transmit raw target for radar
-		sopasCmdVec[CMD_SET_TRANSMIT_RAWTARGETS_OFF] = "\x02sWN TransmitTargets 0\x03";  // do not transmit raw target for radar
-		sopasCmdVec[CMD_SET_TRANSMIT_OBJECTS_ON] = "\x02sWN TransmitObjects 1\x03";  // transmit objects from radar tracking
-		sopasCmdVec[CMD_SET_TRANSMIT_OBJECTS_OFF] = "\x02sWN TransmitObjects 0\x03";  // do not transmit objects from radar tracking
-		sopasCmdVec[CMD_SET_TRACKING_MODE_0] = "\x02sWN TCTrackingMode 0\x03";  // set object tracking mode to BASIC
-		sopasCmdVec[CMD_SET_TRACKING_MODE_1] = "\x02sWN TCTrackingMode 1\x03";  // set object tracking mode to TRAFFIC
-
-
-		sopasCmdVec[CMD_LOAD_APPLICATION_DEFAULT] = "\x02sMN mSCloadappdef\x03";  // load application default
-		sopasCmdVec[CMD_DEVICE_TYPE] = "\x02sRN DItype\x03";  // ask for radar device type
-		sopasCmdVec[CMD_ORDER_NUMBER] = "\x02sRN OrdNum\x03";  // ask for radar order number
-
+    /*
+     * Radar specific commands
+     */
+    sopasCmdVec[CMD_SET_TRANSMIT_RAWTARGETS_ON] = "\x02sWN TransmitTargets 1\x03";  // transmit raw target for radar
+    sopasCmdVec[CMD_SET_TRANSMIT_RAWTARGETS_OFF] = "\x02sWN TransmitTargets 0\x03";  // do not transmit raw target for radar
+    sopasCmdVec[CMD_SET_TRANSMIT_OBJECTS_ON] = "\x02sWN TransmitObjects 1\x03";  // transmit objects from radar tracking
+    sopasCmdVec[CMD_SET_TRANSMIT_OBJECTS_OFF] = "\x02sWN TransmitObjects 0\x03";  // do not transmit objects from radar tracking
+    sopasCmdVec[CMD_SET_TRACKING_MODE_0] = "\x02sWN TCTrackingMode 0\x03";  // set object tracking mode to BASIC
+    sopasCmdVec[CMD_SET_TRACKING_MODE_1] = "\x02sWN TCTrackingMode 1\x03";  // set object tracking mode to TRAFFIC
 
 
-		sopasCmdVec[CMD_START_MEASUREMENT] = "\x02sMN LMCstartmeas\x03";
-		sopasCmdVec[CMD_STOP_MEASUREMENT] = "\x02sMN LMCstopmeas\x03";
-		sopasCmdVec[CMD_APPLICATION_MODE_FIELD_OFF] = "\x02sWN SetActiveApplications 1 FEVL 0\x03"; // <STX>sWN{SPC}SetActiveApplications{SPC}1{SPC}FEVL{SPC}1<ETX>
-		sopasCmdVec[CMD_APPLICATION_MODE_RANGING_ON] = "\x02sWN SetActiveApplications 1 RANG 1\x03";
-		sopasCmdVec[CMD_SET_TO_COLA_A_PROTOCOL] = "\x02sWN EIHstCola 0\x03";
-		sopasCmdVec[CMD_GET_PARTIAL_SCANDATA_CFG] = "\x02sRN LMDscandatacfg\x03";
-		sopasCmdVec[CMD_SET_TO_COLA_B_PROTOCOL] = "\x02sWN EIHstCola 1\x03";
+    sopasCmdVec[CMD_LOAD_APPLICATION_DEFAULT] = "\x02sMN mSCloadappdef\x03";  // load application default
+    sopasCmdVec[CMD_DEVICE_TYPE] = "\x02sRN DItype\x03";  // ask for radar device type
+    sopasCmdVec[CMD_ORDER_NUMBER] = "\x02sRN OrdNum\x03";  // ask for radar order number
 
-		// defining cmd mask for cmds with variable input
-		sopasCmdMaskVec[CMD_SET_PARTICLE_FILTER] = "\x02sWN LFPparticle %d %d\x03";
-		sopasCmdMaskVec[CMD_SET_MEAN_FILTER] = "\x02sWN LFPmeanfilter %d +%d 1\x03";
-		sopasCmdMaskVec[CMD_ALIGNMENT_MODE] = "\x02sWN MMAlignmentMode %d\x03";
-		sopasCmdMaskVec[CMD_APPLICATION_MODE] = "\x02sWN SetActiveApplications 1 %s %d\x03";
-		sopasCmdMaskVec[CMD_SET_OUTPUT_RANGES] = "\x02sWN LMPoutputRange 1 %X %X %X\x03";
-		sopasCmdMaskVec[CMD_SET_PARTIAL_SCANDATA_CFG] = "\x02sWN LMDscandatacfg %02d 00 %d %d 0 00 00 0 0 0 0 1\x03";
-		sopasCmdMaskVec[CMD_SET_ECHO_FILTER] = "\x02sWN FREchoFilter %d\x03";
 
-		//error Messages
-		sopasCmdErrMsg[CMD_DEVICE_IDENT_LEGACY] = "Error reading device ident";
-		sopasCmdErrMsg[CMD_DEVICE_IDENT] = "Error reading device ident for MRS-family";
-		sopasCmdErrMsg[CMD_SERIAL_NUMBER] = "Error reading SerialNumber";
-		sopasCmdErrMsg[CMD_FIRMWARE_VERSION] = "Error reading FirmwareVersion";
-		sopasCmdErrMsg[CMD_DEVICE_STATE] = "Error reading SCdevicestate";
-		sopasCmdErrMsg[CMD_OPERATION_HOURS] = "Error reading operation hours";
-		sopasCmdErrMsg[CMD_POWER_ON_COUNT] = "Error reading operation power on counter";
-		sopasCmdErrMsg[CMD_LOCATION_NAME] = "Error reading Locationname";
-		sopasCmdErrMsg[CMD_ACTIVATE_STANDBY] = "Error acticvating Standby";
-		sopasCmdErrMsg[CMD_SET_PARTICLE_FILTER] = "Error setting Particelefilter";
-		sopasCmdErrMsg[CMD_SET_MEAN_FILTER] = "Error setting Meanfilter";
-		sopasCmdErrMsg[CMD_ALIGNMENT_MODE] = "Error setting Alignmentmode";
-		sopasCmdErrMsg[CMD_APPLICATION_MODE] = "Error setting Meanfilter";
-		sopasCmdErrMsg[CMD_SET_ACCESS_MODE_3] = "Error Access Mode";
-		sopasCmdErrMsg[CMD_SET_OUTPUT_RANGES] = "Error setting angular ranges";
-		sopasCmdErrMsg[CMD_GET_OUTPUT_RANGES] = "Error reading angle range";
-		sopasCmdErrMsg[CMD_RUN] = "FATAL ERROR unable to start RUN mode!";
-		sopasCmdErrMsg[CMD_SET_PARTIAL_SCANDATA_CFG] = "Error setting Scandataconfig";
-		sopasCmdErrMsg[CMD_STOP_SCANDATA] = "Error stopping scandata output";
-		sopasCmdErrMsg[CMD_START_SCANDATA] = "Error starting Scandata output";
 
-		// ML: Add hier more useful cmd and mask entries
+    sopasCmdVec[CMD_START_MEASUREMENT] = "\x02sMN LMCstartmeas\x03";
+    sopasCmdVec[CMD_STOP_MEASUREMENT] = "\x02sMN LMCstopmeas\x03";
+    sopasCmdVec[CMD_APPLICATION_MODE_FIELD_ON] = "\x02sWN SetActiveApplications 1 FEVL 1\x03"; // <STX>sWN{SPC}SetActiveApplications{SPC}1{SPC}FEVL{SPC}1<ETX>
+    sopasCmdVec[CMD_APPLICATION_MODE_FIELD_OFF] = "\x02sWN SetActiveApplications 1 FEVL 0\x03"; // <STX>sWN{SPC}SetActiveApplications{SPC}1{SPC}FEVL{SPC}1<ETX>
+    sopasCmdVec[CMD_APPLICATION_MODE_RANGING_ON] = "\x02sWN SetActiveApplications 1 RANG 1\x03";
+    sopasCmdVec[CMD_SET_TO_COLA_A_PROTOCOL] = "\x02sWN EIHstCola 0\x03";
+    sopasCmdVec[CMD_GET_PARTIAL_SCANDATA_CFG] = "\x02sRN LMDscandatacfg\x03";//<STX>sMN{SPC}mLMPsetscancfg{SPC } +5000{SPC}+1{SPC}+5000{SPC}-450000{SPC}+2250000<ETX>
+    sopasCmdVec[CMD_GET_PARTIAL_SCAN_CFG] = "\x02sRN LMPscancfg\x03";
+    sopasCmdVec[CMD_SET_TO_COLA_B_PROTOCOL] = "\x02sWN EIHstCola 1\x03";
 
-		// After definition of command, we specify the command sequence for scanner initalisation
+    sopasCmdVec[CMD_STOP_IMU_DATA] = "\x02sEN InertialMeasurementUnit 0\x03";
+    sopasCmdVec[CMD_START_IMU_DATA] = "\x02sEN InertialMeasurementUnit 1\x03";
+    sopasCmdVec[CMD_SET_ENCODER_MODE_NO] ="\x02sWN LICencset 0\x03";
+    sopasCmdVec[CMD_SET_ENCODER_MODE_SI] ="\x02sWN LICencset 1\x03";
+    sopasCmdVec[CMD_SET_ENCODER_MODE_DP] ="\x02sWN LICencset 2\x03";
+    sopasCmdVec[CMD_SET_ENCODER_MODE_DL] ="\x02sWN LICencset 3\x03";
+    sopasCmdVec[CMD_SET_INCREMNTSOURCE_ENC] ="\x02sWN LICsrc 1\x03";
 
-		// try for MRS1104
-		sopasCmdChain.push_back(CMD_SET_ACCESS_MODE_3);
+    // defining cmd mask for cmds with variable input
+    sopasCmdMaskVec[CMD_SET_PARTIAL_SCAN_CFG] = "\x02sMN mLMPsetscancfg %d 1 %d 0 0\x03";//scanfreq [1/100 Hz],angres [1/10000°],
+    sopasCmdMaskVec[CMD_SET_PARTICLE_FILTER] = "\x02sWN LFPparticle %d %d\x03";
+    sopasCmdMaskVec[CMD_SET_MEAN_FILTER] = "\x02sWN LFPmeanfilter %d +%d 1\x03";
+    sopasCmdMaskVec[CMD_ALIGNMENT_MODE] = "\x02sWN MMAlignmentMode %d\x03";
+    sopasCmdMaskVec[CMD_APPLICATION_MODE] = "\x02sWN SetActiveApplications 1 %s %d\x03";
+    sopasCmdMaskVec[CMD_SET_OUTPUT_RANGES] = "\x02sWN LMPoutputRange 1 %X %X %X\x03";
+    sopasCmdMaskVec[CMD_SET_PARTIAL_SCANDATA_CFG] = "\x02sWN LMDscandatacfg %02d 00 %d %d 0 00 00 0 0 0 1 1\x03";
+    sopasCmdMaskVec[CMD_SET_ECHO_FILTER] = "\x02sWN FREchoFilter %d\x03";
+    sopasCmdMaskVec[CMD_SET_NTP_UPDATETIME] = "\x02sWN TSCTCupdatetime %d\x03";
+    sopasCmdMaskVec[CMD_SET_NTP_TIMEZONE]= "sWN TSCTCtimezone %d";
+    sopasCmdMaskVec[CMD_SET_IP_ADDR] = "\x02sWN EIIpAddr %02X %02X %02X %02X\x03";
+    sopasCmdMaskVec[CMD_SET_NTP_SERVER_IP_ADDR] = "\x02sWN TSCTCSrvAddr %02X %02X %02X %02X\x03";
+    sopasCmdMaskVec[CMD_SET_GATEWAY] = "\x02sWN EIgate %02X %02X %02X %02X\x03";
+    //error Messages
+    sopasCmdErrMsg[CMD_DEVICE_IDENT_LEGACY] = "Error reading device ident";
+    sopasCmdErrMsg[CMD_DEVICE_IDENT] = "Error reading device ident for MRS-family";
+    sopasCmdErrMsg[CMD_SERIAL_NUMBER] = "Error reading SerialNumber";
+    sopasCmdErrMsg[CMD_FIRMWARE_VERSION] = "Error reading FirmwareVersion";
+    sopasCmdErrMsg[CMD_DEVICE_STATE] = "Error reading SCdevicestate";
+    sopasCmdErrMsg[CMD_OPERATION_HOURS] = "Error reading operation hours";
+    sopasCmdErrMsg[CMD_POWER_ON_COUNT] = "Error reading operation power on counter";
+    sopasCmdErrMsg[CMD_LOCATION_NAME] = "Error reading Locationname";
+    sopasCmdErrMsg[CMD_ACTIVATE_STANDBY] = "Error acticvating Standby";
+    sopasCmdErrMsg[CMD_SET_PARTICLE_FILTER] = "Error setting Particelefilter";
+    sopasCmdErrMsg[CMD_SET_MEAN_FILTER] = "Error setting Meanfilter";
+    sopasCmdErrMsg[CMD_ALIGNMENT_MODE] = "Error setting Alignmentmode";
+    sopasCmdErrMsg[CMD_APPLICATION_MODE] = "Error setting Meanfilter";
+    sopasCmdErrMsg[CMD_SET_ACCESS_MODE_3] = "Error Access Mode";
+    sopasCmdErrMsg[CMD_SET_ACCESS_MODE_3_SAFETY_SCANNER] = "Error Access Mode";
+    sopasCmdErrMsg[CMD_SET_OUTPUT_RANGES] = "Error setting angular ranges";
+    sopasCmdErrMsg[CMD_GET_OUTPUT_RANGES] = "Error reading angle range";
+    sopasCmdErrMsg[CMD_RUN] = "FATAL ERROR unable to start RUN mode!";
+    sopasCmdErrMsg[CMD_SET_PARTIAL_SCANDATA_CFG] = "Error setting Scandataconfig";
+    sopasCmdErrMsg[CMD_STOP_SCANDATA] = "Error stopping scandata output";
+    sopasCmdErrMsg[CMD_START_SCANDATA] = "Error starting Scandata output";
+    sopasCmdErrMsg[CMD_SET_IP_ADDR] = "Error setting IP address";
+    sopasCmdErrMsg[CMD_SET_GATEWAY] = "Error setting gateway";
+    sopasCmdErrMsg[CMD_REBOOT] = "Error rebooting the device";
+    sopasCmdErrMsg[CMD_WRITE_EEPROM] = "Error writing data to EEPRom";
+    sopasCmdErrMsg[CMD_ACTIVATE_NTP_CLIENT] ="Error activating NTP client";
+    sopasCmdErrMsg[CMD_SET_NTP_INTERFACE_ETH] ="Error setting NTP interface to ETH";
+    sopasCmdErrMsg[CMD_SET_NTP_SERVER_IP_ADDR] ="Error setting NTP server Adress";
+    sopasCmdErrMsg[CMD_SET_NTP_UPDATETIME] = "Error setting NTP update time";
+    sopasCmdErrMsg[CMD_SET_NTP_TIMEZONE] = "Error setting NTP timezone";
+    sopasCmdErrMsg[CMD_SET_ENCODER_MODE] = "Error activating encoder in single incremnt mode";
+    sopasCmdErrMsg[CMD_SET_INCREMNTSOURCE_ENC] = "Error seting encoder increment source to Encoder";
 
-		if (parser_->getCurrentParamPtr()->getUseBinaryProtocol())
-		{
-			sopasCmdChain.push_back(CMD_SET_TO_COLA_B_PROTOCOL);
-		}
-		else
-		{
-			//for binary Mode Testing
-			sopasCmdChain.push_back(CMD_SET_TO_COLA_A_PROTOCOL);
-		}
+    // ML: Add hier more useful cmd and mask entries
+
+    // After definition of command, we specify the command sequence for scanner initalisation
+    ;
+    if (parser_->getCurrentParamPtr()->getUseSafetyPasWD())
+    {
+      sopasCmdChain.push_back(CMD_SET_ACCESS_MODE_3_SAFETY_SCANNER);
+    }
+    else
+      {
+        sopasCmdChain.push_back(CMD_SET_ACCESS_MODE_3);
+      }
+
+    if (parser_->getCurrentParamPtr()->getUseBinaryProtocol())
+    {
+      sopasCmdChain.push_back(CMD_SET_TO_COLA_B_PROTOCOL);
+    }
+    else
+    {
+      //for binary Mode Testing
+      sopasCmdChain.push_back(CMD_SET_TO_COLA_A_PROTOCOL);
+    }
 
 		bool tryToStopMeasurement = true;
 		if (parser_->getCurrentParamPtr()->getNumberOfLayers() == 1)
@@ -787,46 +846,55 @@ namespace sick_scan
 		{
 			sopasCmdChain.push_back(CMD_LOAD_APPLICATION_DEFAULT); // load application default for radar
 
-			tryToStopMeasurement = false;
-			// do not stop measurement for RMS320 - the RMS320 does not support the stop command 
-		}
+      tryToStopMeasurement = false;
+      // do not stop measurement for RMS320 - the RMS320 does not support the stop command
+    }
+    if (tryToStopMeasurement)
+    {
+      sopasCmdChain.push_back(CMD_STOP_MEASUREMENT);
+      int numberOfLayers = parser_->getCurrentParamPtr()->getNumberOfLayers();
 
-		if (tryToStopMeasurement)
-		{
-			sopasCmdChain.push_back(CMD_STOP_MEASUREMENT);
-			int numberOfLayers = parser_->getCurrentParamPtr()->getNumberOfLayers();
-			if ((numberOfLayers == 4) || (numberOfLayers == 24))
-			{
-				// just measuring - Application setting not supported
-				// "Old" device ident command "SRi 0" not supported
-				sopasCmdChain.push_back(CMD_DEVICE_IDENT);
-			}
-			else
-			{
-				sopasCmdChain.push_back(CMD_APPLICATION_MODE_FIELD_OFF);
-				sopasCmdChain.push_back(CMD_APPLICATION_MODE_RANGING_ON);
-				sopasCmdChain.push_back(CMD_DEVICE_IDENT_LEGACY);
-				sopasCmdChain.push_back(CMD_SERIAL_NUMBER);
-			}
-		}
-		sopasCmdChain.push_back(CMD_FIRMWARE_VERSION);  // read firmware
-		sopasCmdChain.push_back(CMD_DEVICE_STATE); // read device state
-		sopasCmdChain.push_back(CMD_OPERATION_HOURS); // read operation hours
-		sopasCmdChain.push_back(CMD_POWER_ON_COUNT); // read power on count
-		sopasCmdChain.push_back(CMD_LOCATION_NAME); // read location name
+      switch (numberOfLayers)
+      {
+        case 4:
+          sopasCmdChain.push_back(CMD_APPLICATION_MODE_FIELD_OFF);
+          sopasCmdChain.push_back(CMD_APPLICATION_MODE_RANGING_ON);
+          sopasCmdChain.push_back(CMD_DEVICE_IDENT);
+          sopasCmdChain.push_back(CMD_SERIAL_NUMBER);
+
+          break;
+        case 24:
+          // just measuring - Application setting not supported
+          // "Old" device ident command "SRi 0" not supported
+          sopasCmdChain.push_back(CMD_DEVICE_IDENT);
+          break;
+
+        default:
+          sopasCmdChain.push_back(CMD_APPLICATION_MODE_FIELD_OFF);
+          sopasCmdChain.push_back(CMD_APPLICATION_MODE_RANGING_ON);
+          sopasCmdChain.push_back(CMD_DEVICE_IDENT_LEGACY);
+
+          sopasCmdChain.push_back(CMD_SERIAL_NUMBER);
+          break;
+      }
+
+    }
+    sopasCmdChain.push_back(CMD_FIRMWARE_VERSION);  // read firmware
+    sopasCmdChain.push_back(CMD_DEVICE_STATE); // read device state
+    sopasCmdChain.push_back(CMD_OPERATION_HOURS); // read operation hours
+    sopasCmdChain.push_back(CMD_POWER_ON_COUNT); // read power on count
+    sopasCmdChain.push_back(CMD_LOCATION_NAME); // read location name
+    return (0);
+
+  }
 
 
-		return(0);
-
-	}
-
-
-	/*!
-	\brief initialize scanner
-	\return exit code
-	*/
-	int SickScanCommon::init_scanner()
-	{
+  /*!
+  \brief initialize scanner
+  \return exit code
+  */
+  int SickScanCommon::init_scanner()
+  {
 
 		auto node = getMainNode();
 
@@ -884,37 +952,38 @@ namespace sick_scan
 			RCLCPP_INFO(node->get_logger(),"Activate at least one echo.");
 		}
 
-		int result;
-		//================== DEFINE ANGULAR SETTING ==========================
-		int    angleRes10000th = 0;
-		int    angleStart10000th = 0;
-		int    angleEnd10000th = 0;
-
-		// Mainloop for initial SOPAS cmd-Handling
-		//
-		// To add new commands do the followings:
-		// 1. Define new enum-entry in the enumumation "enum SOPAS_CMD" in the file sick_scan_common.h
-		// 2. Define new command sequence in the member function init_cmdTables()
-		// 3. Add cmd-id in the sopasCmdChain to trigger sending of command.
-		// 4. Add handling of reply by using for the pattern "REPLY_HANDLING" in this code and adding a new case instruction.
-		// That's all!
+    int result;
+    //================== DEFINE ANGULAR SETTING ==========================
+    int angleRes10000th = 0;
+    int angleStart10000th = 0;
+    int angleEnd10000th = 0;
 
 
-		volatile bool useBinaryCmd = false;
-		if (this->parser_->getCurrentParamPtr()->getUseBinaryProtocol()) // hard coded for every scanner type
-		{
-			useBinaryCmd = true;  // shall we talk ascii or binary with the scanner type??
-		}
+    // Mainloop for initial SOPAS cmd-Handling
+    //
+    // To add new commands do the followings:
+    // 1. Define new enum-entry in the enumumation "enum SOPAS_CMD" in the file sick_scan_common.h
+    // 2. Define new command sequence in the member function init_cmdTables()
+    // 3. Add cmd-id in the sopasCmdChain to trigger sending of command.
+    // 4. Add handling of reply by using for the pattern "REPLY_HANDLING" in this code and adding a new case instruction.
+    // That's all!
 
-		bool useBinaryCmdNow = false;
-		int maxCmdLoop = 2; // try binary and ascii during startup
 
-		const int shortTimeOutInMs = 5000; // during startup phase to check binary or ascii
-		const int defaultTimeOutInMs = 20000; // standard time out 20 sec.
+    volatile bool useBinaryCmd = false;
+    if (this->parser_->getCurrentParamPtr()->getUseBinaryProtocol()) // hard coded for every scanner type
+    {
+      useBinaryCmd = true;  // shall we talk ascii or binary with the scanner type??
+    }
 
-		setReadTimeOutInMs(shortTimeOutInMs);
+    bool useBinaryCmdNow = false;
+    int maxCmdLoop = 2; // try binary and ascii during startup
 
-		bool restartDueToProcolChange = false;
+    const int shortTimeOutInMs = 5000; // during startup phase to check binary or ascii
+    const int defaultTimeOutInMs = 20000; // standard time out 20 sec.
+
+    setReadTimeOutInMs(shortTimeOutInMs);
+
+    bool restartDueToProcolChange = false;
 
 
 		for (int i = 0; i < this->sopasCmdChain.size(); i++)
@@ -972,11 +1041,11 @@ namespace sick_scan
 				sopasReplyStrVec[cmdId] = replyToString(replyDummy);
 			}
 
-			//============================================
-			// Handle reply of specific commands here by inserting new case instruction
-			// REPLY_HANDLING
-			//============================================
-			maxCmdLoop = 1;
+      //============================================
+      // Handle reply of specific commands here by inserting new case instruction
+      // REPLY_HANDLING
+      //============================================
+      maxCmdLoop = 1;
 
 
 			switch (cmdId)
@@ -1097,30 +1166,31 @@ namespace sick_scan
 			}
 			break;
 
-			case CMD_OPERATION_HOURS:
-			{
-				int operationHours = -1;
-				int iRetVal = 0;
-				/*
-				* Process device state, 0=Busy, 1=Ready, 2=Error
-				* If configuration parameter is set, try resetting device in error state
-				*/
-				if (useBinaryCmd)
-				{
-					long dummy0, dummy1;
-					dummy0 = 0;
-					dummy1 = 0;
-					operationHours = 0;
-					iRetVal = binScanfVec(&(sopasReplyBinVec[CMD_OPERATION_HOURS]), "%4y%4ysRA ODoprh %4y", &dummy0, &dummy1, &operationHours);
-				}
-				else
-				{
-					operationHours = 0;
-					iRetVal = sscanf(sopasReplyStrVec[CMD_OPERATION_HOURS].c_str(), "sRA ODoprh %x", &operationHours);
-				}
-				if (iRetVal > 0)
-				{
-					double hours = 0.1 * operationHours;
+        case CMD_OPERATION_HOURS:
+        {
+          int operationHours = -1;
+          int iRetVal = 0;
+          /*
+          * Process device state, 0=Busy, 1=Ready, 2=Error
+          * If configuration parameter is set, try resetting device in error state
+          */
+          if (useBinaryCmd)
+          {
+            long dummy0, dummy1;
+            dummy0 = 0;
+            dummy1 = 0;
+            operationHours = 0;
+            iRetVal = binScanfVec(&(sopasReplyBinVec[CMD_OPERATION_HOURS]), "%4y%4ysRA ODoprh %4y", &dummy0, &dummy1,
+                                  &operationHours);
+          }
+          else
+          {
+            operationHours = 0;
+            iRetVal = sscanf(sopasReplyStrVec[CMD_OPERATION_HOURS].c_str(), "sRA ODoprh %x", &operationHours);
+          }
+          if (iRetVal > 0)
+          {
+            double hours = 0.1 * operationHours;
 #if TODO
 					pn.setParam("operationHours", hours);
 #endif
@@ -1230,72 +1300,72 @@ namespace sick_scan
 			angleRes10000th = (int)(0.5 + 10000.0   * this->parser_->getCurrentParamPtr()->getAngularDegreeResolution());
 			std::vector<unsigned char> askOutputAngularRangeReply;
 
-			if (useBinaryCmd)
-			{
-				std::vector<unsigned char> reqBinary;
-				this->convertAscii2BinaryCmd(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &reqBinary);
-				result = sendSopasAndCheckAnswer(reqBinary, &sopasReplyBinVec[CMD_GET_OUTPUT_RANGES]);
-			}
-			else
-			{
-				result = sendSopasAndCheckAnswer(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &askOutputAngularRangeReply);
-			}
+      if (useBinaryCmd)
+      {
+        std::vector<unsigned char> reqBinary;
+        this->convertAscii2BinaryCmd(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &reqBinary);
+        result = sendSopasAndCheckAnswer(reqBinary, &sopasReplyBinVec[CMD_GET_OUTPUT_RANGES]);
+      }
+      else
+      {
+        result = sendSopasAndCheckAnswer(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &askOutputAngularRangeReply);
+      }
 
 
+      if (0 == result)
+      {
+        int askTmpAngleRes10000th = 0;
+        int askTmpAngleStart10000th = 0;
+        int askTmpAngleEnd10000th = 0;
+        char dummy0[MAX_STR_LEN] = {0};
+        char dummy1[MAX_STR_LEN] = {0};
+        int dummyInt = 0;
 
-			if (0 == result)
-			{
-				int askTmpAngleRes10000th = 0;
-				int askTmpAngleStart10000th = 0;
-				int askTmpAngleEnd10000th = 0;
-				char dummy0[MAX_STR_LEN] = { 0 };
-				char dummy1[MAX_STR_LEN] = { 0 };
-				int  dummyInt = 0;
+        int iDummy0, iDummy1;
+        std::string askOutputAngularRangeStr = replyToString(askOutputAngularRangeReply);
+        // Binary-Reply Tab. 63
+        // 0x20 Space
+        // 0x00 0x01 -
+        // 0x00 0x00 0x05 0x14  // Resolution in 1/10000th degree  --> 0.13°
+        // 0x00 0x04 0x93 0xE0  // Start Angle 300000    -> 30°
+        // 0x00 0x16 0xE3 0x60  // End Angle   1.500.000 -> 150°    // in ROS +/-60°
+        // 0x83                 // Checksum
 
-				int iDummy0, iDummy1;
-				std::string askOutputAngularRangeStr = replyToString(askOutputAngularRangeReply);
-				// Binary-Reply Tab. 63
-				// 0x20 Space
-				// 0x00 0x01 - 
-				// 0x00 0x00 0x05 0x14  // Resolution in 1/10000th degree  --> 0.13° 
-				// 0x00 0x04 0x93 0xE0  // Start Angle 300000    -> 30° 
-				// 0x00 0x16 0xE3 0x60  // End Angle   1.500.000 -> 150°    // in ROS +/-60°  
-				// 0x83                 // Checksum
+        int numArgs;
 
-				int numArgs;
+        if (useBinaryCmd)
+        {
+          iDummy0 = 0;
+          iDummy1 = 0;
+          dummyInt = 0;
+          askTmpAngleRes10000th = 0;
+          askTmpAngleStart10000th = 0;
+          askTmpAngleEnd10000th = 0;
 
-				if (useBinaryCmd)
-				{
-					iDummy0 = 0;
-					iDummy1 = 0;
-					dummyInt = 0;
-					askTmpAngleRes10000th = 0;
-					askTmpAngleStart10000th = 0;
-					askTmpAngleEnd10000th = 0;
+          const char *askOutputAngularRangeBinMask = "%4y%4ysRA LMPoutputRange %2y%4y%4y%4y";
+          numArgs = binScanfVec(&sopasReplyBinVec[CMD_GET_OUTPUT_RANGES], askOutputAngularRangeBinMask, &iDummy0,
+                                &iDummy1,
+                                &dummyInt,
+                                &askTmpAngleRes10000th,
+                                &askTmpAngleStart10000th,
+                                &askTmpAngleEnd10000th);
+          //
+        }
+        else
+        {
+          numArgs = sscanf(askOutputAngularRangeStr.c_str(), "%s %s %d %X %X %X", dummy0, dummy1,
+                           &dummyInt,
+                           &askTmpAngleRes10000th,
+                           &askTmpAngleStart10000th,
+                           &askTmpAngleEnd10000th);
+        }
+        if (numArgs >= 6)
+        {
+          double askTmpAngleRes = askTmpAngleRes10000th / 10000.0;
+          double askTmpAngleStart = askTmpAngleStart10000th / 10000.0;
+          double askTmpAngleEnd = askTmpAngleEnd10000th / 10000.0;
 
-					const char *askOutputAngularRangeBinMask = "%4y%4ysRA LMPoutputRange %2y%4y%4y%4y";
-					numArgs = binScanfVec(&sopasReplyBinVec[CMD_GET_OUTPUT_RANGES], askOutputAngularRangeBinMask, &iDummy0, &iDummy1,
-						&dummyInt,
-						&askTmpAngleRes10000th,
-						&askTmpAngleStart10000th,
-						&askTmpAngleEnd10000th);
-					//
-				}
-				else
-				{
-					numArgs = sscanf(askOutputAngularRangeStr.c_str(), "%s %s %d %X %X %X", dummy0, dummy1,
-						&dummyInt,
-						&askTmpAngleRes10000th,
-						&askTmpAngleStart10000th,
-						&askTmpAngleEnd10000th);
-				}
-				if (numArgs >= 6)
-				{
-					double askTmpAngleRes = askTmpAngleRes10000th / 10000.0;
-					double askTmpAngleStart = askTmpAngleStart10000th / 10000.0;
-					double askTmpAngleEnd = askTmpAngleEnd10000th / 10000.0;
-
-					angleRes10000th = askTmpAngleRes10000th;
+          angleRes10000th = askTmpAngleRes10000th;
 					RCLCPP_INFO(node->get_logger(),"Angle resolution of scanner is %0.5lf [deg]  (in 1/10000th deg: 0x%X)", askTmpAngleRes, askTmpAngleRes10000th);
 
 				}
@@ -1329,91 +1399,91 @@ namespace sick_scan
 			}
 			else
 			{
-				std::vector<unsigned char> outputAngularRangeReply;
-				const char* pcCmdMask = sopasCmdMaskVec[CMD_SET_OUTPUT_RANGES].c_str();
-				sprintf(requestOutputAngularRange, pcCmdMask, angleRes10000th, angleStart10000th, angleEnd10000th);
+        std::vector<unsigned char> outputAngularRangeReply;
+        const char *pcCmdMask = sopasCmdMaskVec[CMD_SET_OUTPUT_RANGES].c_str();
+        sprintf(requestOutputAngularRange, pcCmdMask, angleRes10000th, angleStart10000th, angleEnd10000th);
 
-				if (useBinaryCmd)
-				{
-					unsigned char tmpBuffer[255] = { 0 };
-					unsigned char sendBuffer[255] = { 0 };
-					UINT16 sendLen;
-					std::vector<unsigned char> reqBinary;
-					int iStatus = 1;
-					//				const char *askOutputAngularRangeBinMask = "%4y%4ysWN LMPoutputRange %2y%4y%4y%4y";
-									// int askOutputAngularRangeBinLen = binScanfGuessDataLenFromMask(askOutputAngularRangeBinMask);
-									// askOutputAngularRangeBinLen -= 8;  // due to header and length identifier
+        if (useBinaryCmd)
+        {
+          unsigned char tmpBuffer[255] = {0};
+          unsigned char sendBuffer[255] = {0};
+          UINT16 sendLen;
+          std::vector<unsigned char> reqBinary;
+          int iStatus = 1;
+          //				const char *askOutputAngularRangeBinMask = "%4y%4ysWN LMPoutputRange %2y%4y%4y%4y";
+          // int askOutputAngularRangeBinLen = binScanfGuessDataLenFromMask(askOutputAngularRangeBinMask);
+          // askOutputAngularRangeBinLen -= 8;  // due to header and length identifier
 
-					strcpy((char*)tmpBuffer, "WN LMPoutputRange ");
-					unsigned short orgLen = strlen((char *)tmpBuffer);
-					colab::addIntegerToBuffer<UINT16>(tmpBuffer, orgLen, iStatus);
-					colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleRes10000th);
-					colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleStart10000th);
-					colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleEnd10000th);
-					sendLen = orgLen;
-					colab::addFrameToBuffer(sendBuffer, tmpBuffer, &sendLen);
+          strcpy((char *) tmpBuffer, "WN LMPoutputRange ");
+          unsigned short orgLen = strlen((char *) tmpBuffer);
+          colab::addIntegerToBuffer<UINT16>(tmpBuffer, orgLen, iStatus);
+          colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleRes10000th);
+          colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleStart10000th);
+          colab::addIntegerToBuffer<UINT32>(tmpBuffer, orgLen, angleEnd10000th);
+          sendLen = orgLen;
+          colab::addFrameToBuffer(sendBuffer, tmpBuffer, &sendLen);
 
-					// binSprintfVec(&reqBinary, askOutputAngularRangeBinMask, 0x02020202, askOutputAngularRangeBinLen, iStatus, angleRes10000th, angleStart10000th, angleEnd10000th);
+          // binSprintfVec(&reqBinary, askOutputAngularRangeBinMask, 0x02020202, askOutputAngularRangeBinLen, iStatus, angleRes10000th, angleStart10000th, angleEnd10000th);
 
-					// unsigned char sickCrc = sick_crc8((unsigned char *)(&(reqBinary)[8]), reqBinary.size() - 8);
-					// reqBinary.push_back(sickCrc);
-					reqBinary = std::vector<unsigned char>(sendBuffer, sendBuffer + sendLen);
-					// Here we must build a more complex binaryRequest
+          // unsigned char sickCrc = sick_crc8((unsigned char *)(&(reqBinary)[8]), reqBinary.size() - 8);
+          // reqBinary.push_back(sickCrc);
+          reqBinary = std::vector<unsigned char>(sendBuffer, sendBuffer + sendLen);
+          // Here we must build a more complex binaryRequest
 
-					// this->convertAscii2BinaryCmd(requestOutputAngularRange, &reqBinary);
-					result = sendSopasAndCheckAnswer(reqBinary, &outputAngularRangeReply);
-				}
-				else
-				{
-					result = sendSopasAndCheckAnswer(requestOutputAngularRange, &outputAngularRangeReply);
-				}
+          // this->convertAscii2BinaryCmd(requestOutputAngularRange, &reqBinary);
+          result = sendSopasAndCheckAnswer(reqBinary, &outputAngularRangeReply);
+        }
+        else
+        {
+          result = sendSopasAndCheckAnswer(requestOutputAngularRange, &outputAngularRangeReply);
+        }
 			}
 
-			//-----------------------------------------------------------------
-			//
-			// Get Min- und Max scanning angle from the scanner to verify angle setting and correct the config, if something went wrong.
-			//
-			// IMPORTANT:
-			// Axis Orientation in ROS differs from SICK AXIS ORIENTATION!!!
-			// In relation to a body the standard is:
-			// x forward
-			// y left
-			// z up
-			// see http://www.ros.org/reps/rep-0103.html#coordinate-frame-conventions for more details
-			//-----------------------------------------------------------------
+      //-----------------------------------------------------------------
+      //
+      // Get Min- und Max scanning angle from the scanner to verify angle setting and correct the config, if something went wrong.
+      //
+      // IMPORTANT:
+      // Axis Orientation in ROS differs from SICK AXIS ORIENTATION!!!
+      // In relation to a body the standard is:
+      // x forward
+      // y left
+      // z up
+      // see http://www.ros.org/reps/rep-0103.html#coordinate-frame-conventions for more details
+      //-----------------------------------------------------------------
 
-			askOutputAngularRangeReply.clear();
+      askOutputAngularRangeReply.clear();
 
-			if (useBinaryCmd)
-			{
-				std::vector<unsigned char> reqBinary;
-				this->convertAscii2BinaryCmd(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &reqBinary);
-				result = sendSopasAndCheckAnswer(reqBinary, &sopasReplyBinVec[CMD_GET_OUTPUT_RANGES]);
-			}
-			else
-			{
-				result = sendSopasAndCheckAnswer(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &askOutputAngularRangeReply);
-			}
+      if (useBinaryCmd)
+      {
+        std::vector<unsigned char> reqBinary;
+        this->convertAscii2BinaryCmd(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &reqBinary);
+        result = sendSopasAndCheckAnswer(reqBinary, &sopasReplyBinVec[CMD_GET_OUTPUT_RANGES]);
+      }
+      else
+      {
+        result = sendSopasAndCheckAnswer(sopasCmdVec[CMD_GET_OUTPUT_RANGES].c_str(), &askOutputAngularRangeReply);
+      }
 
-			if (result == 0)
-			{
-				char dummy0[MAX_STR_LEN] = { 0 };
-				char dummy1[MAX_STR_LEN] = { 0 };
-				int  dummyInt = 0;
-				int  askAngleRes10000th = 0;
-				int  askAngleStart10000th = 0;
-				int askAngleEnd10000th = 0;
-				int iDummy0, iDummy1;
-				iDummy0 = 0;
-				iDummy1 = 0;
-				std::string askOutputAngularRangeStr = replyToString(askOutputAngularRangeReply);
-				// Binary-Reply Tab. 63
-				// 0x20 Space
-				// 0x00 0x01 - 
-				// 0x00 0x00 0x05 0x14  // Resolution in 1/10000th degree  --> 0.13° 
-				// 0x00 0x04 0x93 0xE0  // Start Angle 300000    -> 30° 
-				// 0x00 0x16 0xE3 0x60  // End Angle   1.500.000 -> 150°    // in ROS +/-60°  
-				// 0x83                 // Checksum
+      if (result == 0)
+      {
+        char dummy0[MAX_STR_LEN] = {0};
+        char dummy1[MAX_STR_LEN] = {0};
+        int dummyInt = 0;
+        int askAngleRes10000th = 0;
+        int askAngleStart10000th = 0;
+        int askAngleEnd10000th = 0;
+        int iDummy0, iDummy1;
+        iDummy0 = 0;
+        iDummy1 = 0;
+        std::string askOutputAngularRangeStr = replyToString(askOutputAngularRangeReply);
+        // Binary-Reply Tab. 63
+        // 0x20 Space
+        // 0x00 0x01 -
+        // 0x00 0x00 0x05 0x14  // Resolution in 1/10000th degree  --> 0.13°
+        // 0x00 0x04 0x93 0xE0  // Start Angle 300000    -> 30°
+        // 0x00 0x16 0xE3 0x60  // End Angle   1.500.000 -> 150°    // in ROS +/-60°
+        // 0x83                 // Checksum
 
 				int numArgs;
 
@@ -2864,31 +2934,32 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 			bufferLen = 1;
 		}
 
-		if (cmdAscii.find(keyWord3) != std::string::npos)
-		{
-			int scanDataStatus = 0;
-			int keyWord3Len = keyWord3.length();
-			int dummyArr[12] = { 0 };
-			if (12 == sscanf(requestAscii + keyWord3Len + 1, " %d %d %d %d %d %d %d %d %d %d %d %d",
-				&dummyArr[0], &dummyArr[1], &dummyArr[2],
-				&dummyArr[3], &dummyArr[4], &dummyArr[5],
-				&dummyArr[6], &dummyArr[7], &dummyArr[8],
-				&dummyArr[9], &dummyArr[10], &dummyArr[11]))
-			{
-				for (int i = 0; i < 13; i++)
-				{
-					buffer[i] = 0x00;
-				}
-				buffer[0] = (unsigned char)(0xFF & (dummyArr[0]));
-				buffer[1] = 0x00;
-				buffer[2] = (unsigned char)(0xFF & dummyArr[2]);  // Remission
-				buffer[3] = (unsigned char)(0xFF & dummyArr[3]);  // Remission data format 0=8 bit 1= 16 bit
-				buffer[12] = (unsigned char)(0xFF & (dummyArr[11]));  // nth-Scan
+    if (cmdAscii.find(keyWord3) != std::string::npos)
+    {
+      int scanDataStatus = 0;
+      int keyWord3Len = keyWord3.length();
+      int dummyArr[12] = {0};
+      if (12 == sscanf(requestAscii + keyWord3Len + 1, " %d %d %d %d %d %d %d %d %d %d %d %d",
+                       &dummyArr[0], &dummyArr[1], &dummyArr[2],
+                       &dummyArr[3], &dummyArr[4], &dummyArr[5],
+                       &dummyArr[6], &dummyArr[7], &dummyArr[8],
+                       &dummyArr[9], &dummyArr[10], &dummyArr[11]))
+      {
+        for (int i = 0; i < 13; i++)
+        {
+          buffer[i] = 0x00;
+        }
+        buffer[0] = (unsigned char) (0xFF & (dummyArr[0]));
+        buffer[1] = 0x00;
+        buffer[2] = (unsigned char) (0xFF & dummyArr[2]);  // Remission
+        buffer[3] = (unsigned char) (0xFF & dummyArr[3]);  // Remission data format 0=8 bit 1= 16 bit
+        buffer[10]= (unsigned char) (0xFF & dummyArr[10]);  // Enable timestamp
+        buffer[12] = (unsigned char) (0xFF & (dummyArr[11]));  // nth-Scan
 
-				bufferLen = 13;
-			}
+        bufferLen = 13;
+      }
 
-		}
+    }
 
 
 		// copy base command string to buffer
@@ -2984,16 +3055,17 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 		return(retValue);
 	}
 
-	void SickScanCommon::setSensorIsRadar(bool _isRadar)
-	{
-		sensorIsRadar = _isRadar;
-	}
-	bool SickScanCommon::getSensorIsRadar(void)
-	{
-		return(sensorIsRadar);
-	}
+  void SickScanCommon::setSensorIsRadar(bool _isRadar)
+  {
+    sensorIsRadar = _isRadar;
+  }
 
-	// SopasProtocol m_protocolId;
+  bool SickScanCommon::getSensorIsRadar(void)
+  {
+    return (sensorIsRadar);
+  }
+
+  // SopasProtocol m_protocolId;
 
 } /* namespace sick_scan */
 

@@ -2,8 +2,8 @@
 * \file
 * \brief Laser Scanner Entry Point
 *
-* Copyright (C) 2018,2017, Ing.-Buero Dr. Michael Lehning, Hildesheim
-* Copyright (C) 2018,2017, SICK AG, Waldkirch
+* Copyright (C) 2019,2018,2017, Ing.-Buero Dr. Michael Lehning, Hildesheim
+* Copyright (C) 2019,2018,2017, SICK AG, Waldkirch
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 *
-*  Last modified: 5th Sep 2018
+*  Last modified: 23rd Oct 2019
 *
 *      Authors:
 *         Michael Lehning <michael.lehning@lehning.de>
@@ -61,8 +61,8 @@
 *
 *
 *
-*  Copyright 2018 SICK AG
-*  Copyright 2018 Ing.-Büro Dr. Michael Lehning
+*  Copyright 2018/2019 SICK AG
+*  Copyright 2018/2019 Ing.-Büro Dr. Michael Lehning
 
 
 
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 		strcpy(logTagVal, "__log:=/tmp/tmp.log");
 		strcpy(internalDebugTagVal, "__internalDebug:=1");
 		// strcpy(sensorEmulVal, "__emulSensor:=1");
-    strcpy(sensorEmulVal, "__emulSensor:=0");
+        strcpy(sensorEmulVal, "__emulSensor:=0");
 		argc_tmp = 5;
 		argv_tmp = (char **)malloc(sizeof(char *) * argc_tmp);
 

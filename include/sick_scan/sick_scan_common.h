@@ -92,6 +92,8 @@ namespace sick_scan
 			CMD_DEVICE_IDENT_LEGACY,
 			CMD_DEVICE_IDENT,  // for MRS6124
 			CMD_SERIAL_NUMBER,
+			CMD_REBOOT,
+			CMD_WRITE_EEPROM,
 			CMD_FIRMWARE_VERSION,
 			CMD_DEVICE_STATE,
 			CMD_OPERATION_HOURS,
@@ -102,34 +104,55 @@ namespace sick_scan
 			CMD_SET_MEAN_FILTER,
 			CMD_ALIGNMENT_MODE,
 			CMD_APPLICATION_MODE,
+            CMD_APPLICATION_MODE_FIELD_ON,
 			CMD_APPLICATION_MODE_FIELD_OFF,
 			CMD_APPLICATION_MODE_RANGING_ON,
 			CMD_SET_ACCESS_MODE_3,
+            CMD_SET_ACCESS_MODE_3_SAFETY_SCANNER,
 			CMD_SET_OUTPUT_RANGES,
 			CMD_GET_OUTPUT_RANGES,
 			CMD_RUN,
+			CMD_SET_PARTIAL_SCAN_CFG,
+			CMD_GET_PARTIAL_SCAN_CFG,
 			CMD_GET_PARTIAL_SCANDATA_CFG,
 			CMD_SET_PARTIAL_SCANDATA_CFG,
 			CMD_STOP_SCANDATA,
 			CMD_START_SCANDATA,
 			CMD_START_RADARDATA,
-			// start of radar specific commands
-			CMD_SET_TRANSMIT_RAWTARGETS_ON,  // transmit raw target for radar
-  		CMD_SET_TRANSMIT_RAWTARGETS_OFF, // do not transmit raw target for radar
+            CMD_ACTIVATE_NTP_CLIENT,
+			CMD_SET_NTP_INTERFACE_ETH,
+			CMD_SET_ENCODER_MODE,
+			CMD_SET_ENCODER_MODE_NO,
+			CMD_SET_ENCODER_MODE_SI,
+			CMD_SET_ENCODER_MODE_DP,
+			CMD_SET_ENCODER_MODE_DL,
+            CMD_SET_INCREMNTSOURCE_ENC,
 
-      CMD_SET_TRANSMIT_OBJECTS_ON,  // transmit raw target for radar
-      CMD_SET_TRANSMIT_OBJECTS_OFF, // do not transmit raw target for radar
+            CMD_START_IMU_DATA, // start of IMU data
+            CMD_STOP_IMU_DATA, // start of IMU data
+
+            // start of radar specific commands
+			CMD_SET_TRANSMIT_RAWTARGETS_ON,  // transmit raw target for radar
+  	     	CMD_SET_TRANSMIT_RAWTARGETS_OFF, // do not transmit raw target for radar
+
+            CMD_SET_TRANSMIT_OBJECTS_ON,  // transmit raw target for radar
+            CMD_SET_TRANSMIT_OBJECTS_OFF, // do not transmit raw target for radar
 
 			CMD_SET_TRACKING_MODE_0,  // set radar tracking mode to "BASIC"
 			CMD_SET_TRACKING_MODE_1,  // set radar tracking mode to "TRAFFIC"
 
-      CMD_LOAD_APPLICATION_DEFAULT, // load application default
-      CMD_DEVICE_TYPE,
-      CMD_ORDER_NUMBER,
-      // end of radar specific commands
+            CMD_LOAD_APPLICATION_DEFAULT, // load application default
+            CMD_DEVICE_TYPE,
+            CMD_ORDER_NUMBER,
+            // end of radar specific commands
 			CMD_START_MEASUREMENT,
 			CMD_STOP_MEASUREMENT,
 			CMD_SET_ECHO_FILTER,
+            CMD_SET_NTP_UPDATETIME,
+			CMD_SET_NTP_TIMEZONE,
+            CMD_SET_IP_ADDR,
+            CMD_SET_GATEWAY,
+			CMD_SET_NTP_SERVER_IP_ADDR,
 			CMD_SET_TO_COLA_A_PROTOCOL,  //		sWN EIHstCola 1  // Cola B 	sWN EIHstCola 0  // Cola A 
 			CMD_SET_TO_COLA_B_PROTOCOL,  // 
 			// ML: Add above new CMD-Identifier
@@ -142,6 +165,7 @@ namespace sick_scan
 #define PARAM_MAX_ANG "max_ang"
 #define PARAM_RES_ANG "res_ang"
 // --- END KEYWORD DEFINITIONS ---
+
 
 		SickScanCommon(SickGenericParser* parser);
 		virtual ~SickScanCommon();
@@ -336,6 +360,7 @@ node->create_publisher<...>("~/chatter", ...);
 		bool checkForProtocolChangeAndMaybeReconnect(bool& useBinaryCmdNow);
 		void setSensorIsRadar(bool _isRadar);
 		bool getSensorIsRadar(void);
+
 		int readTimeOutInMs;
 private:
 	bool sensorIsRadar;

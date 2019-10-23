@@ -36,7 +36,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 *
-*  Last modified: 12th Dec 2017
+*  Last modified: 23rd Oct 2019
 *
 *      Authors:
 *         Michael Lehning <michael.lehning@lehning.de>

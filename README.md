@@ -1,4 +1,5 @@
 # sick_scan2
+This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the following list.
 ## Table of contents
 
 - [Supported Hardware](#supported-hardware)
@@ -14,16 +15,20 @@ mentioned in the following list.
 
 This driver should work with all of the following products.
 
-ROS Device Driver for Sick Laserscanner - supported scanner types: 
+ROS Device Driver for SICK lidar sensors - supported scanner types:
 
 
 | **device name**    |  **part no.**                                                                                                                | **description**                                | **tested?**     |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------|:---------------:|
-| TiM551             | [1060445](https://www.sick.com/media/docs/9/29/229/Operating_instructions_TiM55x_TiM56x_TiM57x_de_IM0051229.PDF)                 | 1 layer max. range: 10m, ang. resol. 1.00[deg] | ✔ [stable]|
+| TiM551             | [1060445](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/tim5xx/tim551-2050001/p/p343045)                 | 1 layer max. range: 10 m, ang. resol. 1.00[deg] | ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
-| TiM561             | [1071419](https://www.sick.com/media/docs/9/29/229/Operating_instructions_TiM55x_TiM56x_TiM57x_de_IM0051229.PDF)                 | 1 layer max. range: 10m, ang. resol. 0.33 [deg]| ✔ [stable]|
+| TiM561             | [1071419](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/tim5xx/tim561-2050101/p/p369446)                 | 1 layer max. range: 10 m, ang. resol. 0.33 [deg]| ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
-| TiM571             | [1079742](https://www.sick.com/media/docs/9/29/229/Operating_instructions_TiM55x_TiM56x_TiM57x_de_IM0051229.PDF)                 | 1 layer max. range: 25m, ang. resol. 0.33 [deg]| ✔ [stable]|
+| TiM571             | [1079742](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/tim5xx/tim571-2050101/p/p412444)                 | 1 layer max. range: 25 m, ang. resol. 0.33 [deg]| ✔ [stable]|
+|                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
+| TiM781             | [1096807](https://www.sick.com/de/de/mess-und-detektionsloesungen/2d-lidar-sensoren/tim7xx/tim781-2174101/p/p594148)                 | 1 layer max. range: 25 m, ang. resol. 0.33 [deg]| ✔ [stable]|
+|                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
+| TiM781S            | [1096363](https://www.sick.com/de/de/mess-und-detektionsloesungen/2d-lidar-sensoren/tim7xx/tim781s-2174104/p/p594149)                 | 1 layer max. range: 25 m, ang. resol. 0.33 [deg]| ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 |                    |                                                                                                   | Opening angle: +/- 50 [deg]   |                 |
 
@@ -31,7 +36,7 @@ ROS Device Driver for Sick Laserscanner - supported scanner types:
 
 See quick start for further hints.
 
-## Sopas mode
+## Sopas Mode
 This driver supports both COLA-B (binary) and COLA-A (ASCII) communication with the laser scanner. Binary mode is activated by default. Since this mode generates less network traffic.
 If the communication mode set in the scanner memory is different from that used by the driver, the scanner's communication mode is changed. This requires a restart of the TCP-IP connection, which can extend the start time by up to 30 seconds. 
 There are two ways to prevent this:
@@ -70,15 +75,17 @@ restart the driver node.
    * List of own IP-addresses: ifconfig|grep "inet addr"
    * Try to ping scanner ip address (used in launch file) 
 9. If the driver stops during init phase please stop the driver with ctrl-c and restart (could be caused due to protocol ASCII/Binary cola-dialect).
-   
-## SUPPORT
- 
+
+## Support
+
 * In case of technical support please open a new issue. For optimal support, add the following information to your request:
  1. Scanner model name,
  2. Ros node startup log,
  3. Sopas file of your scanner configuration.
   The instructions at http://sickusablog.com/create-and-download-a-sopas-file/ show how to create the Sopas file.
 * In case of application support please use [https://supportportal.sick.com ](https://supportportal.sick.com).
+* Issue Handling: Issues, for which no reply was received from the questioner for more than 7 days,						
+  are closed by us because we assume that the user has solved the problem.
 
 
 ## Installation
@@ -143,10 +150,16 @@ source ./install/setup.bash
 
 ## Keywords
 
-TiM5xx 
-TiM551 
+ROS LiDAR
+SICK LiDAR
+SICK Laser
+SICK Laserscanner
+TiM5xx
+TiM551
 TiM561 
 TiM571 
+TiM781
+TiM781S
 
 
 ## Creators
@@ -155,7 +168,7 @@ TiM571
 
 - <http://www.lehning.de>
 
-on behalf of SICK AG 
+on behalf of SICK AG
 
 - <http://www.sick.com>
 
@@ -164,5 +177,3 @@ on behalf of SICK AG
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Logo_SICK_AG_2009.svg/1200px-Logo_SICK_AG_2009.svg.png" width="420">
 
 ![Lehning Logo](http://www.lehning.de/style/banner.jpg "LEHNING Logo")
-
-
