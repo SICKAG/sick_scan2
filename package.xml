@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>sick_scan2</name>
-  <version>0.1.3</version>
+  <version>0.1.4</version>
   <description>
     A ROS2 driver for the SICK TiM series of laser scanners.
     This package is based on the sick_scan-Repository.
