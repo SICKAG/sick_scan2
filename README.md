@@ -58,7 +58,7 @@ restart the driver node.
 
 ## Troubleshooting 
 
-1. Check Scanner IP in the launch file. 
+1. Check Scanner IP by using fping or SOPAS ET under Windows
 2. Check Ethernet connection to scanner with netcat e.g. ```nc -z -v -w5 $SCANNERIPADDRESS 2112```.
    For further details about setting up the correct ip settings see [IP configuration](doc/ipconfig/ipconfig.md) 
 3. View node startup output wether the IP connection could be established 
@@ -113,9 +113,20 @@ source ./install/setup.bash
 Attention: Replace the ip address for "__hostname" with your scanner ip address.
 Default ip address of scanner is 192.168.0.1.
 In this example we use the ip address 192.168.0.71
+
+For TiM5xx:
 ```
 ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx
 ```
+For TiM781:
+```
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xx
+```
+For TiM781S:
+```
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS
+```
+
 Start a second terminal window 
 ```
 cd ~/sick_scan_ws
