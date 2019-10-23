@@ -22,9 +22,11 @@ endif()
 find_package(Boost REQUIRED COMPONENTS system thread)
 
 find_package(ament_cmake REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system thread)
+find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rmw REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 
 add_definitions(-DUSE_DYN_RECONFIG=0)
@@ -53,8 +55,10 @@ add_executable(sick_generic_caller
 
 ament_target_dependencies(sick_generic_caller
   "Boost"
+  "diagnostic_updater"
   "rclcpp"
   "sensor_msgs"
+  "std_msgs"
 )
 
 install(TARGETS
@@ -73,5 +77,3 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-
-
