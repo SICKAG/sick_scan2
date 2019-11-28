@@ -163,7 +163,7 @@ namespace sick_scan
 // --- START KEYWORD DEFINITIONS ---
 #define PARAM_MIN_ANG "min_ang"
 #define PARAM_MAX_ANG "max_ang"
-#define PARAM_RES_ANG "res_ang"
+#define PARAM_FRAME_ID "frame_id"
 // --- END KEYWORD DEFINITIONS ---
 
 

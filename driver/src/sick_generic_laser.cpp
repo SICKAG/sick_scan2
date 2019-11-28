@@ -142,11 +142,13 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   paramArr.push_back("hostname");
   paramArr.push_back("port");
   paramArr.push_back("name");
+  paramArr.push_back("frame_id");
 
 
     std::string scannerName = "sick_tim_5xx";
-    std::string hostname = "192.168.0.71";
+    std::string hostname = "192.168.0.61";
     std::string port = "2112";
+    std::string frame_id="laser";
 
 
     for (int i = 0; i < argc; i++)
@@ -196,6 +198,10 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
           {
             scannerName = val;
           }
+          if (paramArr[i].compare("frame_id") == 0)
+          {
+            frame_id = val;
+          }
         }
       }
     }
@@ -226,6 +232,7 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   paramTagValMap["name"] = scannerName;
   paramTagValMap["hostname"] = hostname;
   paramTagValMap["port"] = port;
+  paramTagValMap["frame_id"] = frame_id;
 
   for(std::map<std::string,std::string>::iterator iter = paramTagValMap.begin(); iter != paramTagValMap.end(); ++iter)
   {

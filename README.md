@@ -7,7 +7,7 @@ This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the fo
 - [Bugs and feature requests](#bugs-and-feature-requests)
 - [Creators](#creators)
 
-This stack provides a ROS2 driver for the SICK TiM series of laser scanners 
+This stack provides a ROS2 driver for the SICK TiM series of laser scanners
 mentioned in the following list.
 
 
@@ -38,34 +38,34 @@ See quick start for further hints.
 
 ## Sopas Mode
 This driver supports both COLA-B (binary) and COLA-A (ASCII) communication with the laser scanner. Binary mode is activated by default. Since this mode generates less network traffic.
-If the communication mode set in the scanner memory is different from that used by the driver, the scanner's communication mode is changed. This requires a restart of the TCP-IP connection, which can extend the start time by up to 30 seconds. 
+If the communication mode set in the scanner memory is different from that used by the driver, the scanner's communication mode is changed. This requires a restart of the TCP-IP connection, which can extend the start time by up to 30 seconds.
 There are two ways to prevent this:
 1. [Recommended] Set the communication mode with the SOPAS ET software to binary and save this setting in the scanner's EEPROM.
 2. Use the parameter "use_binary_protocol" to overwrite the default settings of the driver.
 3. Setting "use_binary_protocol" to "False" activates COLA-A and disables COLA-B (default)
 ### Known issue
-If the scanner has not been set to binary Sopas in the EEPROM, the automatic restart of the TCP-IP connection does not work after the protocol change. The driver stops in this state: 
+If the scanner has not been set to binary Sopas in the EEPROM, the automatic restart of the TCP-IP connection does not work after the protocol change. The driver stops in this state:
 ![Wrong SOPAS Mode](doc/sopas_mode_start_up.png)
 #### Workaround
 restart the driver node.
 
 ## Bugs and feature requests
 
-- Stability issues: Driver is experimental and brand new 
+- Stability issues: Driver is experimental and brand new
 - Sopas protocol mapping:
 -- All scanners: COLA-B (Binary)
 - Software should be further tested, documented and beautified
 
-## Troubleshooting 
+## Troubleshooting
 
 1. Check Scanner IP by using fping or SOPAS ET under Windows
 2. Check Ethernet connection to scanner with netcat e.g. ```nc -z -v -w5 $SCANNERIPADDRESS 2112```.
-   For further details about setting up the correct ip settings see [IP configuration](doc/ipconfig/ipconfig.md) 
-3. View node startup output wether the IP connection could be established 
+   For further details about setting up the correct ip settings see [IP configuration](doc/ipconfig/ipconfig.md)
+3. View node startup output wether the IP connection could be established
 4. Check the scanner status using the LEDs on the device. The LED codes are described in the above mentioned operation manuals.
 5. Further testing and troubleshooting informations can found in the file test/readme_testplan.txt
 6. If you stop the scanner in your debugging IDE or by other hard interruption (like Ctrl-C), you must wait until 60 sec. before
-   the scanner is up and running again. During this time the MRS6124 reconnects twice. 
+   the scanner is up and running again. During this time the MRS6124 reconnects twice.
    If you do not wait this waiting time you could see one of the following messages:
    * TCP connection error
    * Error-Message 0x0d
@@ -73,7 +73,7 @@ restart the driver node.
    Set the min/max-Range of intensity display in the range [0...200] and switch on the intensity flag in the lauch file  
 8. In case of network problems check your own ip address and the ip address of your laser scanner (by using SOPAS ET).
    * List of own IP-addresses: ifconfig|grep "inet addr"
-   * Try to ping scanner ip address (used in launch file) 
+   * Try to ping scanner ip address (used in launch file)
 9. If the driver stops during init phase please stop the driver with ctrl-c and restart (could be caused due to protocol ASCII/Binary cola-dialect).
 
 ## Support
@@ -114,20 +114,22 @@ Attention: Replace the ip address for "__hostname" with your scanner ip address.
 Default ip address of scanner is 192.168.0.1.
 In this example we use the ip address 192.168.0.71
 
+Via the program argument __frame_id the frame of the laserscan messages can be changed. Default is "laser".
+
 For TiM5xx:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx __frame_id:=laser
 ```
 For TiM781:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xx
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xx __frame_id:=laser
 ```
 For TiM781S:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS __frame_id:=laser
 ```
 
-Start a second terminal window 
+Start a second terminal window
 ```
 cd ~/sick_scan_ws
 source ./install/setup.bash
@@ -167,8 +169,8 @@ SICK Laser
 SICK Laserscanner
 TiM5xx
 TiM551
-TiM561 
-TiM571 
+TiM561
+TiM571
 TiM781
 TiM781S
 

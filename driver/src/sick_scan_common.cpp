@@ -246,9 +246,11 @@ namespace sick_scan
 			double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
 			double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
 
+      rclcpp::Parameter frameParam = node->get_parameter(PARAM_FRAME_ID);
+      std::string frameStr = frameParam.as_string();
 			cfg.min_ang = min_angle;
 			cfg.max_ang = max_angle;
-			cfg.frame_id = "laser";
+			cfg.frame_id = frameStr;
 			cfg.skip = 0;
 			update_config(cfg);
 		}
@@ -2629,7 +2631,9 @@ namespace sick_scan
 									strcpy(szTmp, config_.frame_id.c_str());
 								}
 
-								msg.header.frame_id = std::string(szTmp);
+								//msg.header.frame_id = std::string(szTmp);
+								//TODO clean this up!
+                msg.header.frame_id =this->config_.frame_id;
 								// Hector slam can only process ONE valid frame id.
 								std::string echoForSlam = "";
 								bool slamBundle = false;
