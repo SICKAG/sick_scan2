@@ -54,11 +54,10 @@ add_executable(sick_generic_caller
         )
 
 ament_target_dependencies(sick_generic_caller
-  "Boost"
-  "diagnostic_updater"
-  "rclcpp"
-  "sensor_msgs"
-  "std_msgs"
+   "Boost"
+   "rclcpp"
+   "sensor_msgs"
+   "std_msgs"
 )
 
 install(TARGETS
