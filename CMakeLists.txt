@@ -1,6 +1,9 @@
 ###########################################################
 # ROS2 CMakeLists.txt for SICK-Scanner-Support
 #
+# Project: sick_scan2
+# URL: https://github.com/SICKAG/sick_scan2
+#
 ###########################################################
 
 cmake_minimum_required(VERSION 3.5)
@@ -34,6 +37,9 @@ add_definitions(-DUSE_DYN_RECONFIG=0)
 
 include_directories(include include/tinyxml ${Boost_INCLUDE_DIR} )
 
+# pthread-support enable
+# see https://github.com/ros2/rcutils/blob/master/CMakeLists.txt
+ament_export_libraries(pthread)
 
 add_executable(sick_generic_caller
         driver/src/sick_generic_laser.cpp
