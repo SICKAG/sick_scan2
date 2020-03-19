@@ -40,6 +40,7 @@ include_directories(include include/tinyxml ${Boost_INCLUDE_DIR} )
 # pthread-support enable
 # see https://github.com/ros2/rcutils/blob/master/CMakeLists.txt
 ament_export_libraries(pthread)
+ament_export_libraries(pthreads)
 
 add_executable(sick_generic_caller
         driver/src/sick_generic_laser.cpp
