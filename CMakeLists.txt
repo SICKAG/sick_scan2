@@ -14,7 +14,9 @@ project(sick_scan2)
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
-
+# pthread options added to recommendation in the discussion 
+# https://stackoverflow.com/questions/1662909/undefined-reference-to-pthread-create-in-linux
+add_compile_options(-pthread)
 # TODO: Remove compiler warning from the code - currently suppressed
 add_compile_options(-Wno-sign-compare )
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
