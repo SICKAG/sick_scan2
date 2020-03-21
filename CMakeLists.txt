@@ -6,7 +6,7 @@
 #
 ###########################################################
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 project(sick_scan2)
 
@@ -25,9 +25,9 @@ endif()
 
 
 find_package(Boost REQUIRED COMPONENTS system thread)
-
+find_package(Threads)
 find_package(ament_cmake REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system thread)
+# find_package(Boost REQUIRED COMPONENTS system thread)
 # find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -41,8 +41,8 @@ include_directories(include include/tinyxml ${Boost_INCLUDE_DIR} )
 
 # pthread-support enable
 # see https://github.com/ros2/rcutils/blob/master/CMakeLists.txt
-ament_export_libraries(pthread)
-ament_export_libraries(pthreads)
+# ament_export_libraries(pthread)
+# ament_export_libraries(pthreads)
 
 add_executable(sick_generic_caller
         driver/src/sick_generic_laser.cpp
