@@ -6,7 +6,7 @@
 #
 ###########################################################
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
 
 project(sick_scan2)
 
@@ -14,9 +14,6 @@ project(sick_scan2)
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
-# pthread options added to recommendation in the discussion 
-# https://stackoverflow.com/questions/1662909/undefined-reference-to-pthread-create-in-linux
-add_compile_options(-pthread)
 # TODO: Remove compiler warning from the code - currently suppressed
 add_compile_options(-Wno-sign-compare )
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -25,10 +22,8 @@ endif()
 
 
 find_package(Boost REQUIRED COMPONENTS system thread)
-find_package(Threads)
 find_package(ament_cmake REQUIRED)
-# find_package(Boost REQUIRED COMPONENTS system thread)
-# find_package(diagnostic_updater REQUIRED)
+find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -37,12 +32,7 @@ find_package(std_msgs REQUIRED)
 add_definitions(-DUSE_DYN_RECONFIG=0)
 
 
-include_directories(include include/tinyxml ${Boost_INCLUDE_DIR} )
-
-# pthread-support enable
-# see https://github.com/ros2/rcutils/blob/master/CMakeLists.txt
-# ament_export_libraries(pthread)
-# ament_export_libraries(pthreads)
+include_directories(include ${Boost_INCLUDE_DIR})
 
 add_executable(sick_generic_caller
         driver/src/sick_generic_laser.cpp
@@ -64,6 +54,7 @@ add_executable(sick_generic_caller
 
 ament_target_dependencies(sick_generic_caller
    "Boost"
+   "diagnostic_updater"
    "rclcpp"
    "sensor_msgs"
    "std_msgs"
