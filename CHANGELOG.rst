@@ -14,8 +14,8 @@ Changelog for package sick_scan2
 -------------------
 * Porting to "Dashing"
 
-Forthcoming
------------
+0.1.7 (2020-04-16)
+------------------
 * retrial bloom release
 * Merge pull request `#8 <https://github.com/SICKAG/sick_scan2/issues/8>`_ from clalancette/fixes
   Fixes for CMakeLists.txt to build on the buildfarm.
