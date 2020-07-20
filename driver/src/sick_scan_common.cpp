@@ -274,8 +274,10 @@ namespace sick_scan
 		// scan publisher
 		pub_ = nh_.advertise<sensor_msgs::LaserScan>("scan", 1000);
 #endif
-                pub_ = getMainNode()->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
+		pub_ = getMainNode()->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
+		// e.g. https://answers.ros.org/question/312587/generate-and-publish-pointcloud2-in-ros2/
+    cloud_pub_ = getMainNode()->create_publisher<sensor_msgs::msg::PointCloud2>("cloud",100);
     }
 
 	/*!
@@ -1882,7 +1884,7 @@ namespace sick_scan
 	{
 		bool ret = true;
 		static int cnt = 0;
-		char szDumpFileName[255] = { 0 };
+		char szDumpFileName[300] = { 0 };
 		char szDir[255] = { 0 };
 		if (cnt == 0)
 		{
@@ -1995,6 +1997,7 @@ namespace sick_scan
 	int SickScanCommon::loopOnce()
 	{
 		static int cnt = 0;
+		int seqId = 0; // seqId replaces the seq-Identifier in a ros1-message-header
 		// diagnostics_.update();
 
 		unsigned char receiveBuffer[65536];
@@ -2797,8 +2800,9 @@ namespace sick_scan
 
 						}
 						// if ( (msg.header.seq == 0) || (layerOff == 0)) // FIXEN!!!!
-#if 0
-if ((msg.header.seq == 0) || (msg.header.seq == 237))
+#if 1
+            if( (seqId == 0) || (seqId == 237))
+// if ((msg.header.seq == 0) || (msg.header.seq == 237))
 						{
 							// Following cases are interesting:
 							// LMS5xx: seq is always 0 -> publish every scan
@@ -2810,7 +2814,7 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 							// MRS6124: Publish very 24th layer at the layer = 237 , MRS6124 contains no sequence with seq 0
 							;
 #ifndef _MSC_VER
-							cloud_pub_.publish(cloud_);
+							cloud_pub_->publish(cloud_);
 #else
 							printf("PUBLISH:\n");
 #endif
@@ -2824,7 +2828,8 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 
 			return ExitSuccess; // return success to continue looping
 		}
-	}
+    return ExitSuccess;
+  }
 
 
 	/*!

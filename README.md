@@ -129,6 +129,17 @@ For TiM781S:
 ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS __frame_id:=laser
 ```
 
+For LMS111:
+```
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __frame_id:=laser __port:=2112 --ros-args --remap __name:=sick_lms_1xx 
+```
+
+For LMS511:
+```
+ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __frame_id:=laser __port:=2112 --ros-args --remap __name:=sick_lms_5xx 
+```
+
+
 Start a second terminal window
 ```
 cd ~/sick_scan_ws
@@ -160,7 +171,12 @@ source ./install/setup.bash
 ```
   Comment: Please modify the path to your local installation.
 
-
+* If the build step generates a message like `Could NOT find FastRTPS (missing: FastRTPS_INCLUDE_DIR FastRTPS_LIBRARIES)`,
+export addition path infos by the following command:
+```
+export CMAKE_PREFIX_PATH=$AMENT_PREFIX_PATH:$CMAKE_PREFIX_PATH
+```
+(see https://answers.ros.org/question/334581/could-not-find-fastrtps-missing-fastrtps_include_dir-fastrtps_libraries/)
 ## Keywords
 
 ROS LiDAR
@@ -173,6 +189,8 @@ TiM561
 TiM571
 TiM781
 TiM781S
+LMS111
+LMS511
 
 
 ## Creators
