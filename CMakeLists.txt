@@ -15,8 +15,9 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 # TODO: Remove compiler warning from the code - currently suppressed
-add_compile_options(-Wno-sign-compare )
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wno-sign-compare )
 #  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
@@ -27,7 +28,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-
+find_package(tf2 REQUIRED)
 
 add_definitions(-DUSE_DYN_RECONFIG=0)
 
@@ -59,6 +60,15 @@ ament_target_dependencies(sick_generic_caller
    "sensor_msgs"
    "std_msgs"
 )
+
+add_executable(quat_test
+  tools/quat_test/quat_test.cpp
+)
+
+ament_target_dependencies(quat_test
+        "rclcpp"
+        "tf2"
+        )
 
 install(TARGETS
   sick_generic_caller
