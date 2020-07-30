@@ -118,26 +118,27 @@ Via the program argument __frame_id the frame of the laserscan messages can be c
 
 For TiM5xx:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_5xx.launch.py
 ```
+For LMS511:
+```
+ros2 launch sick_scan2 sick_lms_5xx.launch.py
+```
+
 For TiM781:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xx __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_7xx.launch.py
 ```
 For TiM781S:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_7xxS.launch.py
 ```
 
 For LMS111:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __frame_id:=laser __port:=2112 --ros-args --remap __name:=sick_lms_1xx 
+ros2 launch sick_scan2 sick_lms_5xx.launch.py
 ```
 
-For LMS511:
-```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __frame_id:=laser __port:=2112 --ros-args --remap __name:=sick_lms_5xx 
-```
 
 
 Start a second terminal window
