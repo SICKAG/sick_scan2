@@ -243,13 +243,13 @@ namespace sick_scan
 
 			auto node = getMainNode();
 
-			double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
-			double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
+			//double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
+			//double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
 
       rclcpp::Parameter frameParam = node->get_parameter(PARAM_FRAME_ID);
       std::string frameStr = frameParam.as_string();
-			cfg.min_ang = min_angle;
-			cfg.max_ang = max_angle;
+			node->get_parameter("min_ang",cfg.min_ang );
+		  node->get_parameter("max_ang",cfg.max_ang );
 			cfg.frame_id = frameStr;
 			cfg.skip = 0;
 			update_config(cfg);
@@ -681,7 +681,7 @@ namespace sick_scan
 				"If the communication mode set in the scanner memory is different from that used by the driver, the scanner's communication mode is changed.\n"
 				"This requires a restart of the TCP-IP connection, which can extend the start time by up to 30 seconds. There are two ways to prevent this:\n"
 				"1. [Recommended] Set the communication mode with the SOPAS ET software to binary and save this setting in the scanner's EEPROM.\n"
-				"2. Use the parameter \"use_binary_protocol\" to overwrite the default settings of the driver.", result);
+				"2. Use the parameter \"use_binary_protocol\" to overwrite the default settings of the driver.\n", result);
 		}
 		return result;
 	}
@@ -1016,8 +1016,6 @@ namespace sick_scan
 				}
 
 				this->setProtocolType(useBinaryCmdNow ? CoLa_B : CoLa_A);
-
-
 
 				if (useBinaryCmdNow)
 				{

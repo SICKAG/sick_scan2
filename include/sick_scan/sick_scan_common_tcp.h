@@ -68,7 +68,7 @@ class SickScanCommonTcp : public SickScanCommon
 public:
     static void disconnectFunctionS(void *obj);
 
-    SickScanCommonTcp(const std::string &hostname, const std::string &port, int &timelimit, SickGenericParser *parser, char cola_dialect_id);
+    SickScanCommonTcp(const std::string &hostname, const int &port, int &timelimit, SickGenericParser *parser, char cola_dialect_id);
 
     virtual ~SickScanCommonTcp();
 
@@ -150,7 +150,7 @@ public:
         size_t bytes_transfered_;
 
         std::string hostname_;
-        std::string port_;
+        int port_;
         int timelimit_;
         int m_replyMode;
 };

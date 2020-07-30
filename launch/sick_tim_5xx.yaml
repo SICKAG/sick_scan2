@@ -1,5 +1,0 @@
-sick_generic_caller:
-  ros__parameters:
-    - hostname : "192.168.0.1"
-    - frame_id: "laser"
-

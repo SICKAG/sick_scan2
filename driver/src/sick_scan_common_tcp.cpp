@@ -187,7 +187,7 @@ namespace sick_scan
 
 
 
-	SickScanCommonTcp::SickScanCommonTcp(const std::string &hostname, const std::string &port, int &timelimit, SickGenericParser* parser, char cola_dialect_id)
+	SickScanCommonTcp::SickScanCommonTcp(const std::string &hostname, const int &port, int &timelimit, SickGenericParser* parser, char cola_dialect_id)
 		:
 		SickScanCommon(parser),
 		socket_(io_service_),
@@ -582,9 +582,7 @@ namespace sick_scan
 
 	int SickScanCommonTcp::init_device()
 	{
-		int portInt;
-		sscanf(port_.c_str(), "%d", &portInt);
-		m_nw.init(hostname_, portInt, disconnectFunctionS, (void*)this);
+		m_nw.init(hostname_, port_, disconnectFunctionS, (void*)this);
 		m_nw.setReadCallbackFunction(readCallbackFunctionS, (void*)this);
     if (this->getEmulSensor())
     {

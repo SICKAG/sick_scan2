@@ -18,8 +18,8 @@ namespace sick_scan
       std::string frame_id;
       bool intensity;
       bool auto_reboot;
-      float min_ang;
-      float max_ang;
+      double min_ang;
+      double max_ang;
       int skip;
   };
 }
