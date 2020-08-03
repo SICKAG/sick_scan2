@@ -137,7 +137,7 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   auto node = getMainNode();
   bool doInternalDebug = false;
   bool emulSensor = false;
-
+/*
   std::vector<std::string> paramArr;
   paramArr.push_back("hostname");
   paramArr.push_back("port");
@@ -206,7 +206,7 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
       }
     }
   }
-
+*/
 
 #if TODO
   if (false == nhPriv.getParam("scanner_type", scannerName))
@@ -226,13 +226,16 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   }
 
   bool useTCP = true;
-
+/*
   std::map<std::string,std::string> paramTagValMap;
 
   paramTagValMap["name"] = scannerName;
   paramTagValMap["hostname"] = hostname;
   paramTagValMap["port"] = port;
   paramTagValMap["frame_id"] = frame_id;
+
+  //paramTagValMap["min_ang"] = -M_PI;
+  //paramTagValMap["max_ang"] = M_PI;
 
   for(std::map<std::string,std::string>::iterator iter = paramTagValMap.begin(); iter != paramTagValMap.end(); ++iter)
   {
@@ -243,7 +246,20 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
       node->declare_parameter(paramName, iter->second);
     }
   }
+*/
 
+  std::string frameId = "world";
+  std::string hostName = "192.168.0.1";
+  std::string scannerName = "undefined";
+  int port = 2112;
+  double min_ang=-M_PI;
+  double max_ang=M_PI;
+  node->get_parameter("frame_id", frameId);
+  node->get_parameter("hostname", hostName);
+  node->get_parameter("scanner_name", scannerName);
+  node->get_parameter("port", port);
+  node->get_parameter("min_ang", min_ang);
+  node->get_parameter("max_ang", max_ang);
   int timelimit = 5;
 #if TODO
   if (nhPriv.getParam("hostname", hostname))
@@ -346,10 +362,10 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
         delete s;  // disconnect scanner
         if (useTCP)
         {
-          RCLCPP_INFO(node->get_logger(),"hostname: %s", hostname.c_str());
-          RCLCPP_INFO(node->get_logger(),"Port    : %s", port.c_str());
+          RCLCPP_INFO(node->get_logger(),"hostname: %s", hostName.c_str());
+          RCLCPP_INFO(node->get_logger(),"Port    : %d", port);
 
-          s = new sick_scan::SickScanCommonTcp(hostname, port, timelimit, parser, colaDialectId);
+          s = new sick_scan::SickScanCommonTcp(hostName, port, timelimit, parser, colaDialectId);
         }
         else
         {

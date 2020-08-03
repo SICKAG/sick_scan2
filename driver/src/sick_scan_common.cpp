@@ -243,13 +243,13 @@ namespace sick_scan
 
 			auto node = getMainNode();
 
-			double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
-			double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
+			//double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
+			//double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
 
       rclcpp::Parameter frameParam = node->get_parameter(PARAM_FRAME_ID);
       std::string frameStr = frameParam.as_string();
-			cfg.min_ang = min_angle;
-			cfg.max_ang = max_angle;
+			node->get_parameter("min_ang",cfg.min_ang );
+		  node->get_parameter("max_ang",cfg.max_ang );
 			cfg.frame_id = frameStr;
 			cfg.skip = 0;
 			update_config(cfg);
@@ -274,8 +274,10 @@ namespace sick_scan
 		// scan publisher
 		pub_ = nh_.advertise<sensor_msgs::LaserScan>("scan", 1000);
 #endif
-                pub_ = getMainNode()->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
+		pub_ = getMainNode()->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
+		// e.g. https://answers.ros.org/question/312587/generate-and-publish-pointcloud2-in-ros2/
+    cloud_pub_ = getMainNode()->create_publisher<sensor_msgs::msg::PointCloud2>("cloud",100);
     }
 
 	/*!
@@ -679,7 +681,7 @@ namespace sick_scan
 				"If the communication mode set in the scanner memory is different from that used by the driver, the scanner's communication mode is changed.\n"
 				"This requires a restart of the TCP-IP connection, which can extend the start time by up to 30 seconds. There are two ways to prevent this:\n"
 				"1. [Recommended] Set the communication mode with the SOPAS ET software to binary and save this setting in the scanner's EEPROM.\n"
-				"2. Use the parameter \"use_binary_protocol\" to overwrite the default settings of the driver.", result);
+				"2. Use the parameter \"use_binary_protocol\" to overwrite the default settings of the driver.\n", result);
 		}
 		return result;
 	}
@@ -1014,8 +1016,6 @@ namespace sick_scan
 				}
 
 				this->setProtocolType(useBinaryCmdNow ? CoLa_B : CoLa_A);
-
-
 
 				if (useBinaryCmdNow)
 				{
@@ -1882,7 +1882,7 @@ namespace sick_scan
 	{
 		bool ret = true;
 		static int cnt = 0;
-		char szDumpFileName[255] = { 0 };
+		char szDumpFileName[300] = { 0 };
 		char szDir[255] = { 0 };
 		if (cnt == 0)
 		{
@@ -1995,6 +1995,7 @@ namespace sick_scan
 	int SickScanCommon::loopOnce()
 	{
 		static int cnt = 0;
+		int seqId = 0; // seqId replaces the seq-Identifier in a ros1-message-header
 		// diagnostics_.update();
 
 		unsigned char receiveBuffer[65536];
@@ -2797,8 +2798,9 @@ namespace sick_scan
 
 						}
 						// if ( (msg.header.seq == 0) || (layerOff == 0)) // FIXEN!!!!
-#if 0
-if ((msg.header.seq == 0) || (msg.header.seq == 237))
+#if 1
+            if( (seqId == 0) || (seqId == 237))
+// if ((msg.header.seq == 0) || (msg.header.seq == 237))
 						{
 							// Following cases are interesting:
 							// LMS5xx: seq is always 0 -> publish every scan
@@ -2810,7 +2812,7 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 							// MRS6124: Publish very 24th layer at the layer = 237 , MRS6124 contains no sequence with seq 0
 							;
 #ifndef _MSC_VER
-							cloud_pub_.publish(cloud_);
+							cloud_pub_->publish(cloud_);
 #else
 							printf("PUBLISH:\n");
 #endif
@@ -2824,7 +2826,8 @@ if ((msg.header.seq == 0) || (msg.header.seq == 237))
 
 			return ExitSuccess; // return success to continue looping
 		}
-	}
+    return ExitSuccess;
+  }
 
 
 	/*!

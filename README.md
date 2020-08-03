@@ -30,6 +30,10 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 | TiM781S            | [1096363](https://www.sick.com/de/de/mess-und-detektionsloesungen/2d-lidar-sensoren/tim7xx/tim781s-2174104/p/p594149)                 | 1 layer max. range: 25 m, ang. resol. 0.33 [deg]| ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
+| LMS511-10100 PRO   | [e.g. 1046135](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/lms5xx/c/g179651)     | 1 layer max. range: 80 m, ang. resol. 0.167 [deg]| ✔ [stable]|
+|                    |                                                                                                                                  | Scan-Rate: 100 Hz   |                 |
+| LMS1xx-Family      | [e.g. 1041114](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/lms1xx/c/g91901) | 1 layer max. range: 28 m, ang. resol. 0.25 [deg]| ✔ [stable]|
+|                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 
 
 ##  Start Node
@@ -118,16 +122,28 @@ Via the program argument __frame_id the frame of the laserscan messages can be c
 
 For TiM5xx:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_5xx __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_5xx.launch.py
 ```
+For LMS511:
+```
+ros2 launch sick_scan2 sick_lms_5xx.launch.py
+```
+
 For TiM781:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xx __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_7xx.launch.py
 ```
 For TiM781S:
 ```
-ros2 run sick_scan2 sick_generic_caller __hostname:=192.168.0.71 __port:=2112 __name:=sick_tim_7xxS __frame_id:=laser
+ros2 launch sick_scan2 sick_tim_7xxS.launch.py
 ```
+
+For LMS111:
+```
+ros2 launch sick_scan2 sick_lms_5xx.launch.py
+```
+
+
 
 Start a second terminal window
 ```
@@ -160,7 +176,12 @@ source ./install/setup.bash
 ```
   Comment: Please modify the path to your local installation.
 
-
+* If the build step generates a message like `Could NOT find FastRTPS (missing: FastRTPS_INCLUDE_DIR FastRTPS_LIBRARIES)`,
+export addition path infos by the following command:
+```
+export CMAKE_PREFIX_PATH=$AMENT_PREFIX_PATH:$CMAKE_PREFIX_PATH
+```
+(see https://answers.ros.org/question/334581/could-not-find-fastrtps-missing-fastrtps_include_dir-fastrtps_libraries/)
 ## Keywords
 
 ROS LiDAR
@@ -173,6 +194,8 @@ TiM561
 TiM571
 TiM781
 TiM781S
+LMS111
+LMS511
 
 
 ## Creators

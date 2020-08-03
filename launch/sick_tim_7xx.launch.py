@@ -7,12 +7,12 @@ def generate_launch_description():
     config = os.path.join(
         get_package_share_directory('sick_scan2'),
         'config',
-        'sick_tim_5xx.yaml'
+        'sick_tim_7xx.yaml'
         )
 
     node=Node(
         package='sick_scan2',
-        name = 'sick_scan2_tim_5xx',
+        name = 'sick_scan2_tim_7xx',
         executable='sick_generic_caller',
         parameters = [config]
     )

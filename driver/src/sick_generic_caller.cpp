@@ -50,7 +50,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 *
-*  Last modified: 23rd Oct 2019
+*  Last modified: 20th July 2020
 *
 *      Authors:
 *         Michael Lehning <michael.lehning@lehning.de>
@@ -85,17 +85,10 @@
 
 #define MAX_NAME_LEN (1024)
 
-// 001.001.000 Switch to multithreaded processing of data
-// 001.001.001: Documentation added
-// 001.002.001: Bug in bin_scanf fixed (number of counted arguments was always 1)
-// 001.002.002: MRS1xxx/LMS1xxx - legacy device ident cmd. changed to new device ident cmd
-// 001.002.003: MRS1xxx/LMS1xxx - support of hector_slam integrated
-// 001.002.004: RMS3xx - profiling and radar support optimized
-// 001.002.005: Startup process changed to state machine
-//
-#define SICK_GENERIC_MAJOR_VER "001"
-#define SICK_GENERIC_MINOR_VER "002"  
-#define SICK_GENERIC_PATCH_LEVEL "007"
+// 002.000.000 ROS2 specific driver
+#define SICK_GENERIC_MAJOR_VER "002"
+#define SICK_GENERIC_MINOR_VER "000"
+#define SICK_GENERIC_PATCH_LEVEL "000"
 
 #include <algorithm> // for std::min
 
@@ -140,13 +133,13 @@ static std::shared_ptr<rclcpp::Node> mainNode = NULL;
 
 void setMainNode(std::shared_ptr<rclcpp::Node> _tmpNode)
 {
-    mainNode = _tmpNode;
+  mainNode = _tmpNode;
 }
 
 
 std::shared_ptr<rclcpp::Node> getMainNode(void)
 {
-    return(mainNode);
+  return (mainNode);
 }
 
 /*!
@@ -163,62 +156,93 @@ std::shared_ptr<rclcpp::Node> getMainNode(void)
 int main(int argc, char **argv)
 {
 
-    // Pass command line arguments to rclcpp.
-    rclcpp::init(argc, argv);
 
-    auto node = rclcpp::Node::make_shared("sick_scan2");
-    setMainNode(node);
-    rclcpp::Logger node_logger = node->get_logger();
+  // Pass command line arguments to rclcpp.
+  rclcpp::init(argc, argv);
 
-    node->declare_parameter("ABC", 1000);
-	char nameId[] = "__name:=";
-	char nameVal[MAX_NAME_LEN] = { 0 };
-	char **argv_tmp; // argv_tmp[0][0] argv_tmp[0] identisch ist zu (*argv_tmp)
-	int argc_tmp;
-	std::string scannerName = "????";
+  rclcpp::NodeOptions node_options;
+  node_options.allow_undeclared_parameters(true);
+  auto node = rclcpp::Node::make_shared("sick_scan2", "", node_options);
+  std::vector<std::string> paramList;
 
+  //auto node = rclcpp::Node::make_shared("sick_scan2");
 
-	argc_tmp = argc;
-	argv_tmp = argv;
+  setMainNode(node);
+  std::string paramString;
+  rclcpp::Logger node_logger = node->get_logger();
 
-	const int MAX_STR_LEN = 1024;
-	char nameTagVal[MAX_STR_LEN] = { 0 };
-	char logTagVal[MAX_STR_LEN] = { 0 };
-	char internalDebugTagVal[MAX_STR_LEN] = { 0 };
-	char sensorEmulVal[MAX_STR_LEN] = { 0 };
+  std::string frameId = "world";
+  std::string hostName = "192.168.0.1";
+  std::string scanner_name = "undefined";
+  int port = 2112;
+  double min_ang=-M_PI;
+  double max_ang=M_PI;
 
-	if (argc == 1) // just for testing without calling by roslaunch
-	{
-		// recommended call for internal debugging as an example: __name:=sick_rms_320 __internalDebug:=1
-		// strcpy(nameTagVal, "__name:=sick_rms_3xx");  // sick_rms_320 -> radar
-		strcpy(nameTagVal, "__name:=sick_tim_5xx");  // sick_rms_320 -> radar
-		strcpy(logTagVal, "__log:=/tmp/tmp.log");
-		strcpy(internalDebugTagVal, "__internalDebug:=1");
-		// strcpy(sensorEmulVal, "__emulSensor:=1");
-        strcpy(sensorEmulVal, "__emulSensor:=0");
-		argc_tmp = 5;
-		argv_tmp = (char **)malloc(sizeof(char *) * argc_tmp);
-
-		argv_tmp[0] = argv[0];
-		argv_tmp[1] = nameTagVal;
-		argv_tmp[2] = logTagVal;
-		argv_tmp[3] = internalDebugTagVal;
-		argv_tmp[4] = sensorEmulVal;
-
-	}
-	RCLCPP_INFO(node_logger, "sick_generic_caller V. %s.%s.%s", SICK_GENERIC_MAJOR_VER, SICK_GENERIC_MINOR_VER, SICK_GENERIC_PATCH_LEVEL);
-	for (int i = 0; i < argc_tmp; i++)
-	{
-		if (strstr(argv_tmp[i], nameId) == argv_tmp[i])
-		{
-			strcpy(nameVal, argv_tmp[i] + strlen(nameId));
-			scannerName = nameVal;
-		}
-		RCLCPP_INFO(node_logger, "Program arguments: %s", argv_tmp[i]);
-	}
+  // Declare default parameters
+  node->declare_parameter<std::string>("frame_id", "world");
+  node->declare_parameter<std::string>("hostname", hostName);
+  node->declare_parameter<std::string>("scanner_name", scanner_name);
+  node->declare_parameter<int>("port", port);
+  node->declare_parameter<double>("min_ang", min_ang);
+  node->declare_parameter<double>("max_ang", max_ang);
+  // Update with setting from yaml param file or command line parameters
+  node->get_parameter("frame_id", frameId);
+  node->get_parameter("hostname", hostName);
+  node->get_parameter("scanner_name", scanner_name);
+  node->get_parameter("port", port);
+  node->get_parameter("min_ang", min_ang);
+  node->get_parameter("max_ang", max_ang);
 
 
-	int result = mainGenericLaser(argc_tmp, argv_tmp, scannerName);
-	return result;
+  // node->get_parameters(paramList);
+  char nameId[] = "__name:=";
+  char nameVal[MAX_NAME_LEN] = {0};
+  char **argv_tmp; // argv_tmp[0][0] argv_tmp[0] identisch ist zu (*argv_tmp)
+  int argc_tmp;
+
+
+  argc_tmp = argc;
+  argv_tmp = argv;
+
+  const int MAX_STR_LEN = 1024;
+  char nameTagVal[MAX_STR_LEN] = {0};
+  char logTagVal[MAX_STR_LEN] = {0};
+  char internalDebugTagVal[MAX_STR_LEN] = {0};
+  char sensorEmulVal[MAX_STR_LEN] = {0};
+
+  if (argc == 1) // just for testing without calling by roslaunch
+  {
+    // recommended call for internal debugging as an example: __name:=sick_rms_320 __internalDebug:=1
+    // strcpy(nameTagVal, "__name:=sick_rms_3xx");  // sick_rms_320 -> radar
+    strcpy(nameTagVal, "__name:=sick_tim_5xx");  // sick_rms_320 -> radar
+    strcpy(logTagVal, "__log:=/tmp/tmp.log");
+    strcpy(internalDebugTagVal, "__internalDebug:=1");
+    // strcpy(sensorEmulVal, "__emulSensor:=1");
+    strcpy(sensorEmulVal, "__emulSensor:=0");
+    argc_tmp = 5;
+    argv_tmp = (char **) malloc(sizeof(char *) * argc_tmp);
+
+    argv_tmp[0] = argv[0];
+    argv_tmp[1] = nameTagVal;
+    argv_tmp[2] = logTagVal;
+    argv_tmp[3] = internalDebugTagVal;
+    argv_tmp[4] = sensorEmulVal;
+
+  }
+  RCLCPP_INFO(node_logger, "sick_generic_caller V. %s.%s.%s", SICK_GENERIC_MAJOR_VER, SICK_GENERIC_MINOR_VER,
+              SICK_GENERIC_PATCH_LEVEL);
+  for (int i = 0; i < argc_tmp; i++)
+  {
+    if (strstr(argv_tmp[i], nameId) == argv_tmp[i])
+    {
+      strcpy(nameVal, argv_tmp[i] + strlen(nameId));
+      scanner_name = nameVal;
+    }
+    RCLCPP_INFO(node_logger, "Program arguments: %s", argv_tmp[i]);
+  }
+
+
+  int result = mainGenericLaser(argc_tmp, argv_tmp, scanner_name);
+  return result;
 
 }
