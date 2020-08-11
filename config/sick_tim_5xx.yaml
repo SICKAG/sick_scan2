@@ -5,4 +5,4 @@ sick_scan2_tim_5xx:
     scanner_name : "sick_tim_5xx"
     port : 2112
     min_ang : -2.35619449
-    max-ang : 2.35619449
+    max_ang : 2.35619449
