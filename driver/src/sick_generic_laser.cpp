@@ -137,76 +137,7 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   auto node = getMainNode();
   bool doInternalDebug = false;
   bool emulSensor = false;
-/*
-  std::vector<std::string> paramArr;
-  paramArr.push_back("hostname");
-  paramArr.push_back("port");
-  paramArr.push_back("name");
-  paramArr.push_back("frame_id");
 
-
-    std::string scannerName = "sick_tim_5xx";
-    std::string hostname = "192.168.0.61";
-    std::string port = "2112";
-    std::string frame_id="laser";
-
-
-    for (int i = 0; i < argc; i++)
-  {
-    std::string s = argv[i];
-    if (getTagVal(s, tag, val))
-    {
-      if (tag.compare("__internalDebug") == 0)
-      {
-        int debugState = 0;
-        sscanf(val.c_str(), "%d", &debugState);
-        if (debugState > 0)
-        {
-          doInternalDebug = true;
-        }
-      }
-      if (tag.compare("__emulSensor") == 0)
-      {
-        int dummyState = 0;
-        sscanf(val.c_str(), "%d", &dummyState);
-        if (dummyState > 0)
-        {
-          emulSensor = true;
-        }
-      }
-
-      for (int i = 0; i < paramArr.size(); i++)
-      {
-        std::string callParamName = std::string("__");
-        callParamName +=  paramArr[i];
-        if (tag.compare(callParamName) == 0)
-        {
-          node->declare_parameter(paramArr[i], val);
-          std::string s = "Set param " + paramArr[i] + " to " + val;
-          RCLCPP_INFO(node->get_logger(),s.c_str());
-
-          // hacky - will be changed ...
-          if (paramArr[i].compare("hostname") == 0)
-          {
-            hostname = val;
-          }
-          if (paramArr[i].compare("port") == 0)
-          {
-            port = val;
-          }
-          if (paramArr[i].compare("name") == 0)
-          {
-            scannerName = val;
-          }
-          if (paramArr[i].compare("frame_id") == 0)
-          {
-            frame_id = val;
-          }
-        }
-      }
-    }
-  }
-*/
 
 #if TODO
   if (false == nhPriv.getParam("scanner_type", scannerName))

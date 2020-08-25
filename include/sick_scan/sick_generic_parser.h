@@ -38,6 +38,7 @@
 // List of supported laser scanner and radar scanner
 #define SICK_SCANNER_LMS_1XXX_NAME "sick_lms_1xxx"
 #define SICK_SCANNER_MRS_1XXX_NAME "sick_mrs_1xxx"
+#define SICK_SCANNER_TIM_240_NAME "sick_tim_240"
 #define SICK_SCANNER_TIM_5XX_NAME "sick_tim_5xx"
 #define SICK_SCANNER_TIM_7XX_NAME "sick_tim_7xx"
 #define SICK_SCANNER_TIM_7XXS_NAME "sick_tim_7xxS"
@@ -46,6 +47,10 @@
 #define SICK_SCANNER_MRS_6XXX_NAME "sick_mrs_6xxx"
 #define SICK_SCANNER_LMS_4XXX_NAME "sick_lms_4xxx"
 #define SICK_SCANNER_RMS_3XX_NAME "sick_rms_3xx"
+#define SICK_SCANNER_NAV_3XX_NAME "sick_nav_3xx"
+#define SICK_SCANNER_NAV_2XX_NAME "sick_nav_2xx"
+#define SICK_SCANNER_TIM_4XX_NAME "sick_tim_4xx"
+
 #include "SickScanConfig.h"
 
 #include <string>
@@ -56,49 +61,79 @@
 // namespace sensor_msgs
 namespace sick_scan
 {
-	class ScannerBasicParam
-	{
-	public:
-		void setScannerName(std::string _s);
-		std::string getScannerName(void);
-		void setNumberOfLayers(int _layerNum);
-		int getNumberOfLayers(void);
-		void setNumberOfShots(int _shots);
-		int getNumberOfShots(void);
-		void setNumberOfMaximumEchos(int _maxEchos);
-		int getNumberOfMaximumEchos(void);
-		void setAngularDegreeResolution(double _res);
-		void setElevationDegreeResolution(double _elevRes); 
-		double getElevationDegreeResolution(void);
-		double getAngularDegreeResolution(void);
-		double getExpectedFrequency(void);
-		bool getDeviceIsRadar(void);
-		bool getUseBinaryProtocol(void);
-		void setUseBinaryProtocol(bool _useBinary);
-		void setDeviceIsRadar(bool _deviceIsRadar);
-		void setIntensityResolutionIs16Bit(bool _IntensityResolutionIs16Bit);
-		bool getIntensityResolutionIs16Bit(void);
-		void setExpectedFrequency(double _freq);
-		ScannerBasicParam();
-		void setUseSafetyPasWD(bool _useSafetyPasWD);
-		bool getUseSafetyPasWD();
-		void setEncoderMode(int8_t _EncoderMode);
-		int8_t getEncoderMode();
-	private:
-		std::string scannerName;
-		int numberOfLayers;
-		int numberOfShots;
-		int numberOfMaximumEchos;
-		double elevationDegreeResolution;
-		double angleDegressResolution;
-      double expectedFrequency;
-	  bool useBinaryProtocol;
-	  bool IntensityResolutionIs16Bit;
-	  bool deviceIsRadar;
-		bool UseSafetyPasWD;
-		int8_t EncoderMode;
-	  bool CartographerCompatibility;
-	};
+  class ScannerBasicParam
+  {
+  public:
+    void setScannerName(std::string _s);
+
+    std::string getScannerName(void);
+
+    void setNumberOfLayers(int _layerNum);
+
+    int getNumberOfLayers(void);
+
+    void setNumberOfShots(int _shots);
+
+    int getNumberOfShots(void);
+
+    void setNumberOfMaximumEchos(int _maxEchos);
+
+    int getNumberOfMaximumEchos(void);
+
+    void setAngularDegreeResolution(double _res);
+
+    void setElevationDegreeResolution(double _elevRes);
+
+    double getElevationDegreeResolution(void);
+
+    double getAngularDegreeResolution(void);
+
+    double getExpectedFrequency(void);
+
+    bool getDeviceIsRadar(void);
+
+    bool getUseBinaryProtocol(void);
+
+    void setScanMirroredAndShifted(bool _scanMirroredAndShifted);
+
+    bool getScanMirroredAndShifted();
+
+    void setUseBinaryProtocol(bool _useBinary);
+
+    void setDeviceIsRadar(bool _deviceIsRadar);
+
+    void setIntensityResolutionIs16Bit(bool _IntensityResolutionIs16Bit);
+
+    bool getIntensityResolutionIs16Bit(void);
+
+    void setExpectedFrequency(double _freq);
+
+    ScannerBasicParam();
+
+    void setUseSafetyPasWD(bool _useSafetyPasWD);
+
+    bool getUseSafetyPasWD();
+
+    void setEncoderMode(int8_t _EncoderMode);
+
+    int8_t getEncoderMode();
+
+  private:
+    std::string scannerName;
+    int numberOfLayers;
+    int numberOfShots;
+    int numberOfMaximumEchos;
+    double elevationDegreeResolution;
+    double angleDegressResolution;
+    double expectedFrequency;
+    bool useBinaryProtocol;
+    bool IntensityResolutionIs16Bit;
+    bool deviceIsRadar;
+    bool useSafetyPasWD;
+    int8_t encoderMode;
+    bool CartographerCompatibility;
+    bool scanMirroredAndShifted;
+  };
 
 
 

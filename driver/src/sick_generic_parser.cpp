@@ -67,259 +67,283 @@
 
 namespace sick_scan
 {
-	using namespace std;
+  using namespace std;
 
-	/*!
-	\brief Setting name (type) of scanner
+  /*!
+  \brief Setting name (type) of scanner
 
-	\param _s name of scanner
-	\sa getScannerName
-	*/
-	void ScannerBasicParam::setScannerName(std::string _s)
-	{
-		scannerName = _s;
-	}
+  \param _s name of scanner
+  \sa getScannerName
+  */
+  void ScannerBasicParam::setScannerName(std::string _s)
+  {
+    scannerName = _s;
+  }
 
-	/*!
-	\brief Getting name (type) of scanner
+  /*!
+  \brief Getting name (type) of scanner
 
-	\return Name of scanner
-	\sa setScannerName
-	*/
-	std::string ScannerBasicParam::getScannerName()
-	{
-		return(scannerName);
-	}
-
-
-	/*!
-	\brief Setting number of scanner layers (depending of scanner type/family)
-
-	\param _layerNum of scanner layers (e.g. 1 for TiM5xx and 24 for MRS6124
-	\sa getNumberOfLayers
-	*/
-	void ScannerBasicParam::setNumberOfLayers(int _layerNum)
-	{
-		numberOfLayers = _layerNum;
-	}
-
-	/*!
-	\brief Getting number of scanner layers 
-
-	\return Number of scanners layer (e.g. 1 for TiM5xx and 24 for MRS6124)
-	\sa setNumberOfLayers
-	*/
-	int ScannerBasicParam::getNumberOfLayers(void)
-	{
-		return(numberOfLayers);
-
-	}
-
-	/*!
-	\brief Set number of shots per scan
-	
-	\param _shots of shots per scan (for one layer)
-	\sa getNumberOfLayers
-	*/
-	void ScannerBasicParam::setNumberOfShots(int _shots)
-	{
-		numberOfShots = _shots;
-	}
-
-	/*!
-	\brief Get number of shots per scan
-
-	\return Number of shots per scan (for one layer)
-	\sa getNumberOfLayers
-	*/
-	int ScannerBasicParam::getNumberOfShots(void)
-	{
-		return(numberOfShots);
-	}
-
-	/*!
-	\brief Set number of maximum echoes for this laser scanner type
-
-	\param _maxEchos of max echoes
-	\sa getNumberOfMaximumEchos
-	*/
-	void ScannerBasicParam::setNumberOfMaximumEchos(int _maxEchos)
-	{
-		this->numberOfMaximumEchos = _maxEchos;
-	}
+  \return Name of scanner
+  \sa setScannerName
+  */
+  std::string ScannerBasicParam::getScannerName()
+  {
+    return (scannerName);
+  }
 
 
-	/*!
-	\brief Get number of maximum echoes for this laser scanner type
+  /*!
+  \brief Setting number of scanner layers (depending of scanner type/family)
 
-	\return Number of max echoes
-	\sa setNumberOfMaximumEchos
-	*/
-	int ScannerBasicParam::getNumberOfMaximumEchos(void)
-	{
-		return(numberOfMaximumEchos);
-	}
+  \param _layerNum of scanner layers (e.g. 1 for TiM5xx and 24 for MRS6124
+  \sa getNumberOfLayers
+  */
+  void ScannerBasicParam::setNumberOfLayers(int _layerNum)
+  {
+    numberOfLayers = _layerNum;
+  }
 
-	/*!
-	\brief Set pointer to corresponding parameter object to the parser
-	
-	\param _ptr to parameter object
-	\sa getCurrentParamPtr
-	*/
-	void SickGenericParser::setCurrentParamPtr(ScannerBasicParam* _ptr)
-	{
-		currentParamSet = _ptr;
-	}
+  /*!
+  \brief Getting number of scanner layers
 
+  \return Number of scanners layer (e.g. 1 for TiM5xx and 24 for MRS6124)
+  \sa setNumberOfLayers
+  */
+  int ScannerBasicParam::getNumberOfLayers(void)
+  {
+    return (numberOfLayers);
 
-	/*!
-	\brief Set angular resolution in degrees
-	\param _res resolution in degress (NOT rad) between each shot
-	\sa getAngularDegreeResolution
-	*/
-	void ScannerBasicParam::setAngularDegreeResolution(double _res)
-	{
-		angleDegressResolution = _res;
-	}
+  }
 
-	/*!
-	\brief Get angular resolution in degress
-	
-	\return angle resolution in degress (NOT rad) between each shot
-	*/
-	double ScannerBasicParam::getAngularDegreeResolution(void)
-	{
-		return(angleDegressResolution);
-	}
+  /*!
+  \brief Set number of shots per scan
 
-	/*!
-	\brief set expected scan frequency
-	\param _freq scan frequency in [Hz]
-	\sa getExpectedFrequency
-	*/
-	void ScannerBasicParam::setExpectedFrequency(double _freq)
-	{
-		expectedFrequency = _freq;
-	}
+  \param _shots of shots per scan (for one layer)
+  \sa getNumberOfLayers
+  */
+  void ScannerBasicParam::setNumberOfShots(int _shots)
+  {
+    numberOfShots = _shots;
+  }
 
-	/*!
-	\brief get expected scan frequency
-	
-	\return expected scan frequency in [Hz]
-	\sa setExpectedFrequency
-	*/
-	double ScannerBasicParam::getExpectedFrequency()
-	{
-		return(expectedFrequency);
-	}
+  /*!
+  \brief Get number of shots per scan
+
+  \return Number of shots per scan (for one layer)
+  \sa getNumberOfLayers
+  */
+  int ScannerBasicParam::getNumberOfShots(void)
+  {
+    return (numberOfShots);
+  }
+
+  /*!
+  \brief Set number of maximum echoes for this laser scanner type
+
+  \param _maxEchos of max echoes
+  \sa getNumberOfMaximumEchos
+  */
+  void ScannerBasicParam::setNumberOfMaximumEchos(int _maxEchos)
+  {
+    this->numberOfMaximumEchos = _maxEchos;
+  }
 
 
-	/*!
-	\brief set angular resolution in VERTICAL direction for multilayer scanner
-	\param _elevRes resolution in degree
-	\sa getElevationDegreeResolution
-	*/
-	void ScannerBasicParam::setElevationDegreeResolution(double _elevRes)
-	{
-		this->elevationDegreeResolution = _elevRes;
-	}
+  /*!
+  \brief Get number of maximum echoes for this laser scanner type
+
+  \return Number of max echoes
+  \sa setNumberOfMaximumEchos
+  */
+  int ScannerBasicParam::getNumberOfMaximumEchos(void)
+  {
+    return (numberOfMaximumEchos);
+  }
+
+  /*!
+  \brief Set pointer to corresponding parameter object to the parser
+
+  \param _ptr to parameter object
+  \sa getCurrentParamPtr
+  */
+  void SickGenericParser::setCurrentParamPtr(ScannerBasicParam *_ptr)
+  {
+    currentParamSet = _ptr;
+  }
 
 
-	/*!
-	\brief get angular resolution in VERTICAL direction for multilayer scanner
-	\return elevation resolution in degree
-	\sa setElevationDegreeResolution
-	*/
-	double ScannerBasicParam::getElevationDegreeResolution()
-	{
-		return(this->elevationDegreeResolution);
-	}
+  /*!
+  \brief Set angular resolution in degrees
+  \param _res resolution in degress (NOT rad) between each shot
+  \sa getAngularDegreeResolution
+  */
+  void ScannerBasicParam::setAngularDegreeResolution(double _res)
+  {
+    angleDegressResolution = _res;
+  }
 
-	/*!
-	\brief flag to decide between usage of ASCII-sopas or BINARY-sopas
-	\param _useBinary: True for binary, False for ASCII
-	\sa getUseBinaryProtocol
-	*/
-	void ScannerBasicParam::setUseBinaryProtocol(bool _useBinary)
-	{
-		this->useBinaryProtocol = _useBinary;
-	}
+  /*!
+  \brief Get angular resolution in degress
 
-	/*!
-	\brief flag to mark the device as radar (instead of laser scanner)
-	\param _deviceIsRadar: false for laserscanner, true for radar (like rms_3xx)
-	\sa getDeviceIsRadar
-	*/
-	void ScannerBasicParam::setDeviceIsRadar(bool _deviceIsRadar)
-	{
-		deviceIsRadar = _deviceIsRadar;
-	}
+  \return angle resolution in degress (NOT rad) between each shot
+  */
+  double ScannerBasicParam::getAngularDegreeResolution(void)
+  {
+    return (angleDegressResolution);
+  }
 
-	/*!
-	\brief flag to mark the device as radar (instead of laser scanner)
-	\param _deviceIsRadar: false for laserscanner, true for radar (like rms_3xx)
-	\sa getDeviceIsRadar
-	*/
-	bool ScannerBasicParam::getDeviceIsRadar(void)
-	{
-		return(deviceIsRadar);
-	}
+  /*!
+  \brief set expected scan frequency
+  \param _freq scan frequency in [Hz]
+  \sa getExpectedFrequency
+  */
+  void ScannerBasicParam::setExpectedFrequency(double _freq)
+  {
+    expectedFrequency = _freq;
+  }
 
-	/*!
-	\brief flag to decide between usage of ASCII-sopas or BINARY-sopas
-	\return _useBinary: True for binary, False for ASCII
-	\sa getUseBinaryProtocol
-	*/
-	bool ScannerBasicParam::getUseBinaryProtocol(void)
-	{
-		return(this->useBinaryProtocol);
-	}
-	/*!
-	\brief Set the RSSI Value length
-	\param _useBinary: Boolean value: True=16 Bit False=8Bit
-	\sa getUseBinaryProtocol
-	*/
-	void ScannerBasicParam::setIntensityResolutionIs16Bit(bool _IntensityResolutionIs16Bit)
-	{
-		this->IntensityResolutionIs16Bit = _IntensityResolutionIs16Bit;
-	}
+  /*!
+  \brief get expected scan frequency
 
-	/*!
-	\brief Get the RSSI Value length
-	\return Boolean value: True=16 Bit False=8Bit
-	\sa setUseBinaryProtocol
-	*/
-	bool ScannerBasicParam::getIntensityResolutionIs16Bit(void)
-	{
-		return(IntensityResolutionIs16Bit);
-	}
-	/*!
-	\brief flag to mark the device uses the safety scanner password
-	\param  _useSafetyPasWD: false for normal scanners true for safety scanners
-	\sa setUseSafetyPasWD
-	*/
-	void ScannerBasicParam::setUseSafetyPasWD(bool _useSafetyPasWD)
-{
-	this->UseSafetyPasWD = _useSafetyPasWD;
-}
-	/*!
-	\brief flag to mark the device uses the safety scanner password
-	\reutrn Bool true for safety password false for normal password
-	\sa getUseSafetyPasWD
-	*/
-bool ScannerBasicParam::getUseSafetyPasWD()
-{
-	return(UseSafetyPasWD);
-}
-	/*!
-	\brief Construction of parameter object
+  \return expected scan frequency in [Hz]
+  \sa setExpectedFrequency
+  */
+  double ScannerBasicParam::getExpectedFrequency()
+  {
+    return (expectedFrequency);
+  }
 
-	*/
-	ScannerBasicParam::ScannerBasicParam()
-	{
-		this->elevationDegreeResolution = 0.0;
-		this->setUseBinaryProtocol(false);
-	}
+
+  /*!
+  \brief set angular resolution in VERTICAL direction for multilayer scanner
+  \param _elevRes resolution in degree
+  \sa getElevationDegreeResolution
+  */
+  void ScannerBasicParam::setElevationDegreeResolution(double _elevRes)
+  {
+    this->elevationDegreeResolution = _elevRes;
+  }
+
+
+  /*!
+  \brief get angular resolution in VERTICAL direction for multilayer scanner
+  \return elevation resolution in degree
+  \sa setElevationDegreeResolution
+  */
+  double ScannerBasicParam::getElevationDegreeResolution()
+  {
+    return (this->elevationDegreeResolution);
+  }
+
+  /*!
+  \brief flag to decide between usage of ASCII-sopas or BINARY-sopas
+  \param _useBinary: True for binary, False for ASCII
+  \sa getUseBinaryProtocol
+  */
+  void ScannerBasicParam::setUseBinaryProtocol(bool _useBinary)
+  {
+    this->useBinaryProtocol = _useBinary;
+  }
+
+  /*!
+  \brief flag to mark the device as radar (instead of laser scanner)
+  \param _deviceIsRadar: false for laserscanner, true for radar (like rms_3xx)
+  \sa getDeviceIsRadar
+  */
+  void ScannerBasicParam::setDeviceIsRadar(bool _deviceIsRadar)
+  {
+    deviceIsRadar = _deviceIsRadar;
+  }
+
+  /*!
+  \brief flag to mark the device as radar (instead of laser scanner)
+  \param _deviceIsRadar: false for laserscanner, true for radar (like rms_3xx)
+  \sa getDeviceIsRadar
+  */
+  bool ScannerBasicParam::getDeviceIsRadar(void)
+  {
+    return (deviceIsRadar);
+  }
+
+  /*!
+\brief flag to mark mirroring of rotation direction
+\param _scanMirrored: false for normal mounting true for up side down or NAV 310
+\sa setScanMirrored
+*/
+  void ScannerBasicParam::setScanMirroredAndShifted(bool _scannMirroredAndShifted)
+  {
+    scanMirroredAndShifted = _scannMirroredAndShifted;
+  }
+
+  /*!
+  \brief flag to mark mirroring of rotation direction
+  \param _scanMirrored:  false for normal mounting true for up side down or NAV 310
+  \sa getScanMirrored
+  */
+  bool ScannerBasicParam::getScanMirroredAndShifted(void)
+  {
+    return (scanMirroredAndShifted);
+  }
+
+  /*!
+  \brief flag to decide between usage of ASCII-sopas or BINARY-sopas
+  \return _useBinary: True for binary, False for ASCII
+  \sa getUseBinaryProtocol
+  */
+  bool ScannerBasicParam::getUseBinaryProtocol(void)
+  {
+    return (this->useBinaryProtocol);
+  }
+
+  /*!
+  \brief Set the RSSI Value length
+  \param _useBinary: Boolean value: True=16 Bit False=8Bit
+  \sa getUseBinaryProtocol
+  */
+  void ScannerBasicParam::setIntensityResolutionIs16Bit(bool _IntensityResolutionIs16Bit)
+  {
+    this->IntensityResolutionIs16Bit = _IntensityResolutionIs16Bit;
+  }
+
+  /*!
+  \brief Get the RSSI Value length
+  \return Boolean value: True=16 Bit False=8Bit
+  \sa setUseBinaryProtocol
+  */
+  bool ScannerBasicParam::getIntensityResolutionIs16Bit(void)
+  {
+    return (IntensityResolutionIs16Bit);
+  }
+
+  /*!
+  \brief flag to mark the device uses the safety scanner password
+  \param  _useSafetyPasWD: false for normal scanners true for safety scanners
+  \sa setUseSafetyPasWD
+  */
+  void ScannerBasicParam::setUseSafetyPasWD(bool _useSafetyPasWD)
+  {
+    this->useSafetyPasWD = _useSafetyPasWD;
+  }
+
+  /*!
+  \brief flag to mark the device uses the safety scanner password
+  \reutrn Bool true for safety password false for normal password
+  \sa getUseSafetyPasWD
+  */
+  bool ScannerBasicParam::getUseSafetyPasWD()
+  {
+    return (useSafetyPasWD);
+  }
+
+  /*!
+  \brief Construction of parameter object
+
+  */
+  ScannerBasicParam::ScannerBasicParam()
+  {
+    this->elevationDegreeResolution = 0.0;
+    this->setUseBinaryProtocol(false);
+  }
 
 	/*!
 \brief Prama for encoder mode
@@ -328,7 +352,7 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 */
 	void ScannerBasicParam::setEncoderMode(int8_t _EncoderMode)
 	{
-		this->EncoderMode = _EncoderMode;
+		this->encoderMode = _EncoderMode;
 	}
 	/*!
 	/*!
@@ -338,7 +362,7 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 	*/
 	int8_t ScannerBasicParam::getEncoderMode()
 	{
-		return(EncoderMode);
+		return(encoderMode);
 	}
 
 	/*!
@@ -353,6 +377,7 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 	{
 		setScannerType(_scanType);
 		allowedScannerNames.push_back(SICK_SCANNER_MRS_1XXX_NAME);
+    allowedScannerNames.push_back(SICK_SCANNER_TIM_240_NAME);
 		allowedScannerNames.push_back(SICK_SCANNER_TIM_5XX_NAME);
 		allowedScannerNames.push_back(SICK_SCANNER_TIM_7XX_NAME);
     allowedScannerNames.push_back(SICK_SCANNER_TIM_7XXS_NAME);
@@ -394,7 +419,22 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
 			}
-			if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_5XX_NAME) == 0) // TIM_5xx - 1 Layer, max. 811 shots per scan
+      if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_240_NAME) ==
+          0) // TIM_5xx - 1 Layer, max. 811 shots per scan
+      {
+        basicParams[i].setNumberOfMaximumEchos(1);
+        basicParams[i].setNumberOfLayers(1);
+        basicParams[i].setNumberOfShots(241); // [-120 deg, 120 deg]
+        basicParams[i].setAngularDegreeResolution(1.00000);
+        basicParams[i].setExpectedFrequency(15.0);
+        basicParams[i].setUseBinaryProtocol(true);
+        basicParams[i].setDeviceIsRadar(false); // Default
+        basicParams[i].setUseSafetyPasWD(false); // Default
+        basicParams[i].setEncoderMode(-1); // Default
+
+
+      }
+	  if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_5XX_NAME) == 0) // TIM_5xx - 1 Layer, max. 811 shots per scan
       {
         basicParams[i].setNumberOfMaximumEchos(1);
         basicParams[i].setNumberOfLayers(1);
@@ -688,29 +728,29 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 		int verboseLevel = 0;
 		// tmpParam.getParam("verboseLevel", verboseLevel);
 
-		int HEADER_FIELDS = 32;
-		char* cur_field;
-		size_t count;
-		int scannerIdx = lookUpForAllowedScanner(getScannerType());
+    int HEADER_FIELDS = 32;
+    char *cur_field;
+    size_t count;
+    int scannerIdx = lookUpForAllowedScanner(getScannerType());
 
-		// Reserve sufficient space
-		std::vector<char *> fields;
-		fields.reserve(datagram_length / 2);
+    // Reserve sufficient space
+    std::vector<char *> fields;
+    fields.reserve(datagram_length / 2);
 
-		// ----- only for debug output
-		std::vector<char> datagram_copy_vec;
-		datagram_copy_vec.resize(datagram_length + 1); // to avoid using malloc. destructor frees allocated mem.
-		char* datagram_copy = &(datagram_copy_vec[0]);
+    // ----- only for debug output
+    std::vector<char> datagram_copy_vec;
+    datagram_copy_vec.resize(datagram_length + 1); // to avoid using malloc. destructor frees allocated mem.
+    char *datagram_copy = &(datagram_copy_vec[0]);
 
 		if (verboseLevel > 0) {
 			printf("Verbose LEVEL activated. Only for DEBUG.");
 		}
 
-		if (verboseLevel > 0)
-		{
-			static int cnt = 0;
-			char szDumpFileName[255] = {0};
-			char szDir[255] = {0};
+    if (verboseLevel > 0)
+    {
+      static int cnt = 0;
+      char szDumpFileName[511] = {0};
+      char szDir[255] = {0};
 #ifdef _MSC_VER
       strcpy(szDir,"C:\\temp\\");
 #else
@@ -752,9 +792,9 @@ bool ScannerBasicParam::getUseSafetyPasWD()
 
 		if (verboseLevel > 0)
 		{
-			static int cnt = 0;
-			char szDumpFileName[255] = {0};
-			char szDir[255] = {0};
+      static int cnt = 0;
+      char szDumpFileName[511] = {0};
+      char szDir[255] = {0};
 #ifdef _MSC_VER
 			strcpy(szDir,"C:\\temp\\");
 #else
