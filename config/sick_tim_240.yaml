@@ -1,0 +1,8 @@
+sick_scan2_tim_240:
+  ros__parameters:
+    hostname : "192.168.0.1"
+    frame_id : "cloud"
+    scanner_name : "sick_tim_240"
+    port : 2111
+    min_ang : -2.094395102
+    max_ang : +2.094395102
