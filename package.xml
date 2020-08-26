@@ -9,10 +9,6 @@
   </description>
 
   <maintainer email="michael.lehning@lehning.de">Michael Lehning</maintainer>
-  <author email="michael.lehning@lehning.de">Michael Lehning</author>
-  <author email="ros@jochen.sprickerhof.de">Jochen Sprickerhof</author>
-  <author email="martin.guenther@dfki.de">Martin Günther</author>
-
   <license>BSD</license>
   <url type="website">http://wiki.ros.org/sick_scan2</url>
   <url type="repository">https://github.com/SICKAG/sick_scan2</url>
