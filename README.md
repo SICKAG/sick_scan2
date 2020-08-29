@@ -20,6 +20,8 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 
 | **device name**    |  **part no.**                                                                                                                | **description**                                | **tested?**     |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------|:---------------:|
+| TiM240             | prototype [more info here](doc/tim240/tim240.md) | 1 layer max. range: 10 m, ang. resol. 1.00 [deg], 240 [deg]| ✔ [prototype]|
+|                    |                                                                                                                                  | Scan-Rate: 14.5 Hz   |                 |
 | TiM551             | [1060445](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/tim5xx/tim551-2050001/p/p343045)                 | 1 layer max. range: 10 m, ang. resol. 1.00[deg] | ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 | TiM561             | [1071419](https://www.sick.com/de/en/detection-and-ranging-solutions/2d-lidar-sensors/tim5xx/tim561-2050101/p/p369446)                 | 1 layer max. range: 10 m, ang. resol. 0.33 [deg]| ✔ [stable]|
@@ -120,6 +122,10 @@ In this example we use the ip address 192.168.0.71
 
 Via the program argument __frame_id the frame of the laserscan messages can be changed. Default is "laser".
 
+For TiM240:
+```
+ros2 launch sick_scan2 sick_tim_240.launch.py
+```
 For TiM5xx:
 ```
 ros2 launch sick_scan2 sick_tim_5xx.launch.py
