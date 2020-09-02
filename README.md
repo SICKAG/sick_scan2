@@ -178,7 +178,7 @@ source ./install/setup.bash
 * Start clion-Shell-Script with directory containing 'CMakeLists.txt', e.g.
   (see https://groups.google.com/forum/#!topic/ros-sig-ng-ros/UMjVH047nVc, Answer from G. Viola)
 ```
-~/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/182.4323.58/bin/clion.sh ./src/sick_scan2
+~/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/201.8743.17/bin/clion.sh ./src/sick_scan2
 ```
   Comment: Please modify the path to your local installation.
 
