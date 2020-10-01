@@ -148,7 +148,10 @@ For LMS111:
 ```
 ros2 launch sick_scan2 sick_lms_5xx.launch.py
 ```
-
+For MRS1104:
+```
+ros2 launch sick_scan2 sick_mrs_1xxx.launch.py
+```
 
 
 Start a second terminal window
@@ -187,7 +190,12 @@ export addition path infos by the following command:
 ```
 export CMAKE_PREFIX_PATH=$AMENT_PREFIX_PATH:$CMAKE_PREFIX_PATH
 ```
-(see https://answers.ros.org/question/334581/could-not-find-fastrtps-missing-fastrtps_include_dir-fastrtps_libraries/)
+(see https://answers.ros.org/question/334581/could-not-find-fastrtps-missing-fastrtps_include_dir-fastrtps_libraries/).
+Or try to set the path manualy
+```
+set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include)
+set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
+```
 ## Keywords
 
 ROS LiDAR
