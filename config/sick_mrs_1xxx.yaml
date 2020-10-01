@@ -1,0 +1,8 @@
+sick_scan2_mrs_1xxx:
+  ros__parameters:
+    hostname : "192.168.0.1"
+    frame_id : "cloud"
+    scanner_name : "sick_mrs_1xxx"
+    port : 2112
+    min_ang : -2.35619449
+    max_ang : 2.35619449

@@ -1867,11 +1867,11 @@ namespace sick_scan
               if (deviceState == 1) // scanner is ready
               {
                 scannerReady = true; // interrupt waiting for scanner ready
-                printf("Scanner ready for measurement after %d [sec]", i);
+                printf("Scanner ready for measurement after %d [sec]\n", i);
                 break;
               }
             }
-            printf("Waiting for scanner ready state since %d secs", i);
+            printf("Waiting for scanner ready state since %d secs\n", i);
             // ros::Duration(shortSleepTime).sleep();
 
             if (scannerReady)
@@ -2139,6 +2139,8 @@ namespace sick_scan
 
       // msg.header.stamp = recvTimeStamp;
       double elevationAngleInRad = 0.0;
+      short elevAngleX200 = 0;  // signed short (F5 B2  -> Layer 24
+      // F5B2h -> -2638/200= -13.19°
       /*
        * datagrams are enclosed in <STX> (0x02), <ETX> (0x03) pairs
        */
@@ -2178,8 +2180,6 @@ namespace sick_scan
               // binary message
               if (lenVal < actual_length)
               {
-                short elevAngleX200 = 0;  // signed short (F5 B2  -> Layer 24
-                // F5B2h -> -2638/200= -13.19°
                 int scanFrequencyX100 = 0;
                 double elevAngle = 0.00;
                 double scanFrequency = 0.0;
@@ -2593,18 +2593,21 @@ namespace sick_scan
             case 1: // TIM571 etc.
               baseLayer = 0;
               break;
-            case 4:
-
+            case 4:// MRS1104
               baseLayer = -1;
-#if 0
-              if (msg.header.seq == 250) layer = -1;
-              else if (msg.header.seq == 0) layer = 0;
-              else if (msg.header.seq == -250) layer = 1;
-              else if (msg.header.seq == -500) layer = 2;
-#endif
+              if (elevAngleX200 == 250)
+              { layer = -1; }
+              else if (elevAngleX200 == 0)
+              { layer = 0; }
+              else if (elevAngleX200 == -250)
+              { layer = 1; }
+              else if (elevAngleX200 == -500)
+              { layer = 2; }
               elevationAngleDegree = this->parser_->getCurrentParamPtr()->getElevationDegreeResolution();
               elevationAngleDegree = elevationAngleDegree / 180.0 * M_PI;
               // 0.0436332 /*2.5 degrees*/;
+              break;
+
               break;
             case 24: // Preparation for MRS6000
               baseLayer = -1;
@@ -2804,8 +2807,12 @@ namespace sick_scan
               float *cosAlphaTablePtr = &cosAlphaTable[0];
               float *sinAlphaTablePtr = &sinAlphaTable[0];
 
-              float *vangPtr = &vang_vec[0];
-              float *rangeTmpPtr = &rangeTmp[0];
+                float *vangPtr = NULL;
+                float *rangeTmpPtr = &rangeTmp[0];
+                if (vang_vec.size() > 0)
+                {
+                    vangPtr = &vang_vec[0];
+                }
               for (size_t i = 0; i < rangeNum; i++)
               {
                 geometry_msgs::msg::Point32 point;
