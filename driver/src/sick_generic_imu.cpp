@@ -607,8 +607,10 @@ namespace sick_scan
     imuTimeStamp[idx] = imuValue.TimeStamp();
 */  uint32_t seconds=timeStamp.seconds();
     uint32_t nanoseconds= timeStamp.nanoseconds();
-    bool bRet = SoftwarePLL::instance().getCorrectedTimeStamp(seconds ,nanoseconds,
-                                                              (uint32_t) (imuValue.TimeStamp() & 0xFFFFFFFF));
+    bool bRet=true;
+    //TODO reactivate software PLL
+    //bool bRet = SoftwarePLL::instance().getCorrectedTimeStamp(seconds ,nanoseconds,
+     //                                                         (uint32_t) (imuValue.TimeStamp() & 0xFFFFFFFF));
     /*
     timeStampSecCorBuffer[idx] = timeStamp.seconds;
     timeStampNanoSecCorBuffer[idx] = timeStamp.nanoseconds;

@@ -77,6 +77,8 @@
 #include "sick_scan/sick_scan_common_nw.h"
 
 void swap_endian(unsigned char *ptr, int numBytes);
+std::string stripControl(std::vector<unsigned char> s);
+std::string stripControl(std::string s);
 
 namespace sick_scan
 {

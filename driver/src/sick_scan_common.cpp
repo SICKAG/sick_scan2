@@ -136,7 +136,6 @@ std::vector<unsigned char> stringToVector(std::string s)
 
 }
 
-
 /*!
 \brief return diagnostic error code (small helper function)
      This small helper function was introduced to allow the compiling under Visual c++.
@@ -224,6 +223,147 @@ namespace sick_scan
         }
       }
     }
+    return (dest);
+  }
+
+  /*!
+\brief Converts a SOPAS command to a human readable string
+\param s: ASCII-Sopas command including 0x02 and 0x03
+\return Human readable string 0x02 and 0x02 are converted to "<STX>" and "<ETX>"
+*/
+  std::string stripControl(std::vector<unsigned char> s)
+  {
+    bool isParamBinary = false;
+    int spaceCnt = 0x00;
+    int cnt0x02 = 0;
+
+    for (size_t i = 0; i < s.size(); i++)
+    {
+      if (s[i] != 0x02)
+      {
+        isParamBinary = false;
+
+      }
+      else
+      {
+        cnt0x02++;
+      }
+      if (i > 4)
+      {
+        break;
+      }
+    }
+    if (4 == cnt0x02)
+    {
+      isParamBinary = true;
+    }
+    std::string dest;
+    if (isParamBinary == true)
+    {
+      int parseState = 0;
+
+      unsigned long lenId = 0x00;
+      char szDummy[255] = {0};
+      for (size_t i = 0; i < s.size(); i++)
+      {
+        switch (parseState)
+        {
+          case 0:
+            if (s[i] == 0x02)
+            {
+              dest += "<STX>";
+            }
+            else
+            {
+              dest += "?????";
+            }
+            if (i == 3)
+            {
+              parseState = 1;
+            }
+            break;
+          case 1:
+            lenId |= s[i] << (8 * (7 - i));
+            if (i == 7)
+            {
+              sprintf(szDummy, "<Len=%04lu>", lenId);
+              dest += szDummy;
+              parseState = 2;
+            }
+            break;
+          case 2:
+          {
+            unsigned long dataProcessed = i - 8;
+            if (s[i] == ' ')
+            {
+              spaceCnt++;
+            }
+            if (spaceCnt == 2)
+            {
+              parseState = 3;
+            }
+            dest += s[i];
+            if (dataProcessed >= (lenId - 1))
+            {
+              parseState = 4;
+            }
+
+            break;
+          }
+
+          case 3:
+          {
+            char ch = dest[dest.length() - 1];
+            if (ch != ' ')
+            {
+              dest += ' ';
+            }
+            sprintf(szDummy, "0x%02x", s[i]);
+            dest += szDummy;
+
+            unsigned long dataProcessed = i - 8;
+            if (dataProcessed >= (lenId - 1))
+            {
+              parseState = 4;
+            }
+            break;
+          }
+          case 4:
+          {
+            sprintf(szDummy, " CRC:<0x%02x>", s[i]);
+            dest += szDummy;
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+    else
+    {
+      for (size_t i = 0; i < s.size(); i++)
+      {
+
+        if (s[i] >= ' ')
+        {
+          // <todo> >= 0x80
+          dest += s[i];
+        }
+        else
+        {
+          switch (s[i])
+          {
+            case 0x02:
+              dest += "<STX>";
+              break;
+            case 0x03:
+              dest += "<ETX>";
+              break;
+          }
+        }
+      }
+    }
+
     return (dest);
   }
 
@@ -851,10 +991,6 @@ namespace sick_scan
     {
       //for binary Mode Testing
       sopasCmdChain.push_back(CMD_SET_TO_COLA_A_PROTOCOL);
-    }
-    if (parser_->getCurrentParamPtr()->getImuEnabled())
-    {
-      sopasCmdChain.push_back(CMD_START_IMU_DATA);
     }
     bool tryToStopMeasurement = true;
     if (parser_->getCurrentParamPtr()->getNumberOfLayers() == 1)
@@ -1761,6 +1897,26 @@ namespace sick_scan
       }
       startProtocolSequence.push_back(CMD_RUN);  // leave user level
       startProtocolSequence.push_back(CMD_START_SCANDATA);
+      if (this->parser_->getCurrentParamPtr()->getNumberOfLayers() == 4)  // MRS1104 - start IMU-Transfer
+      {
+        bool imu_enable = parser_->getCurrentParamPtr()->getImuEnabled();
+        if (imu_enable)
+        {
+          if (useBinaryCmdNow == true)
+          {
+            printf("Enable IMU data transfer");
+            // TODO Flag to decide between IMU on or off
+            startProtocolSequence.push_back(CMD_START_IMU_DATA);
+          }
+          else
+          {
+            printf(
+                "IMU USAGE NOT POSSIBLE IN ASCII COMMUNICATION MODE.\nTo use the IMU the communication with the scanner must be set to binary mode.\n This can be done by inserting the line:\n<param name=\"use_binary_protocol\" type=\"bool\" value=\"True\" />\n into the launchfile.\n See also https://github.com/SICKAG/sick_scan/blob/master/doc/IMU.md");
+            exit(0);
+          }
+
+        }
+      }
     }
 
     std::vector<int>::iterator it;
@@ -1773,30 +1929,32 @@ namespace sick_scan
       std::string sopasCmd = sopasCmdVec[cmdId];
       std::vector<unsigned char> replyDummy;
       std::vector<unsigned char> reqBinary;
-      printf("Command: %s", stripControl(sopasCmd).c_str());
+      std::vector<unsigned char> sopasVec;
+      sopasVec = stringToVector(sopasCmd);
+      printf("Command: %s", stripControl(sopasVec).c_str());
       if (useBinaryCmd)
       {
         this->convertAscii2BinaryCmd(sopasCmd.c_str(), &reqBinary);
-        result = sendSopasAndCheckAnswer(reqBinary, &replyDummy);
+        result = sendSopasAndCheckAnswer(reqBinary, &replyDummy, cmdId);
         sopasReplyBinVec[cmdId] = replyDummy;
 
         switch (cmdId)
         {
           case CMD_START_SCANDATA:
-            // printf("Sleeping for a couple of seconds of start measurement\n");
+            // ROS_DEBUG("Sleeping for a couple of seconds of start measurement\n");
             // ros::Duration(10.0).sleep();
             break;
         }
       }
       else
       {
-        result = sendSopasAndCheckAnswer(sopasCmd.c_str(), &replyDummy);
+        result = sendSopasAndCheckAnswer(sopasCmd.c_str(), &replyDummy, cmdId);
       }
 
       if (result != 0)
       {
         printf("%s", sopasCmdErrMsg[cmdId].c_str());
-        // diagnostics_.broadcast(getDiagnosticErrorCode(), sopasCmdErrMsg[cmdId]);
+        //diagnostics_.broadcast(getDiagnosticErrorCode(), sopasCmdErrMsg[cmdId]);
       }
       else
       {
@@ -1829,7 +1987,7 @@ namespace sick_scan
 
         if (waitForDeviceState)
         {
-          int maxWaitForDeviceStateReady = 45;   // max. 30 sec. (see manual)
+          int maxWaitForDeviceStateReady = 45;   // max. 45 sec. (see manual)
           bool scannerReady = false;
           for (int i = 0; i < maxWaitForDeviceStateReady; i++)
           {
@@ -1841,7 +1999,9 @@ namespace sick_scan
             int deviceState = 0;
 
             std::vector<unsigned char> reqBinary;
-            printf("Command: %s", stripControl(sopasCmd).c_str());
+            std::vector<unsigned char> sopasVec;
+            sopasVec = stringToVector(sopasCmd);
+//            printf("Command: %s", stripControl(sopasVec).c_str());
             if (useBinaryCmd)
             {
               this->convertAscii2BinaryCmd(sopasCmd.c_str(), &reqBinary);
@@ -1873,12 +2033,13 @@ namespace sick_scan
               if (deviceState == 1) // scanner is ready
               {
                 scannerReady = true; // interrupt waiting for scanner ready
-                printf("Scanner ready for measurement after %d [sec]\n", i);
+                printf("Scanner ready for measurement after %d [sec]", i);
                 break;
               }
             }
-            printf("Waiting for scanner ready state since %d secs\n", i);
-            // ros::Duration(shortSleepTime).sleep();
+            printf("Waiting for scanner ready state since %d secs", i);
+            const std::chrono::nanoseconds nsshortSleepTime((int64_t)(shortSleepTime*1e9));
+            rclcpp::sleep_for(nsshortSleepTime);
 
             if (scannerReady)
             {
