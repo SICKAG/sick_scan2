@@ -311,12 +311,6 @@ namespace sick_scan
     datagram_copy_vec.resize(datagram_length + 1); // to avoid using malloc. destructor frees allocated mem.
     char *datagram_copy = &(datagram_copy_vec[0]);
 
-    if (verboseLevel > 0)
-    {
-      ROS_WARN("Verbose LEVEL activated. Only for DEBUG.");
-    }
-
-
     strncpy(datagram_copy, datagram, datagram_length); // datagram will be changed by strtok
     datagram_copy[datagram_length] = 0;
 
@@ -554,14 +548,15 @@ namespace sick_scan
 
   }
 
-  int SickScanImu::parseDatagram(ros::Time timeStamp, unsigned char *receiveBuffer, int actual_length,
+  int SickScanImu::parseDatagram(rclcpp::Time timeStamp, unsigned char *receiveBuffer, int actual_length,
                                  bool useBinaryProtocol)
   {
     int exitCode = ExitSuccess;
 
     SickScanImuValue imuValue;
-    sensor_msgs::Imu imuMsg_;
-    static ros::Time lastTimeStamp;
+
+    sensor_msgs::msg::Imu imuMsg_;
+    static rclcpp::Time lastTimeStamp;
 
     static double lastRoll = 0.0;
     static double lastPitch = 0.0;
@@ -607,19 +602,20 @@ namespace sick_scan
       this->parseAsciiDatagram((char *) receiveBuffer, actual_length, &imuValue);
     }
     /*
-    timeStampSecBuffer[idx] = timeStamp.sec;
-    timeStampNanoSecBuffer[idx] = timeStamp.nsec;
+    timeStampSecBuffer[idx] = timeStamp.seconds;
+    timeStampNanoSecBuffer[idx] = timeStamp.nanoseconds;
     imuTimeStamp[idx] = imuValue.TimeStamp();
-*/
-    bool bRet = SoftwarePLL::instance().getCorrectedTimeStamp(timeStamp.sec, timeStamp.nsec,
+*/  uint32_t seconds=timeStamp.seconds();
+    uint32_t nanoseconds= timeStamp.nanoseconds();
+    bool bRet = SoftwarePLL::instance().getCorrectedTimeStamp(seconds ,nanoseconds,
                                                               (uint32_t) (imuValue.TimeStamp() & 0xFFFFFFFF));
     /*
-    timeStampSecCorBuffer[idx] = timeStamp.sec;
-    timeStampNanoSecCorBuffer[idx] = timeStamp.nsec;
+    timeStampSecCorBuffer[idx] = timeStamp.seconds;
+    timeStampNanoSecCorBuffer[idx] = timeStamp.nanoseconds;
     timeStampValid[idx] = bRet ? 1 : 0;
     */
     imuMsg_.header.stamp = timeStamp;
-    imuMsg_.header.seq = 0;
+    //imuMsg_.header.seq = 0; seq is decapricated in ros2
     imuMsg_.header.frame_id = commonPtr->config_.imu_frame_id; //
 
 
@@ -759,7 +755,7 @@ namespace sick_scan
       imuMsg_.orientation_covariance[i] = 0.00;
 
     }
-
+/*
     if (commonPtr->config_.cloud_output_mode == 2)
     {
       imuMsg_.angular_velocity_covariance[0] = 0.02;
@@ -794,6 +790,7 @@ namespace sick_scan
     }
     else
     {
+      */
       imuMsg_.angular_velocity_covariance[0] = 0;
       imuMsg_.angular_velocity_covariance[1] = 0;
       imuMsg_.angular_velocity_covariance[2] = 0;
@@ -824,10 +821,10 @@ namespace sick_scan
       imuMsg_.orientation_covariance[7] = 0;
       imuMsg_.orientation_covariance[8] = 0;
 
-    }
+//    }
     if (true == bRet)
     {
-      this->commonPtr->imuScan_pub_.publish(imuMsg_);
+      this->commonPtr->imuScan_pub_->publish(imuMsg_);
     }
     return (exitCode);
 

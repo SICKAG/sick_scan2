@@ -52,7 +52,7 @@
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <std_msgs/msg/string.h>
-#include <sensor_msgs/msg/imu.h>
+#include <sensor_msgs/msg/imu.hpp>
 
 
 #include <sick_scan/sick_scan_common_nw.h>
@@ -195,7 +195,7 @@ namespace sick_scan
 
     bool isImuAckDatagram(char *datagram, size_t datagram_length);
 
-    int parseDatagram(ros::Time timeStamp, unsigned char *receiveBuffer, int actual_length, bool useBinaryProtocol);
+    int parseDatagram(rclcpp::Time timeStamp, unsigned char *receiveBuffer, int actual_length, bool useBinaryProtocol);
 
     int parseAsciiDatagram(char *datagram, size_t datagram_length, SickScanImuValue *imValuePtr);
 

@@ -254,9 +254,12 @@ namespace sick_scan
 
       rclcpp::Parameter frameParam = node->get_parameter(PARAM_FRAME_ID);
       std::string frameStr = frameParam.as_string();
+      rclcpp::Parameter imu_frameParam = node->get_parameter(PARAM_IMU_FRAME_ID);
+      std::string imu_frameStr = frameParam.as_string();
       node->get_parameter("min_ang", cfg.min_ang);
       node->get_parameter("max_ang", cfg.max_ang);
       cfg.frame_id = frameStr;
+      cfg.imu_frame_id = imu_frameStr;
       cfg.skip = 0;
       update_config(cfg);
     }
@@ -284,6 +287,7 @@ namespace sick_scan
 
     // e.g. https://answers.ros.org/question/312587/generate-and-publish-pointcloud2-in-ros2/
     cloud_pub_ = getMainNode()->create_publisher<sensor_msgs::msg::PointCloud2>("cloud", 100);
+    imuScan_pub_ = getMainNode()->create_publisher<sensor_msgs::msg::Imu>("imu", 100);
   }
 
   /*!
@@ -3149,6 +3153,22 @@ namespace sick_scan
   bool SickScanCommon::getSensorIsRadar(void)
   {
     return (sensorIsRadar);
+  }
+/*!
+\brief Universal swapping function
+\param ptr: Pointer to datablock
+\param numBytes : size of variable in bytes
+*/
+  void swap_endian(unsigned char *ptr, int numBytes)
+  {
+    unsigned char *buf = (ptr);
+    unsigned char tmpChar;
+    for (int i = 0; i < numBytes / 2; i++)
+    {
+      tmpChar = buf[numBytes - 1 - i];
+      buf[numBytes - 1 - i] = buf[i];
+      buf[i] = tmpChar;
+    }
   }
 
   // SopasProtocol m_protocolId;
