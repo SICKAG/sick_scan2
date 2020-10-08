@@ -23,8 +23,8 @@ endif()
 
 
 #uncomment this lines and change path accordingly
-#set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include)
-#set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
+set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include)
+set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
 #to fix
 #CMake Error at /snap/clion/126/bin/cmake/linux/share/cmake-3.17/Modules/FindPackageHandleStandardArgs.cmake:164 (message):
 #  Could NOT find FastRTPS (missing: FastRTPS_INCLUDE_DIR FastRTPS_LIBRARIES)
@@ -59,19 +59,22 @@ add_executable(sick_generic_caller
         driver/src/tcp/colab.cpp
         driver/src/binScanf.cpp
         driver/src/sick_scan_common_nw.cpp
-        )
+        driver/src/sick_generic_imu.cpp
+        driver/src/softwarePLL.cpp)
 
-ament_target_dependencies(sick_generic_caller
-   "Boost"
+ament_target_dependencies(
+        sick_generic_caller
+        "Boost"
 #   "diagnostic_updater"
-   "rclcpp"
-   "sensor_msgs"
-   "std_msgs"
+        "rclcpp"
+        "sensor_msgs"
+        "std_msgs"
 )
 
 add_executable(quat_test
-  tools/quat_test/quat_test.cpp
-)
+        tools/quat_test/quat_test.cpp
+        include/sick_scan/sick_generic_imu.h
+        include/sick_scan/softwarePLL.h)
 
 ament_target_dependencies(quat_test
         "rclcpp"
