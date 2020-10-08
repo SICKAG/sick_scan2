@@ -66,11 +66,9 @@
 #endif
 
 #include "sick_scan/binScanf.hpp"
+#include "sick_scan/sick_generic_imu.h"
 // if there is a missing RadarScan.h, try to run catkin_make in der workspace-root
 // #include <sick_scan/RadarScan.h>
-
-
-
 
 #include <cstdio>
 #include <cstring>
@@ -258,6 +256,7 @@ namespace sick_scan
       std::string imu_frameStr = frameParam.as_string();
       node->get_parameter("min_ang", cfg.min_ang);
       node->get_parameter("max_ang", cfg.max_ang);
+      node->get_parameter("imu_enable", cfg.imu_enable);
       cfg.frame_id = frameStr;
       cfg.imu_frame_id = imu_frameStr;
       cfg.skip = 0;
@@ -853,7 +852,10 @@ namespace sick_scan
       //for binary Mode Testing
       sopasCmdChain.push_back(CMD_SET_TO_COLA_A_PROTOCOL);
     }
-
+    if (parser_->getCurrentParamPtr()->getImuEnabled())
+    {
+      sopasCmdChain.push_back(CMD_START_IMU_DATA);
+    }
     bool tryToStopMeasurement = true;
     if (parser_->getCurrentParamPtr()->getNumberOfLayers() == 1)
     {
@@ -2136,6 +2138,25 @@ namespace sick_scan
     return errorCode; // return success to continue looping
 #endif
     }
+    static SickScanImu scanImu(this); // todo remove static
+    if (scanImu.isImuDatagram((char *) receiveBuffer, actual_length))
+    {
+      int errorCode = ExitSuccess;
+      if (scanImu.isImuAckDatagram((char *) receiveBuffer, actual_length))
+      {
+
+      }
+      else
+      {
+        // parse radar telegram and send pointcloud2-debug messages
+        errorCode = scanImu.parseDatagram(recvTimeStamp, (unsigned char *) receiveBuffer, actual_length,
+                                          useBinaryProtocol);
+
+      }
+      return errorCode; // return success to continue looping
+
+
+    }
     else
     {
 
@@ -2981,7 +3002,20 @@ namespace sick_scan
     std::string keyWord1 = "sWN FREchoFilter";
     std::string keyWord2 = "sEN LMDscandata";
     std::string keyWord3 = "sWN LMDscandatacfg";
+    std::string keyWord4 = "sWN SetActiveApplications";
+    std::string keyWord5 = "sEN IMUData";
+    std::string keyWord6 = "sWN EIIpAddr";
+    std::string keyWord7 = "sMN mLMPsetscancfg";
+    std::string keyWord8 = "sWN TSCTCupdatetime";
+    std::string keyWord9 = "sWN TSCTCSrvAddr";
+    std::string keyWord10 = "sWN LICencres";
+    std::string keyWord11 = "sWN LFPmeanfilter";
+
+    //BBB
+
     std::string cmdAscii = requestAscii;
+
+
     int copyUntilSpaceCnt = 2;
     int spaceCnt = 0;
     char hexStr[255] = {0};
@@ -3029,29 +3063,217 @@ namespace sick_scan
       int scanDataStatus = 0;
       int keyWord3Len = keyWord3.length();
       int dummyArr[12] = {0};
-      if (12 == sscanf(requestAscii + keyWord3Len + 1, " %d %d %d %d %d %d %d %d %d %d %d %d",
-                       &dummyArr[0], &dummyArr[1], &dummyArr[2],
-                       &dummyArr[3], &dummyArr[4], &dummyArr[5],
-                       &dummyArr[6], &dummyArr[7], &dummyArr[8],
-                       &dummyArr[9], &dummyArr[10], &dummyArr[11]))
+      //sWN LMDscandatacfg %02d 00 %d %d 0 0 %02d 0 0 0 1 1\x03"
+      int sscanfresult = sscanf(requestAscii + keyWord3Len + 1, " %d %d %d %d %d %d %d %d %d %d %d %d",
+                                &dummyArr[0], // Data Channel Idx LSB
+                                &dummyArr[1], // Data Channel Idx MSB
+                                &dummyArr[2], // Remission
+                                &dummyArr[3], // Remission data format
+                                &dummyArr[4], // Unit
+                                &dummyArr[5], // Encoder Setting LSB
+                                &dummyArr[6], // Encoder Setting MSB
+                                &dummyArr[7], // Position
+                                &dummyArr[8], // Send Name
+                                &dummyArr[9], // Send Comment
+                                &dummyArr[10], // Time information
+                                &dummyArr[11]); // n-th Scan (packed - not sent as single byte sequence) !!!
+      if (1 < sscanfresult)
       {
+
         for (int i = 0; i < 13; i++)
         {
           buffer[i] = 0x00;
         }
-        buffer[0] = (unsigned char) (0xFF & (dummyArr[0]));
-        buffer[1] = 0x00;
+        buffer[0] = (unsigned char) (0xFF & dummyArr[0]);  //Data Channel 2 Bytes
+        buffer[1] = (unsigned char) (0xFF & dummyArr[1]);; // MSB of Data Channel (here Little Endian!!)
         buffer[2] = (unsigned char) (0xFF & dummyArr[2]);  // Remission
         buffer[3] = (unsigned char) (0xFF & dummyArr[3]);  // Remission data format 0=8 bit 1= 16 bit
-        buffer[10] = (unsigned char) (0xFF & dummyArr[10]);  // Enable timestamp
-        buffer[12] = (unsigned char) (0xFF & (dummyArr[11]));  // nth-Scan
-
+        buffer[4] = (unsigned char) (0xFF & dummyArr[4]);  //Unit of remission data
+        buffer[5] = (unsigned char) (0xFF & dummyArr[5]);  //encoder Data LSB
+        buffer[6] = (unsigned char) (0xFF & dummyArr[6]);  //encoder Data MSB
+        buffer[7] = (unsigned char) (0xFF & dummyArr[7]);  // Position
+        buffer[8] = (unsigned char) (0xFF & dummyArr[8]);  // Send Scanner Name
+        buffer[9] = (unsigned char) (0xFF & dummyArr[9]);  // Comment
+        buffer[10] = (unsigned char) (0xFF & dummyArr[10]);  // Time information
+        buffer[11] = (unsigned char) (0xFF & (dummyArr[11] >> 8));  // BIG Endian High Byte nth-Scan
+        buffer[12] = (unsigned char) (0xFF & (dummyArr[11] >> 0));  // BIG Endian Low Byte nth-Scan
         bufferLen = 13;
+
       }
 
     }
 
+    if (cmdAscii.find(keyWord4) != std::string::npos)
+    {
+      char tmpStr[1024] = {0};
+      char szApplStr[255] = {0};
+      int keyWord4Len = keyWord4.length();
+      int scanDataStatus = 0;
+      int dummy0, dummy1;
+      strcpy(tmpStr, requestAscii + keyWord4Len + 2);
+      sscanf(tmpStr, "%d %s %d", &dummy0, szApplStr, &dummy1);
+      // rebuild string
+      buffer[0] = 0x00;
+      buffer[1] = dummy0 ? 0x01 : 0x00;
+      for (int ii = 0; ii < 4; ii++)
+      {
+        buffer[2 + ii] = szApplStr[ii]; // idx: 1,2,3,4
+      }
+      buffer[6] = dummy1 ? 0x01 : 0x00;
+      bufferLen = 7;
+    }
 
+    if (cmdAscii.find(keyWord5) != std::string::npos)
+    {
+      int imuSetStatus = 0;
+      int keyWord5Len = keyWord5.length();
+      sscanf(requestAscii + keyWord5Len + 1, " %d", &imuSetStatus);
+      buffer[0] = (unsigned char) (0xFF & imuSetStatus);
+      bufferLen = 1;
+    }
+
+    if (cmdAscii.find(keyWord6) != std::string::npos)
+    {
+      int adrPartArr[4];
+      int imuSetStatus = 0;
+      int keyWord6Len = keyWord6.length();
+      sscanf(requestAscii + keyWord6Len + 1, " %x %x %x %x", &(adrPartArr[0]), &(adrPartArr[1]), &(adrPartArr[2]),
+             &(adrPartArr[3]));
+      buffer[0] = (unsigned char) (0xFF & adrPartArr[0]);
+      buffer[1] = (unsigned char) (0xFF & adrPartArr[1]);
+      buffer[2] = (unsigned char) (0xFF & adrPartArr[2]);
+      buffer[3] = (unsigned char) (0xFF & adrPartArr[3]);
+      bufferLen = 4;
+    }
+    //\x02sMN mLMPsetscancfg %d 1 %d 0 0\x03";
+    //02 02 02 02 00 00 00 25 73 4D 4E 20 6D 4C 4D 50 73 65 74 73 63 61 6E 63 66 67 20
+    // 00 00 13 88 4byte freq
+    // 00 01 2 byte sectors always 1
+    // 00 00 13 88  ang_res
+    // FF F9 22 30 sector start always 0
+    // 00 22 55 10 sector stop  always 0
+    // 21
+    if (cmdAscii.find(keyWord7) != std::string::npos)
+    {
+      if (this->parser_->getCurrentParamPtr()->getScannerName().compare(SICK_SCANNER_NAV_3XX_NAME) != 0)
+      {
+        {
+          bufferLen = 18;
+          for (int i = 0; i < bufferLen; i++)
+          {
+            unsigned char uch = 0x00;
+            switch (i)
+            {
+              case 5:
+                uch = 0x01;
+                break;
+            }
+            buffer[i] = uch;
+          }
+          char tmpStr[1024] = {0};
+          char szApplStr[255] = {0};
+          int keyWord7Len = keyWord7.length();
+          int scanDataStatus = 0;
+          int dummy0, dummy1;
+          strcpy(tmpStr, requestAscii + keyWord7Len + 2);
+          sscanf(tmpStr, "%d 1 %d", &dummy0, &dummy1);
+
+          buffer[0] = (unsigned char) (0xFF & (dummy0 >> 24));
+          buffer[1] = (unsigned char) (0xFF & (dummy0 >> 16));
+          buffer[2] = (unsigned char) (0xFF & (dummy0 >> 8));
+          buffer[3] = (unsigned char) (0xFF & (dummy0 >> 0));
+
+
+          buffer[6] = (unsigned char) (0xFF & (dummy1 >> 24));
+          buffer[7] = (unsigned char) (0xFF & (dummy1 >> 16));
+          buffer[8] = (unsigned char) (0xFF & (dummy1 >> 8));
+          buffer[9] = (unsigned char) (0xFF & (dummy1 >> 0));
+        }
+      }
+      else
+      {
+        int keyWord3Len = keyWord7.length();
+        int dummyArr[14] = {0};
+        if (14 == sscanf(requestAscii + keyWord3Len + 1, " %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+                         &dummyArr[0], &dummyArr[1], &dummyArr[2],
+                         &dummyArr[3], &dummyArr[4], &dummyArr[5],
+                         &dummyArr[6], &dummyArr[7], &dummyArr[8],
+                         &dummyArr[9], &dummyArr[10], &dummyArr[11], &dummyArr[12], &dummyArr[13]))
+        {
+          for (int i = 0; i < 54; i++)
+          {
+            buffer[i] = 0x00;
+          }
+          int targetPosArr[] = {0, 4, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54};
+          int numElem = (sizeof(targetPosArr) / sizeof(targetPosArr[0])) - 1;
+          for (int i = 0; i < numElem; i++)
+          {
+            int lenOfBytesToRead = targetPosArr[i + 1] - targetPosArr[i];
+            int adrPos = targetPosArr[i];
+            unsigned char *destPtr = buffer + adrPos;
+            memcpy(destPtr, &(dummyArr[i]), lenOfBytesToRead);
+            swap_endian(destPtr, lenOfBytesToRead);
+          }
+          bufferLen = targetPosArr[numElem];
+          /*
+           * 00 00 03 20 00 01
+  00 00 09 C4 00 00 00 00 00 36 EE 80 00 00 09 C4 00 00 00 00 00 00 00 00 00 00 09 C4 00 00 00 00 00
+  00 00 00 00 00 09 C4 00 00 00 00 00 00 00 00 00 00 09 C4 00 00 00 00 00 00 00 00 E4
+           */
+
+        }
+      }
+
+    }
+    if (cmdAscii.find(keyWord8) != std::string::npos)
+    {
+      uint32_t updatetime = 0;
+      int keyWord8Len = keyWord8.length();
+      sscanf(requestAscii + keyWord8Len + 1, " %d", &updatetime);
+      buffer[0] = (unsigned char) (0xFF & (updatetime >> 24));
+      buffer[1] = (unsigned char) (0xFF & (updatetime >> 16));
+      buffer[2] = (unsigned char) (0xFF & (updatetime >> 8));
+      buffer[3] = (unsigned char) (0xFF & (updatetime >> 0));
+      bufferLen = 4;
+    }
+    if (cmdAscii.find(keyWord9) != std::string::npos)
+    {
+      int adrPartArr[4];
+      int imuSetStatus = 0;
+      int keyWord9Len = keyWord9.length();
+      sscanf(requestAscii + keyWord9Len + 1, " %x %x %x %x", &(adrPartArr[0]), &(adrPartArr[1]), &(adrPartArr[2]),
+             &(adrPartArr[3]));
+      buffer[0] = (unsigned char) (0xFF & adrPartArr[0]);
+      buffer[1] = (unsigned char) (0xFF & adrPartArr[1]);
+      buffer[2] = (unsigned char) (0xFF & adrPartArr[2]);
+      buffer[3] = (unsigned char) (0xFF & adrPartArr[3]);
+      bufferLen = 4;
+    }
+    if (cmdAscii.find(keyWord10) != std::string::npos)
+    {
+      float EncResolution = 0;
+      bufferLen = 4;
+      int keyWord10Len = keyWord10.length();
+      sscanf(requestAscii + keyWord10Len + 1, " %f", &EncResolution);
+      memcpy(buffer, &EncResolution, bufferLen);
+      swap_endian(buffer, bufferLen);
+
+    }
+    if (cmdAscii.find(keyWord11) != std::string::npos)
+    {
+      char tmpStr[1024] = {0};
+      char szApplStr[255] = {0};
+      int keyWord11Len = keyWord11.length();
+      int dummy0, dummy1,dummy2;
+      strcpy(tmpStr, requestAscii + keyWord11Len + 2);
+      sscanf(tmpStr, "%d %d %d", &dummy0, &dummy1, &dummy2);
+      // rebuild string
+      buffer[0] = dummy0 ? 0x01 : 0x00;
+      buffer[1] =dummy1/256;//
+      buffer[2] =dummy1%256;//
+      buffer[3] =dummy2;
+      bufferLen = 4;
+    }
     // copy base command string to buffer
     bool switchDoBinaryData = false;
     for (int i = 1; i <= (int) (msgLen); i++)  // STX DATA ETX --> 0 1 2
@@ -3099,6 +3321,14 @@ namespace sick_scan
     unsigned char xorVal = 0x00;
     xorVal = sick_crc8((unsigned char *) (&((*requestBinary)[8])), requestBinary->size() - 8);
     requestBinary->push_back(xorVal);
+#if 0
+    for (int i = 0; i < requestBinary->size(); i++)
+    {
+      unsigned char c = (*requestBinary)[i];
+      printf("[%c]%02x ", (c < ' ') ? '.' : c, c) ;
+    }
+    printf("\n");
+#endif
     return (0);
 
   };

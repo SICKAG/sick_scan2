@@ -17,11 +17,13 @@ namespace sick_scan
   public:
       std::string frame_id;
       std::string imu_frame_id;
+      bool imu_enable;
       bool intensity;
       bool auto_reboot;
       double min_ang;
       double max_ang;
       int skip;
+
   };
 }
 

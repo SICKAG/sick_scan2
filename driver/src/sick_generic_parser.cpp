@@ -245,6 +245,14 @@ namespace sick_scan
     this->useBinaryProtocol = _useBinary;
   }
 
+  bool ScannerBasicParam::getImuEnabled()
+  {
+    return this->imuEnabled;
+  }
+  void ScannerBasicParam::setImuEnabled(bool _imuEnabled)
+  {
+    this->imuEnabled = _imuEnabled;
+  }
   /*!
   \brief flag to mark the device as radar (instead of laser scanner)
   \param _deviceIsRadar: false for laserscanner, true for radar (like rms_3xx)
@@ -308,7 +316,6 @@ namespace sick_scan
   /*!
   \brief Get the RSSI Value length
   \return Boolean value: True=16 Bit False=8Bit
-  \sa setUseBinaryProtocol
   */
   bool ScannerBasicParam::getIntensityResolutionIs16Bit(void)
   {
@@ -404,7 +411,8 @@ namespace sick_scan
 				basicParams[i].setUseBinaryProtocol(true);
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
-				basicParams[i].setEncoderMode(-1); // Default
+				basicParams[i].setEncoderMode(-1);
+        basicParams[i].setImuEnabled(true); // Activate Imu for MRS1000
 			}
 			if (basicParams[i].getScannerName().compare(SICK_SCANNER_LMS_1XXX_NAME) == 0)  // LMS1000 - 4 layer, 1101 shots per scan
 			{
@@ -418,7 +426,8 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
-			}
+        basicParams[i].setImuEnabled(false);// Default
+      }
       if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_240_NAME) ==
           0) // TIM_5xx - 1 Layer, max. 811 shots per scan
       {
@@ -431,6 +440,7 @@ namespace sick_scan
         basicParams[i].setDeviceIsRadar(false); // Default
         basicParams[i].setUseSafetyPasWD(false); // Default
         basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 
 
       }
@@ -445,6 +455,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
 			if (basicParams[i].getScannerName().compare(SICK_SCANNER_LMS_4XXX_NAME) == 0) // LMS_4xxx - 1 Layer, 600 Hz
 			{
@@ -457,6 +468,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
 			if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_7XX_NAME) == 0) // TIM_7xx - 1 Layer Scanner
 			{
@@ -469,6 +481,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
       if (basicParams[i].getScannerName().compare(SICK_SCANNER_TIM_7XXS_NAME) == 0) // TIM_7xxS - 1 layer Safety Scanner
       {
@@ -481,6 +494,7 @@ namespace sick_scan
         basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(true); // Safety scanner
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
       }
       if (basicParams[i].getScannerName().compare(SICK_SCANNER_LMS_5XX_NAME) == 0) // LMS_5xx - 1 Layer
       {
@@ -493,6 +507,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
       if (basicParams[i].getScannerName().compare(SICK_SCANNER_LMS_1XX_NAME) == 0) // LMS_1xx - 1 Layer
       {
@@ -505,6 +520,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
 			if (basicParams[i].getScannerName().compare(SICK_SCANNER_MRS_6XXX_NAME) == 0) //
 			{
@@ -518,6 +534,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(false); // Default
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 			}
 
 			if (basicParams[i].getScannerName().compare(SICK_SCANNER_RMS_3XX_NAME) == 0) // Radar
@@ -532,6 +549,7 @@ namespace sick_scan
 				basicParams[i].setDeviceIsRadar(true); // Device is a radar
 				basicParams[i].setUseSafetyPasWD(false); // Default
 				basicParams[i].setEncoderMode(-1); // Default
+        basicParams[i].setImuEnabled(false);// Default
 
 			}
 

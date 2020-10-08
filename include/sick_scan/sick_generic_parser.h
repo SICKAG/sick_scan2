@@ -98,6 +98,10 @@ namespace sick_scan
 
     bool getScanMirroredAndShifted();
 
+    void setImuEnabled(bool _imuEnabled);
+
+    bool getImuEnabled();
+
     void setUseBinaryProtocol(bool _useBinary);
 
     void setDeviceIsRadar(bool _deviceIsRadar);
@@ -133,6 +137,7 @@ namespace sick_scan
     int8_t encoderMode;
     bool CartographerCompatibility;
     bool scanMirroredAndShifted;
+    bool imuEnabled;
   };
 
 

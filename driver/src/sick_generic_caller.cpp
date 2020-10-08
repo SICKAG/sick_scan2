@@ -172,26 +172,32 @@ int main(int argc, char **argv)
   rclcpp::Logger node_logger = node->get_logger();
 
   std::string frameId = "world";
+  std::string imu_frameId = "imu";
   std::string hostName = "192.168.0.1";
   std::string scanner_name = "undefined";
   int port = 2112;
   double min_ang=-M_PI;
   double max_ang=M_PI;
+  bool imu_enable=false;
 
   // Declare default parameters
   node->declare_parameter<std::string>("frame_id", "world");
+  node->declare_parameter<std::string>("imu_frame_id", "imu");
   node->declare_parameter<std::string>("hostname", hostName);
   node->declare_parameter<std::string>("scanner_name", scanner_name);
   node->declare_parameter<int>("port", port);
   node->declare_parameter<double>("min_ang", min_ang);
   node->declare_parameter<double>("max_ang", max_ang);
+  node->declare_parameter<bool>("imu_enable", false);
   // Update with setting from yaml param file or command line parameters
   node->get_parameter("frame_id", frameId);
+  node->get_parameter("imu_frame_id", imu_frameId);
   node->get_parameter("hostname", hostName);
   node->get_parameter("scanner_name", scanner_name);
   node->get_parameter("port", port);
   node->get_parameter("min_ang", min_ang);
   node->get_parameter("max_ang", max_ang);
+  node->get_parameter("imu_enable", imu_enable);
 
 
   // node->get_parameters(paramList);
