@@ -180,8 +180,29 @@ bool SoftwarePLL::updatePLL(uint32_t sec, uint32_t nanoSec, uint32_t curtick)
 }
 
 //TODO Kommentare
+bool SoftwarePLL::getCorrectedTimeStamp(rclcpp::Time *timestamp, uint32_t curtick)
+{
+  uint32_t sec=timestamp->seconds();
+  uint32_t nanoSec=timestamp->nanoseconds();
+  bool retval=getCorrectedTimeStamp(sec,nanoSec,curtick);
+  rclcpp::Time returntime(sec, nanoSec);
+  *timestamp= returntime;
+  return retval;
+}
+bool SoftwarePLL::getCorrectedTimeStamp(builtin_interfaces::msg::Time *timestamp, uint32_t curtick)
+{
+  uint32_t sec=timestamp->sec;
+  uint32_t nanoSec=timestamp->nanosec;
+  bool retval=getCorrectedTimeStamp(sec,nanoSec,curtick);
+  timestamp->sec=sec;
+  timestamp->nanosec=nanoSec;
+  return retval;
+}
+
+
 bool SoftwarePLL::getCorrectedTimeStamp(uint32_t &sec, uint32_t &nanoSec, uint32_t curtick)
 {
+
   if (IsInitialized() == false)
   {
     return (false);

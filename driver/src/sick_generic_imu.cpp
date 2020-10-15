@@ -563,7 +563,6 @@ namespace sick_scan
     static double lastYaw = 0.0;
 
     static bool firstTime = true;
-    /*
     static int cnt = 0;
     static u_int32_t timeStampSecBuffer[1000];
     static u_int32_t timeStampNanoSecBuffer[1000];
@@ -591,7 +590,6 @@ namespace sick_scan
                    timeStampSecCorBuffer[i], timeStampNanoSecCorBuffer[i], tsDoubleCorr, tsDiff, timeStampValid[i]);
         }
     }
-     */
     if (useBinaryProtocol)
     {
       this->parseBinaryDatagram((char *) receiveBuffer, actual_length, &imuValue);
@@ -601,21 +599,20 @@ namespace sick_scan
     {
       this->parseAsciiDatagram((char *) receiveBuffer, actual_length, &imuValue);
     }
-    /*
-    timeStampSecBuffer[idx] = timeStamp.seconds;
-    timeStampNanoSecBuffer[idx] = timeStamp.nanoseconds;
+
+    timeStampSecBuffer[idx] = timeStamp.seconds();
+    timeStampNanoSecBuffer[idx] = timeStamp.nanoseconds();
     imuTimeStamp[idx] = imuValue.TimeStamp();
-*/  uint32_t seconds=timeStamp.seconds();
-    uint32_t nanoseconds= timeStamp.nanoseconds();
+//uint32_t seconds=timeStamp.seconds();
+//   uint32_t nanoseconds= timeStamp.nanoseconds();
     bool bRet=true;
     //TODO reactivate software PLL
-    //bool bRet = SoftwarePLL::instance().getCorrectedTimeStamp(seconds ,nanoseconds,
-     //                                                         (uint32_t) (imuValue.TimeStamp() & 0xFFFFFFFF));
-    /*
-    timeStampSecCorBuffer[idx] = timeStamp.seconds;
-    timeStampNanoSecCorBuffer[idx] = timeStamp.nanoseconds;
+    bRet = SoftwarePLL::instance().getCorrectedTimeStamp(&timeStamp,
+                                                              (uint32_t) (imuValue.TimeStamp() & 0xFFFFFFFF));
+    timeStampSecCorBuffer[idx] = (uint32_t)(timeStamp.seconds()+1e-12);
+    timeStampNanoSecCorBuffer[idx] = (uint32_t)(timeStamp.nanoseconds()+1e-12);
     timeStampValid[idx] = bRet ? 1 : 0;
-    */
+
     imuMsg_.header.stamp = timeStamp;
     //imuMsg_.header.seq = 0; seq is decapricated in ros2
     imuMsg_.header.frame_id = commonPtr->config_.imu_frame_id; //

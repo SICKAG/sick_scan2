@@ -23,6 +23,8 @@ namespace sick_scan
       double min_ang;
       double max_ang;
       int skip;
+      bool use_software_pll;
+      bool sw_pll_only_publish;
 
   };
 }

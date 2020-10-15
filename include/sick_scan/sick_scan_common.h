@@ -256,6 +256,7 @@ namespace sick_scan
 				sensor_msgs::msg::PointCloud2 cloud_;
 
 				rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr  imuScan_pub_;
+    //rclcpp::Logger node_logger_;
 		//////
     // Dynamic Reconfigure
     SickScanConfig config_;

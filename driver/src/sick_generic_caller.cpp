@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 
   setMainNode(node);
   std::string paramString;
-  rclcpp::Logger node_logger = node->get_logger();
+  //rclcpp::Logger node_logger = node->get_logger();
 
 
 
@@ -212,6 +212,8 @@ int main(int argc, char **argv)
   bool imu_enable=false;
   bool use_software_pll=true;
   int skip=0;
+  bool sw_pll_only_publish=true;
+  bool intensity=true;
 
   // Declare default parameters
 
@@ -223,8 +225,10 @@ int main(int argc, char **argv)
   node->declare_parameter<double>("min_ang", min_ang);
   node->declare_parameter<double>("max_ang", max_ang);
   node->declare_parameter<bool>("imu_enable", imu_enable);
-  node->declare_parameter<bool>("use_software_pll", use_software_pll);
   node->declare_parameter<int>("skip", skip);
+  node->declare_parameter<bool>("use_software_pll", use_software_pll);
+  node->declare_parameter<bool>("sw_pll_only_publish", sw_pll_only_publish);
+  node->declare_parameter<bool>("intensity",intensity);
 
 #if 0
   //handling if params had been defined before
@@ -285,6 +289,8 @@ int main(int argc, char **argv)
   node->get_parameter("imu_enable", imu_enable);
   node->get_parameter("skip", skip);
   node->get_parameter("use_software_pll", use_software_pll);
+  node->get_parameter("sw_pll_only_publish", sw_pll_only_publish);
+  node->get_parameter("intensity", intensity);
   // node->get_parameters(paramList);
   char nameId[] = "__name:=";
   char nameVal[MAX_NAME_LEN] = {0};
@@ -320,7 +326,7 @@ int main(int argc, char **argv)
     argv_tmp[4] = sensorEmulVal;
 
   }
-  RCLCPP_INFO(node_logger, "sick_generic_caller V. %s.%s.%s", SICK_GENERIC_MAJOR_VER, SICK_GENERIC_MINOR_VER,
+  RCLCPP_INFO(getMainNode()->get_logger(), "sick_generic_caller V. %s.%s.%s", SICK_GENERIC_MAJOR_VER, SICK_GENERIC_MINOR_VER,
               SICK_GENERIC_PATCH_LEVEL);
   for (int i = 0; i < argc_tmp; i++)
   {
@@ -333,9 +339,9 @@ int main(int argc, char **argv)
     {
       node->set_parameter(rclcpp::Parameter("hostname", argv_tmp[i] + 10));
       node->get_parameter("hostname", hostName);
-      RCLCPP_INFO(node_logger, "hostname: %s", hostName.c_str());
+      RCLCPP_INFO(getMainNode()->get_logger(), "hostname: %s", hostName.c_str());
     }
-    RCLCPP_INFO(node_logger, "Program arguments: %s", argv_tmp[i]);
+    RCLCPP_INFO(getMainNode()->get_logger(), "Program arguments: %s", argv_tmp[i]);
   }
 
 

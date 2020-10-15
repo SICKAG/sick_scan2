@@ -19,6 +19,7 @@
 #include <iomanip>
 #include <ctime>
 #include <boost/cstdint.hpp>
+#include "rclcpp/rclcpp.hpp"
 // #include <chrono>
 
 class SoftwarePLL
@@ -36,8 +37,10 @@ public:
   bool pushIntoFifo(double curTimeStamp, uint32_t curtick);// update tick fifo and update clock (timestamp) fifo;
   double extraPolateRelativeTimeStamp(uint32_t tick);
 
-  bool getCorrectedTimeStamp(uint32_t &sec, uint32_t &nanoSec, uint32_t tick);
-
+  //bool getCorrectedTimeStamp(uint32_t &sec, uint32_t &nanoSec, uint32_t tick);
+  bool getCorrectedTimeStamp(builtin_interfaces::msg::Time *timestamp, uint32_t curtick);
+  bool getCorrectedTimeStamp(rclcpp::Time *timestamp, uint32_t curtick);
+  bool getCorrectedTimeStamp(uint32_t &sec, uint32_t &nanoSec, uint32_t curtick);
   bool getDemoFileData(std::string fileName, std::vector<uint32_t> &tickVec, std::vector<uint32_t> &secVec,
                        std::vector<uint32_t> &nanoSecVec);
 

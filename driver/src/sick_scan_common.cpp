@@ -392,6 +392,9 @@ namespace sick_scan
       node->get_parameter("imu_frame_id", cfg.imu_frame_id);
       node->get_parameter("frame_id", cfg.frame_id);
       node->get_parameter("skip", cfg.skip);
+      node->get_parameter("use_software_pll", cfg.use_software_pll);
+      node->get_parameter("sw_pll_only_publish",cfg.sw_pll_only_publish);
+      node->get_parameter("intensity",cfg.intensity);
       update_config(cfg);
     }
 #if 0
@@ -2364,7 +2367,9 @@ namespace sick_scan
                 long measurementFrequencyDiv100 = 0; // multiply with 100
                 int numberOf16BitChannels = 0;
                 int numberOf8BitChannels = 0;
-
+                uint32_t SystemCountScan = 0;
+                static uint32_t lastSystemCountScan = 0;// this variable is used to ensure that only the first time stamp of an multi layer scann is used for PLL updating
+                uint32_t SystemCountTransmit = 0;
                 memcpy(&elevAngleX200, receiveBuffer + 50, 2);
                 swap_endian((unsigned char *) &elevAngleX200, 2);
 
@@ -2383,7 +2388,48 @@ namespace sick_scan
 
                 msg.range_min = parser_->get_range_min();
                 msg.range_max = parser_->get_range_max();
+                memcpy(&SystemCountScan, receiveBuffer + 0x26, 4);
+                swap_endian((unsigned char *) &SystemCountScan, 4);
 
+                memcpy(&SystemCountTransmit, receiveBuffer + 0x2A, 4);
+                swap_endian((unsigned char *) &SystemCountTransmit, 4);
+                double timestampfloat = recvTimeStamp.sec + recvTimeStamp.nanosec * 1e-9;
+                bool bRet;
+                if (SystemCountScan !=
+                    lastSystemCountScan)//MRS 6000 sends 6 packets with same  SystemCountScan we should only update the pll once with this time stamp since the SystemCountTransmit are different and this will only increase jitter of the pll
+                {
+                  bRet = SoftwarePLL::instance().updatePLL(recvTimeStamp.sec, recvTimeStamp.nanosec,
+                                                           SystemCountTransmit);
+                  lastSystemCountScan = SystemCountScan;
+                }
+
+                bRet = SoftwarePLL::instance().getCorrectedTimeStamp(&recvTimeStamp,
+                                                                     SystemCountScan);
+                double timestampfloat_coor = recvTimeStamp.sec + recvTimeStamp.nanosec * 1e-9;
+                double DeltaTime = timestampfloat - timestampfloat_coor;
+                //ROS_INFO("%F,%F,%u,%u,%F",timestampfloat,timestampfloat_coor,SystemCountTransmit,SystemCountScan,DeltaTime);
+                //TODO Handle return values
+                if (config_.sw_pll_only_publish == true && bRet == false)
+                {
+                  int packets_expected_to_drop = SoftwarePLL::instance().fifoSize - 1;
+                  SoftwarePLL::instance().packeds_droped++;
+                  RCLCPP_INFO(getMainNode()->get_logger(),"%i / %i Packet dropped Software PLL not yet locked.",
+                           SoftwarePLL::instance().packeds_droped, packets_expected_to_drop);
+                  if (SoftwarePLL::instance().packeds_droped == packets_expected_to_drop)
+                  {
+
+                    RCLCPP_INFO(getMainNode()->get_logger(),"Software PLL is expected to be ready now!");
+                  }
+                  if (SoftwarePLL::instance().packeds_droped > packets_expected_to_drop)
+                  {
+                    RCLCPP_WARN(getMainNode()->get_logger(),"More packages than expected were dropped!!\n"
+                             "Check the network connection.\n"
+                             "Check if the system time has been changed in a leap.\n"
+                             "If the problems can persist, disable the software PLL with the option sw_pll_only_publish=False  !");
+                  }
+                  dataToProcess = false;
+                  break;
+                }
 
                 memcpy(&numberOf16BitChannels, receiveBuffer + 62, 2);
                 swap_endian((unsigned char *) &numberOf16BitChannels, 2);
@@ -2815,7 +2861,7 @@ namespace sick_scan
           // XXX  - HIER MEHRERE SCANS publish, falls Mehrzielszenario läuft
           if (numEchos > 5)
           {
-            printf("Too much echos");
+            RCLCPP_INFO(getMainNode()->get_logger(),"Too much echos");
           }
           else
           {
@@ -2937,7 +2983,7 @@ namespace sick_scan
                 pub_->publish(msg);
               }
 #else
-              printf("MSG received...");
+              RCLCPP_INFO(node->get_logger(),"MSG received...");
 #endif
             }
           }
@@ -2948,7 +2994,7 @@ namespace sick_scan
             const int numChannels = 4; // x y z i (for intensity)
 
 
-//						cloud_.header.stamp = recvTimeStamp;
+						cloud_.header.stamp = recvTimeStamp;
             cloud_.header.frame_id = config_.frame_id;
 //						cloud_.header.seq = 0;
             cloud_.height = numOfLayers * numValidEchos; // due to multi echo multiplied by num. of layers
@@ -3071,7 +3117,7 @@ namespace sick_scan
 #ifndef _MSC_VER
               cloud_pub_->publish(cloud_);
 #else
-              printf("PUBLISH:\n");
+              RCLCPP_INFO(node->get_logger(),"PUBLISH:\n");
 #endif
             }
 #endif
