@@ -165,14 +165,6 @@ namespace sick_scan
 			//
 			CMD_END // CMD_END is a tag for end of enum - never (re-)move it. It must be the last element.
 		};
-// --- START KEYWORD DEFINITIONS ---
-#define PARAM_MIN_ANG "min_ang"
-#define PARAM_MAX_ANG "max_ang"
-#define PARAM_FRAME_ID "frame_id"
-#define PARAM_IMU_FRAME_ID "imu_frame_id"
-// --- END KEYWORD DEFINITIONS ---
-
-
 		SickScanCommon(SickGenericParser* parser);
 		virtual ~SickScanCommon();
 

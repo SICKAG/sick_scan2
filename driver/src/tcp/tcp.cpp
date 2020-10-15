@@ -173,7 +173,7 @@ bool Tcp::open(std::string ipAddress, UINT16 port, bool enableVerboseDebugOutput
 	if (result < 0)
 	{
 		// Verbindungsversuch ist fehlgeschlagen
-		std::string text = "Tcp::open: Failed to open TCP connection to " + ipAddress + ", aborting.";
+		std::string text = "Tcp::open: Failed to open TCP connection to " + ipAddress + ":" + toString(port) + ", aborting.";
 		printError(text);
 		return false;
 	}

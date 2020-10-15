@@ -386,20 +386,12 @@ namespace sick_scan
       SickScanConfig cfg;
 
       auto node = getMainNode();
-
-      //double min_angle = node->declare_parameter(PARAM_MIN_ANG, -2.35619449);
-      //double max_angle = node->declare_parameter(PARAM_MAX_ANG, +2.35619449);
-
-      rclcpp::Parameter frameParam = node->get_parameter(PARAM_FRAME_ID);
-      std::string frameStr = frameParam.as_string();
-      rclcpp::Parameter imu_frameParam = node->get_parameter(PARAM_IMU_FRAME_ID);
-      std::string imu_frameStr = frameParam.as_string();
       node->get_parameter("min_ang", cfg.min_ang);
       node->get_parameter("max_ang", cfg.max_ang);
       node->get_parameter("imu_enable", cfg.imu_enable);
-      cfg.frame_id = frameStr;
-      cfg.imu_frame_id = imu_frameStr;
-      cfg.skip = 0;
+      node->get_parameter("imu_frame_id", cfg.imu_frame_id);
+      node->get_parameter("frame_id", cfg.frame_id);
+      node->get_parameter("skip", cfg.skip);
       update_config(cfg);
     }
 #if 0
@@ -1899,7 +1891,7 @@ namespace sick_scan
       startProtocolSequence.push_back(CMD_START_SCANDATA);
       if (this->parser_->getCurrentParamPtr()->getNumberOfLayers() == 4)  // MRS1104 - start IMU-Transfer
       {
-        bool imu_enable = parser_->getCurrentParamPtr()->getImuEnabled();
+        bool imu_enable = config_.imu_enable;
         if (imu_enable)
         {
           if (useBinaryCmdNow == true)

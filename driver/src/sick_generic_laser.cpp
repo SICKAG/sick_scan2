@@ -70,6 +70,9 @@
 
 #endif
 
+#if defined LDMRS_SUPPORT && LDMRS_SUPPORT > 0
+#include <sick_scan/ldmrs/sick_ldmrs_node.h>
+#endif
 #include <sick_scan/sick_generic_laser.h>
 #include <sick_scan/sick_scan_common_tcp.h>
 
@@ -211,9 +214,37 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
 
   signal(SIGINT, h_sig_sigint); // just a workaround - use two ctrl-c :-(
 
+  if(scannerName == "sick_ldmrs")
+  {
+#if defined LDMRS_SUPPORT && LDMRS_SUPPORT > 0
+    RCLCPP_INFO(node->get_logger(), "Initializing LDMRS...");
+    sick_scan::SickLdmrsNode ldmrs;
+    int result = ldmrs.init(node, hostName, frameId);
+    if(result != sick_scan::ExitSuccess)
+    {
+      RCLCPP_ERROR(node->get_logger(), "LDMRS initialization failed.");
+      return sick_scan::ExitError;
+    }
+    RCLCPP_INFO(node->get_logger(), "LDMRS initialized.");
+    rclcpp::spin(node);
+    return sick_scan::ExitSuccess;
+#else
+    RCLCPP_ERROR(node->get_logger(), "LDMRS not supported. Please build sick_scan2 with option LDMRS_SUPPORT");
+    return sick_scan::ExitError;
+#endif    
+  }
 
-  sick_scan::SickGenericParser *parser = new sick_scan::SickGenericParser(scannerName);
-
+  sick_scan::SickGenericParser *parser = 0;
+  try
+  {
+    parser = new sick_scan::SickGenericParser(scannerName);
+  }
+  catch(const std::exception& e)
+  {
+    RCLCPP_ERROR(node->get_logger(), "Scanner \"%s\" not supported, exception \"%s\". Please check your sick_scan2 configuration and launch file.", scannerName.c_str(), e.what());
+    return sick_scan::ExitError;
+  }
+  
 
   double param;
   char colaDialectId = 'A'; // A or B (Ascii or Binary)

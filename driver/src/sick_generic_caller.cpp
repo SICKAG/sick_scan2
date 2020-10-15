@@ -162,6 +162,7 @@ int main(int argc, char **argv)
 
   rclcpp::NodeOptions node_options;
   node_options.allow_undeclared_parameters(true);
+  //node_options.automatically_declare_initial_parameters(true);
   auto node = rclcpp::Node::make_shared("sick_scan2", "", node_options);
   std::vector<std::string> paramList;
 
@@ -171,6 +172,36 @@ int main(int argc, char **argv)
   std::string paramString;
   rclcpp::Logger node_logger = node->get_logger();
 
+
+
+
+
+#if 0
+  // Update with setting from yaml param file or command line parameters
+  enum PARAM_LIST_ENUM {FRAME_ID_DECLARED,
+      IMU_FRAME_ID_DECLARED,
+      HOSTNAME_DECLARED,
+      SCANNER_NAME_DECLARED,
+      PORT_DECLARED,
+      MIN_ANG_DECLARED,
+      MAX_ANG_DECLARED,
+      IMU_ENABLE_DECLARED,
+      SKIP_DECLARED,
+      USE_SOFTWARE_PLL_DECLARED,
+      NUM_DECLARED};
+  std::map<int,std::string> parameterNameListMapping;
+  parameterNameListMapping[FRAME_ID_DECLARED]= "frame_id";
+  parameterNameListMapping[IMU_FRAME_ID_DECLARED]= "imu_frame_id";
+  parameterNameListMapping[SCANNER_NAME_DECLARED]= "scanner_name";
+  parameterNameListMapping[HOSTNAME_DECLARED]= "hostname";
+  parameterNameListMapping[PORT_DECLARED]= "port";
+  parameterNameListMapping[MAX_ANG_DECLARED]= "max_ang";
+  parameterNameListMapping[MIN_ANG_DECLARED]= "min_ang";
+  parameterNameListMapping[IMU_ENABLE_DECLARED]= "imu_enable";
+  parameterNameListMapping[SKIP_DECLARED]= "skip";
+  parameterNameListMapping[USE_SOFTWARE_PLL_DECLARED]= "use_software_pll";
+#endif
+  //default Values
   std::string frameId = "world";
   std::string imu_frameId = "imu";
   std::string hostName = "192.168.0.1";
@@ -179,8 +210,11 @@ int main(int argc, char **argv)
   double min_ang=-M_PI;
   double max_ang=M_PI;
   bool imu_enable=false;
+  bool use_software_pll=true;
+  int skip=0;
 
   // Declare default parameters
+
   node->declare_parameter<std::string>("frame_id", "world");
   node->declare_parameter<std::string>("imu_frame_id", "imu");
   node->declare_parameter<std::string>("hostname", hostName);
@@ -188,8 +222,59 @@ int main(int argc, char **argv)
   node->declare_parameter<int>("port", port);
   node->declare_parameter<double>("min_ang", min_ang);
   node->declare_parameter<double>("max_ang", max_ang);
-  node->declare_parameter<bool>("imu_enable", false);
-  // Update with setting from yaml param file or command line parameters
+  node->declare_parameter<bool>("imu_enable", imu_enable);
+  node->declare_parameter<bool>("use_software_pll", use_software_pll);
+  node->declare_parameter<int>("skip", skip);
+
+#if 0
+  //handling if params had been defined before
+  std::vector<bool> paramListDeclaredFlag;
+  paramListDeclaredFlag.resize(NUM_DECLARED);
+  for (int i = 0; i < paramListDeclaredFlag.size(); i++)
+  {
+    std::string paramName=parameterNameListMapping[i];
+    paramListDeclaredFlag[i] = node->has_parameter(paramName);// parameter not declared
+  }
+  for (int i = 0; i < paramListDeclaredFlag.size(); i++)
+  {
+    if (paramListDeclaredFlag[i] == false) // parameter not declared
+    {
+      switch(i)
+      {
+        case FRAME_ID_DECLARED:
+          node->declare_parameter<std::string>(parameterNameListMapping[FRAME_ID_DECLARED], frameId);
+          break;
+        case IMU_FRAME_ID_DECLARED:
+          node->declare_parameter<std::string>(parameterNameListMapping[IMU_FRAME_ID_DECLARED], imu_frameId);
+          break;
+        case SCANNER_NAME_DECLARED:
+          node->declare_parameter<std::string>(parameterNameListMapping[SCANNER_NAME_DECLARED], scanner_name);
+          break;
+        case HOSTNAME_DECLARED:
+          node->declare_parameter<std::string>(parameterNameListMapping[HOSTNAME_DECLARED], hostName);
+          break;
+        case PORT_DECLARED:
+          node->declare_parameter<int>(parameterNameListMapping[PORT_DECLARED], port);
+          break;
+        case MAX_ANG_DECLARED:
+          node->declare_parameter<double>(parameterNameListMapping[MAX_ANG_DECLARED], max_ang);
+          break;
+        case MIN_ANG_DECLARED:
+          node->declare_parameter<double>(parameterNameListMapping[MIN_ANG_DECLARED], min_ang);
+          break;
+        case IMU_ENABLE_DECLARED:
+          node->declare_parameter<bool>(parameterNameListMapping[IMU_ENABLE_DECLARED], imu_enable);
+          break;
+        case SKIP_DECLARED:
+          node->declare_parameter<int>(parameterNameListMapping[SKIP_DECLARED], skip);
+          break;
+        case USE_SOFTWARE_PLL_DECLARED:
+          node->declare_parameter<bool>(parameterNameListMapping[USE_SOFTWARE_PLL_DECLARED], use_software_pll);
+          break;
+      }
+    }
+  }
+#endif
   node->get_parameter("frame_id", frameId);
   node->get_parameter("imu_frame_id", imu_frameId);
   node->get_parameter("hostname", hostName);
@@ -198,8 +283,8 @@ int main(int argc, char **argv)
   node->get_parameter("min_ang", min_ang);
   node->get_parameter("max_ang", max_ang);
   node->get_parameter("imu_enable", imu_enable);
-
-
+  node->get_parameter("skip", skip);
+  node->get_parameter("use_software_pll", use_software_pll);
   // node->get_parameters(paramList);
   char nameId[] = "__name:=";
   char nameVal[MAX_NAME_LEN] = {0};
@@ -243,6 +328,12 @@ int main(int argc, char **argv)
     {
       strcpy(nameVal, argv_tmp[i] + strlen(nameId));
       scanner_name = nameVal;
+    }
+    if(strncmp("hostname:=", argv_tmp[i], 10) == 0)
+    {
+      node->set_parameter(rclcpp::Parameter("hostname", argv_tmp[i] + 10));
+      node->get_parameter("hostname", hostName);
+      RCLCPP_INFO(node_logger, "hostname: %s", hostName.c_str());
     }
     RCLCPP_INFO(node_logger, "Program arguments: %s", argv_tmp[i]);
   }

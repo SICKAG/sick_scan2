@@ -560,7 +560,7 @@ namespace sick_scan
 		{
 			// ROS_ERROR("Scanner not supported.\n");
 			printf("Scanner not supported.\n");
-			throw new std::string("scanner type " + scannerType + " not supported.");
+			throw std::runtime_error(std::string("scanner type " + scannerType + " not supported"));
 		}
 		else
 		{
