@@ -1899,14 +1899,14 @@ namespace sick_scan
         {
           if (useBinaryCmdNow == true)
           {
-            printf("Enable IMU data transfer");
+            RCLCPP_INFO(node->get_logger(), "Enable IMU data transfer");
             // TODO Flag to decide between IMU on or off
             startProtocolSequence.push_back(CMD_START_IMU_DATA);
           }
           else
           {
-            printf(
-                "IMU USAGE NOT POSSIBLE IN ASCII COMMUNICATION MODE.\nTo use the IMU the communication with the scanner must be set to binary mode.\n This can be done by inserting the line:\n<param name=\"use_binary_protocol\" type=\"bool\" value=\"True\" />\n into the launchfile.\n See also https://github.com/SICKAG/sick_scan/blob/master/doc/IMU.md");
+            RCLCPP_INFO(node->get_logger(),
+                        "IMU USAGE NOT POSSIBLE IN ASCII COMMUNICATION MODE.\nTo use the IMU the communication with the scanner must be set to binary mode.\n This can be done by inserting the line:\n<param name=\"use_binary_protocol\" type=\"bool\" value=\"True\" />\n into the launchfile.\n See also https://github.com/SICKAG/sick_scan/blob/master/doc/IMU.md");
             exit(0);
           }
 
@@ -1926,7 +1926,7 @@ namespace sick_scan
       std::vector<unsigned char> reqBinary;
       std::vector<unsigned char> sopasVec;
       sopasVec = stringToVector(sopasCmd);
-      printf("Command: %s", stripControl(sopasVec).c_str());
+      RCLCPP_INFO(node->get_logger(), "Command: %s", stripControl(sopasVec).c_str());
       if (useBinaryCmd)
       {
         this->convertAscii2BinaryCmd(sopasCmd.c_str(), &reqBinary);
@@ -1948,7 +1948,7 @@ namespace sick_scan
 
       if (result != 0)
       {
-        printf("%s", sopasCmdErrMsg[cmdId].c_str());
+        RCLCPP_INFO(node->get_logger(), "%s", sopasCmdErrMsg[cmdId].c_str());
         //diagnostics_.broadcast(getDiagnosticErrorCode(), sopasCmdErrMsg[cmdId]);
       }
       else
@@ -1959,13 +1959,13 @@ namespace sick_scan
 
       if (cmdId == CMD_START_RADARDATA)
       {
-        printf("Starting radar data ....\n");
+        RCLCPP_INFO(node->get_logger(), "Starting radar data ....\n");
       }
 
 
       if (cmdId == CMD_START_SCANDATA)
       {
-        printf("Starting scan data ....\n");
+        RCLCPP_INFO(node->get_logger(), "Starting scan data ....\n");
       }
 
       if (cmdId == CMD_RUN)
@@ -1996,7 +1996,7 @@ namespace sick_scan
             std::vector<unsigned char> reqBinary;
             std::vector<unsigned char> sopasVec;
             sopasVec = stringToVector(sopasCmd);
-//            printf("Command: %s", stripControl(sopasVec).c_str());
+//            RCLCPP_INFO(node->get_logger(), "Command: %s", stripControl(sopasVec).c_str());
             if (useBinaryCmd)
             {
               this->convertAscii2BinaryCmd(sopasCmd.c_str(), &reqBinary);
@@ -2028,17 +2028,22 @@ namespace sick_scan
               if (deviceState == 1) // scanner is ready
               {
                 scannerReady = true; // interrupt waiting for scanner ready
-                printf("Scanner ready for measurement after %d [sec]", i);
+                RCLCPP_INFO(node->get_logger(), "Scanner ready for measurement after %d [sec]", i);
                 break;
               }
             }
-            printf("Waiting for scanner ready state since %d secs", i);
+            RCLCPP_INFO(node->get_logger(), "Waiting for scanner ready state since %d secs", i);
             const std::chrono::nanoseconds nsshortSleepTime((int64_t)(shortSleepTime*1e9));
             rclcpp::sleep_for(nsshortSleepTime);
 
             if (scannerReady)
             {
               break;
+            }
+            if(i==(maxWaitForDeviceStateReady-1))
+            {
+              RCLCPP_INFO(node->get_logger(), "TIMEOUT WHILE STARTING SCANNER", i);
+              return ExitError;
             }
           }
         }
