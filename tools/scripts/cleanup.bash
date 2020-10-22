@@ -1,5 +1,6 @@
 #!/bin/bash
 
+./killall.bash
 pushd ../../../../
 source /opt/ros/eloquent/setup.bash
 if [ -d build ] || [ -d install ] || [ -d log ] ; then rm -rf ./build ./install ./log ; fi

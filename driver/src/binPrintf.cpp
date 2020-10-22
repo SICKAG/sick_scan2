@@ -261,7 +261,7 @@ int binSprintfVec(std::vector<unsigned char> *outvec, const char *fmt, ...)
 }
 
 
-std::string binDumpVecToString(std::vector<unsigned char> *outvec, bool appendReadableText /*= false*/)
+std::string binDumpVecToString(const std::vector<unsigned char> *outvec, bool appendReadableText /*= false*/)
 {
   std::string s;
   for (int i = 0; i < outvec->size(); i++)

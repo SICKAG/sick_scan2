@@ -84,6 +84,7 @@ add_library(sick_scan2_lib
         driver/src/tcp/Time.cpp
         driver/src/tcp/colaa.cpp
         driver/src/tcp/colab.cpp
+        driver/src/binPrintf.cpp
         driver/src/binScanf.cpp
         driver/src/sick_scan_common_nw.cpp
         driver/src/sick_generic_imu.cpp
@@ -139,8 +140,12 @@ else()
 endif()
 
 if(BUILD_WITH_TEST_SERVER OR BUILD_WITH_TEST_SERVER MATCHES "true")
-        add_executable(test_server tools/test_server/src/test_server.cpp tools/test_server/src/test_server_thread.cpp)
-        target_link_libraries(test_server sick_scan2_lib ${Boost_LIBRARIES})
+        add_executable(test_server 
+            tools/test_server/src/test_server.cpp 
+            tools/test_server/src/test_server_cola_msg.cpp 
+            tools/test_server/src/test_server_ldmrs_msg.cpp 
+            tools/test_server/src/test_server_thread.cpp)
+        target_link_libraries(test_server sick_scan2_lib ${SICK_LDMRS_LIBRARIES} ${Boost_LIBRARIES})
         ament_target_dependencies(test_server "rclcpp")
         install(TARGETS 
             test_server

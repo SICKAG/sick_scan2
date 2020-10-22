@@ -7,7 +7,7 @@ This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the fo
 - [Bugs and feature requests](#bugs-and-feature-requests)
 - [Creators](#creators)
 
-This stack provides a ROS2 driver for the SICK TiM series of laser scanners
+This stack provides a ROS2 driver for the SICK laser scanners
 mentioned in the following list.
 
 
@@ -38,6 +38,10 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 | MRS1104            | [1081208](https://www.sick.com/sg/en/detection-and-ranging-solutions/3d-lidar-sensors/mrs1000/mrs1104c-111011/p/p495044)         | 4 layer max. range: 64 m, ang. resol. 0.25 [deg] hor., 2.50 [deg] ver.                                         | ✔ [development]|
 |                    |                                                                                                                                  | Scan-Rate: 50 Hz, 4x12.5 Hz            |                 |
+| LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.125/0.25/0.5 [deg] | ✔ [development]|
+|       |   | Scan-Rate: 12.5-50 Hz Hz | |
+
+
 
 ##  Start Node
 
@@ -111,6 +115,24 @@ colcon build --symlink-install
 source ~/sick_scan_ws/install/setup.bash
 ```
 
+To build the sick_scan2 ros driver with LDMRS support, libsick_ldmrs is required and flag BUILD_WITH_LDMRS_SUPPORT must be set:
+
+```bash
+source /opt/ros/$ROS_DISTRO/setup.bash
+mkdir -p ~/sick_scan_ws/src/
+cd ~/sick_scan_ws/src/
+sudo apt-get install ros-$ROS_DISTRO-diagnostic-updater
+git clone https://github.com/SICKAG/libsick_ldmrs.git
+git clone https://github.com/SICKAG/sick_scan2.git
+cd ..
+export BUILD_WITH_LDMRS_SUPPORT=True
+colcon build --symlink-install --cmake-args " -DBUILD_WITH_LDMRS_SUPPORT=$BUILD_WITH_LDMRS_SUPPORT"
+source ~/sick_scan_ws/install/setup.bash
+```
+
+The LDMRS driver is originally taken from sick_lmrs_laser, migrated to ROS2 and integrated into sick_scan2. 
+Please see https://github.com/SICKAG/sick_ldmrs_laser and https://github.com/SICKAG/libsick_ldmrs for further details.
+
 ## Quick Start
 
 ```bash
@@ -149,11 +171,16 @@ For LMS111:
 ```
 ros2 launch sick_scan2 sick_lms_5xx.launch.py
 ```
+
 For MRS1104:
 ```
 ros2 launch sick_scan2 sick_mrs_1xxx.launch.py
 ```
 
+For LDMRS:
+```
+ros2 launch sick_scan2 sick_ldmrs.launch.py
+```
 
 Start a second terminal window
 ```
@@ -170,6 +197,44 @@ rviz2 ./install/sick_scan2/share/sick_scan2/launch/rviz/tim_5xx.rviz
 
 The result shoud look like this:
 ![rviz2_scan](doc/rviz2_scan.png)
+
+## Unit tests
+
+For a quick unit test after installation without the sensor hardware, a test server is provided to simulate a scanner. 
+The test server generates scan data examples and responds to command requests. 
+Please note, that this test server does not emulate a Lidar sensor. It just sends some simple scan data and response messages to a tcp client.
+It can be used for a quick unit test after build and install.
+
+For a unit test, run the following commands in different terminals:
+
+For LDMRS unit test:
+
+```
+cd ~/sick_scan_ws
+source ./install/setup.bash
+ros2 run sick_scan2 test_server --ros-args --params-file src/sick_scan2/tools/test_server/config/test_server_ldmrs.yaml
+ros2 run sick_scan2 sick_generic_caller --ros-args --params-file src/sick_scan2/config/sick_ldmrs_flexres.yaml -p "hostname:=127.0.0.1"
+ros2 run rviz2 rviz2 -d ./src/sick_scan2/launch/rviz/sick_ldmrs.rviz
+```
+
+For other scanners supported by sick_scan2, replace $yaml_file by sick_tim_240.yaml, sick_tim_5xx.yaml, sick_tim_7xx.yaml, sick_tim_7xxS.yaml, 
+sick_lms_1xx.yaml, sick_lms_5xx.yaml or sick_mrs_1xxx.yaml, and run the following commands:
+
+```
+cd ~/sick_scan_ws
+source ./install/setup.bash
+ros2 run sick_scan2 test_server --ros-args --params-file src/sick_scan2/tools/test_server/config/test_server_cola.yaml
+ros2 run sick_scan2 sick_generic_caller --ros-args --params-file src/sick_scan2/config/$yaml_file -p "hostname:=127.0.0.1" -p "port:=2112"
+ros2 run rviz2 rviz2 -d ./src/sick_scan2/launch/rviz/sick_cola.rviz
+```
+
+For a quick build, install and run test, some bash scripts are provided in folder `src/sick_scan2/tools/scripts`. Run the following commands:
+
+```
+cd ~/sick_scan_ws/src/sick_scan2/tools/scripts
+./makeall.bash
+./run_simu.bash
+```
 
 ## Developing with CLion IDE
 
@@ -197,6 +262,21 @@ Or try to set the path manualy
 set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include)
 set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
 ```
+
+## Developing with Visual Studio Code
+
+Download the debian package code_1.47.3-1595520028_amd64.deb (or any later version) from https://code.visualstudio.com and install Visual Studio Code by
+
+```sudo apt install ./code_1.47.3-1595520028_amd64.deb```
+
+Open Visual Studio Code by running `code` in the console, select `Customize`, `Tools and languages` and install Python, C/C++, ROS, Colcon Tasks and Markdown (and any other usefull extensions you might need).
+
+Open folder `sick_scan_ws` via `File` menu and save a new workspace with `Save Workspace As...`. Open file `c_cpp_properties.json` in the Visual Studio Code Editor and insert compiler settings:
+```
+"includePath": [ "~/sick_scan_ws/src/sick_scan2/include/**", "~/sick_scan_ws/src/sick_scan2/tools/test_server/include/**", "~/sick_scan_ws/src/sick_ldmrs_laser/sick_ldmrs_driver/include/**", "~/sick_scan_ws/src/sick_ldmrs_laser/sick_ldmrs_msgs/include/**", "~/sick_scan_ws/build/**", "~/sick_scan_ws/install/**", "/opt/ros/eloquent/include", "/usr/include/**" ],
+"defines": [ "LDMRS_SUPPORT=1" ],
+```
+
 ## Keywords
 
 ROS LiDAR
@@ -211,7 +291,7 @@ TiM781
 TiM781S
 LMS111
 LMS511
-
+LDMRS
 
 ## Creators
 

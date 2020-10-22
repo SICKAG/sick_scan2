@@ -93,9 +93,6 @@
 #include <algorithm> // for std::min
 
 
-static std::shared_ptr<rclcpp::Node> mainNode = NULL;
-
-
 // Copyright 2017 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,17 +128,6 @@ static std::shared_ptr<rclcpp::Node> mainNode = NULL;
 #define DEG2RAD M_PI / 180.0
 
 
-void setMainNode(std::shared_ptr<rclcpp::Node> _tmpNode)
-{
-  mainNode = _tmpNode;
-}
-
-
-std::shared_ptr<rclcpp::Node> getMainNode(void)
-{
-  return (mainNode);
-}
-
 /*!
 \brief Startup routine - if called with no argmuments we assume debug session.
        Set scanner name variable by parsing for "__name:=". This will be changed in the future
@@ -171,11 +157,6 @@ int main(int argc, char **argv)
   setMainNode(node);
   std::string paramString;
   //rclcpp::Logger node_logger = node->get_logger();
-
-
-
-
-
 #if 0
   // Update with setting from yaml param file or command line parameters
   enum PARAM_LIST_ENUM {FRAME_ID_DECLARED,
@@ -201,7 +182,8 @@ int main(int argc, char **argv)
   parameterNameListMapping[SKIP_DECLARED]= "skip";
   parameterNameListMapping[USE_SOFTWARE_PLL_DECLARED]= "use_software_pll";
 #endif
-  //default Values
+
+  // default Values
   std::string frameId = "world";
   std::string imu_frameId = "imu";
   std::string hostName = "192.168.0.1";
@@ -216,7 +198,6 @@ int main(int argc, char **argv)
   bool intensity=true;
 
   // Declare default parameters
-
   node->declare_parameter<std::string>("frame_id", "world");
   node->declare_parameter<std::string>("imu_frame_id", "imu");
   node->declare_parameter<std::string>("hostname", hostName);
@@ -291,6 +272,7 @@ int main(int argc, char **argv)
   node->get_parameter("use_software_pll", use_software_pll);
   node->get_parameter("sw_pll_only_publish", sw_pll_only_publish);
   node->get_parameter("intensity", intensity);
+
   // node->get_parameters(paramList);
   char nameId[] = "__name:=";
   char nameVal[MAX_NAME_LEN] = {0};
@@ -341,8 +323,15 @@ int main(int argc, char **argv)
       node->get_parameter("hostname", hostName);
       RCLCPP_INFO(getMainNode()->get_logger(), "hostname: %s", hostName.c_str());
     }
+    if(strncmp("port:=", argv_tmp[i], 6) == 0)
+    {
+      node->set_parameter(rclcpp::Parameter("port", atoi(argv_tmp[i] + 6)));
+      node->get_parameter("port", port);
+      RCLCPP_INFO(getMainNode()->get_logger(), "port: %d", port);
+    }
     RCLCPP_INFO(getMainNode()->get_logger(), "Program arguments: %s", argv_tmp[i]);
   }
+  RCLCPP_INFO(getMainNode()->get_logger(), "sick_generic_caller: scanner_name: %s, hostname: %s, port: %d", scanner_name.c_str(), hostName.c_str(), port);
 
 
   int result = mainGenericLaser(argc_tmp, argv_tmp, scanner_name);

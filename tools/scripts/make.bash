@@ -20,7 +20,7 @@ if [ -f ./log/sick_scan2_build_errors.log ] ; then rm -f ./log/sick_scan2_build_
 # Build and install sick_scan2 binaries without LDMRS and test support.
 #
 
-if [ 1 == 1 ] ; then
+if [ 1 == 0 ] ; then
   unset BUILD_WITH_LDMRS_SUPPORT
   unset BUILD_WITH_TEST_SERVER
   if [ -f ./build_std/sick_scan2/sick_generic_caller ] ; then rm -f ./build_std/sick_scan2/sick_generic_caller ; fi
@@ -36,7 +36,7 @@ fi
 # Build and install sick_scan2 binaries with LDMRS and test support.
 #
 
-if [ 1 == 0 ] ; then
+if [ 1 == 1 ] ; then
   export BUILD_WITH_LDMRS_SUPPORT=True
   export BUILD_WITH_TEST_SERVER=True
   if [ -f ./build/sick_scan2/sick_generic_caller ] ; then rm -f ./build/sick_scan2/sick_generic_caller ; fi

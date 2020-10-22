@@ -88,6 +88,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static std::shared_ptr<rclcpp::Node> mainNode = NULL;
+
+void setMainNode(std::shared_ptr<rclcpp::Node> _tmpNode)
+{
+  mainNode = _tmpNode;
+}
+
+std::shared_ptr<rclcpp::Node> getMainNode(void)
+{
+  return (mainNode);
+}
+
 /*!
 \brief splitting expressions like <tag>:=<value> into <tag> and <value>
 \param [In] tagVal: string expression like <tag>:=<value>
