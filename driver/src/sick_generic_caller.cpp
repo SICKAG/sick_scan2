@@ -85,9 +85,9 @@
 
 #define MAX_NAME_LEN (1024)
 
-// 002.000.000 ROS2 specific driver
-#define SICK_GENERIC_MAJOR_VER "002"
-#define SICK_GENERIC_MINOR_VER "000"
+// 000.001.009 ROS2 specific driver
+#define SICK_GENERIC_MAJOR_VER "001"
+#define SICK_GENERIC_MINOR_VER "009"
 #define SICK_GENERIC_PATCH_LEVEL "000"
 
 #include <algorithm> // for std::min

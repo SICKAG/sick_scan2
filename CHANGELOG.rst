@@ -14,6 +14,11 @@ Changelog for package sick_scan2
 -------------------
 * Porting to "Dashing"
 
+Forthcoming
+-----------
+* tf2-ros dependency added, temperatur to test server added
+* Contributors: Michael Lehning
+
 0.1.8 (2020-10-22)
 ------------------
 * LDMRS support added scanner simulator added
