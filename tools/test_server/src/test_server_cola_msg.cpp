@@ -225,7 +225,7 @@ sick_scan2::test::TestServerColaMsg::TestServerColaMsg(double send_scan_data_rat
       {"sRN DItype", encodeColaTelegram("sRA DItype D RMS3xx-xxxxxx", {}, {}, is_binary_idx > 0)},
       {"sRN ODoprh", encodeColaTelegram("sRA ODoprh", {451}, {2}, is_binary_idx > 0)},
       {"sMN mSCloadappdef", encodeColaTelegram("sAN mSCloadappdef", {}, {}, is_binary_idx > 0)},
-      {"sRN SerialNumber", encodeColaTelegram("sRA SerialNumber",  {"18020073"}, is_binary_idx > 0)},
+      {"sRN SerialNumber", encodeColaTelegram("sRA SerialNumber",  {"18340008"}, is_binary_idx > 0)},
       {"sRN ODpwrc", encodeColaTelegram("sRA ODpwrc", {20}, {1}, is_binary_idx > 0)},
       {"sRN LocationName", encodeColaTelegram("sRA LocationName B not defined", {}, {}, is_binary_idx > 0)},
       {"sEN LMDradardata", encodeColaTelegram("sEA LMDradardata", {1}, {1}, is_binary_idx > 0)},
@@ -236,7 +236,7 @@ sick_scan2::test::TestServerColaMsg::TestServerColaMsg(double send_scan_data_rat
       {"sWN SetActiveApplications", encodeColaTelegram("sWA SetActiveApplications", {}, {}, is_binary_idx > 0)},
       {"sWN FREchoFilter", encodeColaTelegram("sWA FREchoFilter", {}, {}, is_binary_idx > 0)},
       {"sEN InertialMeasurementUnit", encodeColaTelegram("sEA InertialMeasurementUnit", {}, {}, is_binary_idx > 0)},
-      {"sRN DeviceIdent", encodeColaTelegram("sRA DeviceIdent", {"MRS1xxx", "V1.0"}, is_binary_idx > 0)}, // todo: DeviceIdent from config
+      {"sRN DeviceIdent", encodeColaTelegram("sRA DeviceIdent", {"MRS1xxxC", "1.4.3.0B"}, is_binary_idx > 0)}, // todo: DeviceIdent from config // DeviceIdent 8 MRS1xxxx 8 1.3.0.0R.
       {"sMN LMCstartmeas", encodeColaTelegram("sAN LMCstartmeas", {}, {}, is_binary_idx > 0)},
       {"sMN LMCstopmeas", encodeColaTelegram("sAN LMCstopmeas", {}, {}, is_binary_idx > 0)},
       {"sMN Run", encodeColaTelegram("sAN Run", {}, {}, is_binary_idx > 0)},

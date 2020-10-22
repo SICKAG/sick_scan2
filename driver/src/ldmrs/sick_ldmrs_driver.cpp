@@ -119,11 +119,9 @@ void SickLDMRS::produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper 
   stat.add("Vendor Name", "SICK");
   stat.add("Product Name", "LD-MRS");
   stat.add("Firmware Version", ldmrs->getFirmwareVersion());  // includes date, e.g. "3.03.5 2015-01-14 13:32"
-#define LDMRS_SUPPORTS_TEMPERATURE_AND_FPGA_VERSION 0  // not yet supported, todo: enable FPGA version and temperatur after libsick_ldmrs update
-#if LDMRS_SUPPORTS_TEMPERATURE_AND_FPGA_VERSION  
   stat.add("FPGA Version", ldmrs->getFPGAVersion());          // FPGA version including date
-  stat.add("Temperature", ldmrs->getTemperature());
-#endif  
+  std::string temperature = std::to_string(ldmrs->getTemperature());
+  stat.add("Temperature", temperature);
   stat.add("Device ID", ldmrs->getSerialNumber());
 }
 
