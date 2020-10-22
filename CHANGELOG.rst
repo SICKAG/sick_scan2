@@ -14,8 +14,8 @@ Changelog for package sick_scan2
 -------------------
 * Porting to "Dashing"
 
-Forthcoming
------------
+0.1.8 (2020-10-22)
+------------------
 * LDMRS support added scanner simulator added
 * migraded print statments to ros2
 * implemeted software pll and rssi
