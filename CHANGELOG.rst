@@ -14,6 +14,26 @@ Changelog for package sick_scan2
 -------------------
 * Porting to "Dashing"
 
+Forthcoming
+-----------
+* LDMRS support added scanner simulator added
+* migraded print statments to ros2
+* implemeted software pll and rssi
+* MRS 1xxx Imu support activated
+* added MRS1104 support
+* Update clion debugging
+* Adding TiM240 support info.
+* support of TiM240
+* prepare TiM240
+  Correct parameter name "max_ang" in config files to activate the setting.
+* Modify max-ang to max_ang in config files.
+* Supported hardware list extended
+* added new launchfiles and updated readme
+* tf2 added
+* First draft of LMS511 and LMS111 support and pointcloud2
+* Quaternion test added
+* Contributors: Michael Lehning, Skyler Pan
+
 0.1.7 (2020-04-16)
 ------------------
 * retrial bloom release
