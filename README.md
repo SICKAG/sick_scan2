@@ -38,6 +38,8 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 15 Hz   |                 |
 | MRS1104            | [1081208](https://www.sick.com/sg/en/detection-and-ranging-solutions/3d-lidar-sensors/mrs1000/mrs1104c-111011/p/p495044)         | 4 layer max. range: 64 m, ang. resol. 0.25 [deg] hor., 2.50 [deg] ver.                                         | ✔ [development]|
 |                    |                                                                                                                                  | Scan-Rate: 50 Hz, 4x12.5 Hz            |                 |
+| LMS1104            | [1092445](https://www.sick.com/ag/en/detection-and-ranging-solutions/2d-lidar-sensors/lms1000/c/g387151)                         | 1 layer max. range: 64 m, ang. resol. 0.25 [deg] |  ✔ [stable]|
+|                    |                                                                                                                                  | Scan-Rate: 150 Hz, 4x37.5 Hz   | 
 | LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.125/0.25/0.5 [deg] | ✔ [development]|
 |       |   | Scan-Rate: 12.5-50 Hz Hz | |
 
@@ -175,6 +177,11 @@ ros2 launch sick_scan2 sick_lms_5xx.launch.py
 For MRS1104:
 ```
 ros2 launch sick_scan2 sick_mrs_1xxx.launch.py
+```
+
+For LMS1104:
+```
+ros2 launch sick_scan2 sick_lms_1xxx.launch.py
 ```
 
 For LDMRS:
