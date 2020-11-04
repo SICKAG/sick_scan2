@@ -1556,8 +1556,9 @@ namespace sick_scan
       }
       else
       {
-        minAngSopas += 90.0;
-        maxAngSopas += 90.0;
+        //TODO change scanAngleShift for other scanners
+        //minAngSopas += 90.0;
+        //maxAngSopas += 90.0;
       }
       angleStart10000th = (int) (0.5 + 10000.0 * minAngSopas);
       angleEnd10000th = (int) (0.5 + 10000.0 * maxAngSopas);
@@ -1570,8 +1571,8 @@ namespace sick_scan
         double askAngleStart = -137.0;
         double askAngleEnd = +137.0;
 
-        this->config_.min_ang = askAngleStart / 180.0 * M_PI;
-        this->config_.max_ang = askAngleEnd / 180.0 * M_PI;
+        this->config_.min_ang = askAngleStart;
+        this->config_.max_ang = askAngleEnd;
       }
       else
       {
@@ -1713,26 +1714,12 @@ namespace sick_scan
         double askAngleRes = askAngleRes10000th / 10000.0;
         double askAngleStart = askAngleStart10000th / 10000.0;
         double askAngleEnd = askAngleEnd10000th / 10000.0;
-
-        if (this->parser_->getCurrentParamPtr()->getScannerName().compare(SICK_SCANNER_TIM_240_NAME) == 0)
-        {
-          // the TiM240 operates directly in the ros coordinate system
-        }
-        else
-        {
-          askAngleStart -= 90; // angle in ROS relative to y-axis
-          askAngleEnd -= 90; // angle in ROS relative to y-axis
-        }
-        this->config_.min_ang = askAngleStart / 180.0 * M_PI;
-        this->config_.max_ang = askAngleEnd / 180.0 * M_PI;
-#if TODO
-        ros::NodeHandle nhPriv("~");
-        nhPriv.setParam("min_ang", this->config_.min_ang); // update parameter setting with "true" values read from scanner
-        nhPriv.setParam("max_ang", this->config_.max_ang); // update parameter setting with "true" values read from scanner
-#endif
-        RCLCPP_INFO(node->get_logger(), "MIN_ANG (after command verification): %8.3f [rad] %8.3f [deg]",
+        double angshift= this->parser_->getCurrentParamPtr()->getScanAngleShift();
+        this->config_.min_ang = (askAngleStart / 180.0 * M_PI);
+        this->config_.max_ang = (askAngleEnd / 180.0 * M_PI);
+        RCLCPP_INFO(node->get_logger(), "MIN_ANG (after command verification in device reference frame): %8.3f [rad] %8.3f [deg]",
                     config_.min_ang, rad2deg(this->config_.min_ang));
-        RCLCPP_INFO(node->get_logger(), "MAX_ANG (after command verification): %8.3f [rad] %8.3f [deg]",
+        RCLCPP_INFO(node->get_logger(), "MAX_ANG (after command verification in device reference frame): %8.3f [rad] %8.3f [deg]",
                     config_.max_ang, rad2deg(this->config_.max_ang));
       }
 
@@ -2652,8 +2639,9 @@ namespace sick_scan
                             startAngle = startAngleDiv10000 / 10000.00;
                             sizeOfSingleAngularStep = sizeOfSingleAngularStepDiv10000 / 10000.0;
                             sizeOfSingleAngularStep *= (M_PI / 180.0);
-
-                            msg.angle_min = startAngle / 180.0 * M_PI - M_PI / 2;
+                            //TODO add ange offset argument - M_PI / 2
+                            msg.angle_min = (startAngle / 180.0 * M_PI)+
+                                            this->parser_->getCurrentParamPtr()->getScanAngleShift(); ;
                             msg.angle_increment = sizeOfSingleAngularStep;
                             msg.angle_max = msg.angle_min + (numberOfItems - 1) * msg.angle_increment;
 
@@ -3026,8 +3014,9 @@ namespace sick_scan
             {
               std::vector<float> cosAlphaTable;
               std::vector<float> sinAlphaTable;
-
-              float angle = config_.min_ang;
+              //TODO add ange offset argument - M_PI / 2
+              double angshift= this->parser_->getCurrentParamPtr()->getScanAngleShift();
+              float angle = config_.min_ang+angshift;
               int rangeNum = rangeTmp.size() / numEchos;
 
               cosAlphaTable.resize(rangeNum);

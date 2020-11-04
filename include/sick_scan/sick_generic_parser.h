@@ -50,6 +50,7 @@
 #define SICK_SCANNER_NAV_3XX_NAME "sick_nav_3xx"
 #define SICK_SCANNER_NAV_2XX_NAME "sick_nav_2xx"
 #define SICK_SCANNER_TIM_4XX_NAME "sick_tim_4xx"
+#define SICK_SCANNER_LRS_4XXX_NAME "sick_lrs_4xxx"
 
 #include "SickScanConfig.h"
 
@@ -94,9 +95,13 @@ namespace sick_scan
 
     bool getUseBinaryProtocol(void);
 
-    void setScanMirroredAndShifted(bool _scanMirroredAndShifted);
+    void setScanMirroredAndShifted(bool _scanMirroredAndShifted);//for NAV310 should be changed in only mirrord in comibantion with new scanangelshift param
 
-    bool getScanMirroredAndShifted();
+    bool getScanMirroredAndShifted();//for NAV310 should be changed in only mirrord in comibantion with new scanangelshift param
+
+    void setScanAngleShift(double _scanAngleShift);//for NAV310 should be changed in only mirrord in comibantion with new scanangelshift param
+
+    double getScanAngleShift();
 
     void setImuEnabled(bool _imuEnabled);
 
@@ -130,6 +135,7 @@ namespace sick_scan
     double elevationDegreeResolution;
     double angleDegressResolution;
     double expectedFrequency;
+    double scanAngleShift;
     bool useBinaryProtocol;
     bool IntensityResolutionIs16Bit;
     bool deviceIsRadar;

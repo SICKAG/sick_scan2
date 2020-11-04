@@ -1,0 +1,9 @@
+sick_scan2: # configuration for sick_scan2_lrs_4xxx: For compatibility with ros versions previous to foxy, node and parameter name changed to sick_scan2 for all supported scanner. The type of scanner is configured by scanner_name only.
+  ros__parameters:
+    hostname : "192.168.0.1"
+    frame_id : "cloud"
+    scanner_name : "sick_lrs_4xxx"
+    port : 2112
+    # min_ang and max_ang are given relative to device axis orientation.
+    min_ang : -4.71238898
+    max_ang : 1.57079632
