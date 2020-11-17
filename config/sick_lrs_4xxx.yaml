@@ -7,3 +7,4 @@ sick_scan2: # configuration for sick_scan2_lrs_4xxx: For compatibility with ros 
     # min_ang and max_ang are given relative to device axis orientation.
     min_ang : -4.71238898
     max_ang : 1.57079632
+    
