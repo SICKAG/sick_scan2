@@ -42,7 +42,7 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 150 Hz, 4x37.5 Hz   | 
 | LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.125/0.25/0.5 [deg] | ✔ [development]|
 |       |   | Scan-Rate: 12.5-50 Hz Hz | |
-| LRS1000 |   |  | ✔ [development]|
+| LRS4000 |   |  | ✔ [development]|
 |       |   |  | |
 
 
