@@ -42,7 +42,8 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 150 Hz, 4x37.5 Hz   | 
 | LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.125/0.25/0.5 [deg] | ✔ [development]|
 |       |   | Scan-Rate: 12.5-50 Hz Hz | |
-
+| LRS1000 |   |  | ✔ [development]|
+|       |   |  | |
 
 
 ##  Start Node
@@ -189,6 +190,11 @@ For LDMRS:
 ros2 launch sick_scan2 sick_ldmrs.launch.py
 ```
 
+For LRS4000:
+```
+ros2 launch sick_scan2 sick_lrs4000.launch.py
+```
+
 Start a second terminal window
 ```
 cd ~/sick_scan_ws
@@ -303,6 +309,7 @@ LMS1104
 MRS1xxx
 LMS1xxx
 LDMRS
+LRS4000
 
 ## Creators
 
