@@ -1,7 +1,7 @@
 # Timestamping
 
 Often there is a requirement that the time stamp of the measurements should be calculated for each individual shot. 
-This article explains some background information about the determination of these time stamps. In the present case, the statements refer to the LMS511. However, they can be transferred to other scanners using the same logic.
+This article explains some background information about the determination of these time stamps. In the present case, the statements refer to the LMS511. However, they can be transferred to other lidars using the same logic.
 
 ![](lms511_scan.png)
 
@@ -23,7 +23,7 @@ In the transmission protocol of the lidar two points in time are given in so-cal
 a) Start of the scans in ticks
 b) Start of IP data transfer from lidar to PC in ticks
 
-It is assumed that the transfer between lidar and PC is latency-free.
+It is assumed that the transfer between lidar and PC is near latency-free.
 The software PLL generates an assignment between the tick of the IP data transmission and the system time of the PC via an estimated line mapping. On the basis of this straight line equation, the start of the scan is then calculated relative to the system time. This generation time stamp is the time of the first shot of the scan. This timestamp is assigned to the pointcloud timestamp. From there, the rotation speed and the angular distance from shot to shot can be used to approximately calculate the time for each shot.
 
 
