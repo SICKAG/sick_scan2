@@ -1,7 +1,7 @@
 # Timestamping
 
 Often there is a requirement that the time stamp of the measurements should be calculated for each individual shot. 
-This article explains some background information about the determination of these time stamps. In the present case, the statements refer to the LMS511. However, they can be transferred to other lidars using the same logic.
+This article explains some background information about the determination of these time stamps. Here the statements refer to the LMS511. However, they can be transferred to other lidars using the same logic.
 
 ![](lms511_scan.png)
 
