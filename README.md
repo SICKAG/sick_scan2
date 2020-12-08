@@ -5,6 +5,7 @@ This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the fo
 - [Supported Hardware](#supported-hardware)
 - [Start node](#start-node)
 - [Bugs and feature requests](#bugs-and-feature-requests)
+- [Timestamping](doc/timestamping.md)
 - [Creators](#creators)
 
 This stack provides a ROS2 driver for the SICK laser scanners
