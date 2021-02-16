@@ -41,7 +41,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)  
+find_package(tf2_ros REQUIRED)
 
 add_definitions(-DUSE_DYN_RECONFIG=0)
 
@@ -68,7 +68,7 @@ find_package(Boost REQUIRED COMPONENTS system thread) # rosidl_generate_interfac
 
 if(BUILD_WITH_TEST_SERVER OR BUILD_WITH_TEST_SERVER MATCHES "true")
         message(STATUS "Building sick_scan2 with test server support")
-        set(TEST_SERVER_INCLUDES tools/test_server/include) 
+        set(TEST_SERVER_INCLUDES tools/test_server/include)
 endif()
 
 include_directories(include ${Boost_INCLUDE_DIR} ${LDMRS_INCLUDES} ${TEST_SERVER_INCLUDES})
@@ -92,7 +92,7 @@ add_library(sick_scan2_lib
         driver/src/sick_generic_imu.cpp
         driver/src/softwarePLL.cpp
         ${LDMRS_SOURCES}
-) 
+)
 
 ament_target_dependencies(
         sick_scan2_lib
@@ -103,8 +103,8 @@ ament_target_dependencies(
         "sensor_msgs"
         "std_msgs"
         "geometry_msgs"
-        "diagnostic_msgs" 
-        "tf2_ros" 
+        "diagnostic_msgs"
+        "tf2_ros"
         ${LDMRS_TARGET_DEPENDENCIES}
 )
 
@@ -121,8 +121,8 @@ ament_target_dependencies(
         "sensor_msgs"
         "std_msgs"
         "geometry_msgs"
-        "diagnostic_msgs" 
-        "tf2_ros" 
+        "diagnostic_msgs"
+        "tf2_ros"
         ${LDMRS_TARGET_DEPENDENCIES}
 )
 
@@ -140,22 +140,22 @@ if(BUILD_WITH_LDMRS_SUPPORT OR BUILD_WITH_LDMRS_SUPPORT MATCHES "true")
         rosidl_target_interfaces(sick_scan2_lib ${PROJECT_NAME} "rosidl_typesupport_cpp")
         rosidl_target_interfaces(sick_generic_caller ${PROJECT_NAME} "rosidl_typesupport_cpp")
         target_link_libraries(sick_generic_caller sick_scan2_lib ${SICK_LDMRS_LIBRARIES} ${Boost_LIBRARIES})
-else()        
+else()
         target_link_libraries(sick_generic_caller sick_scan2_lib)
 endif()
 
 if(BUILD_WITH_TEST_SERVER OR BUILD_WITH_TEST_SERVER MATCHES "true")
-        add_executable(test_server 
-            tools/test_server/src/test_server.cpp 
-            tools/test_server/src/test_server_cola_msg.cpp 
-            tools/test_server/src/test_server_ldmrs_msg.cpp 
+        add_executable(test_server
+            tools/test_server/src/test_server.cpp
+            tools/test_server/src/test_server_cola_msg.cpp
+            tools/test_server/src/test_server_ldmrs_msg.cpp
             tools/test_server/src/test_server_thread.cpp)
         target_link_libraries(test_server sick_scan2_lib ${SICK_LDMRS_LIBRARIES} ${Boost_LIBRARIES})
         ament_target_dependencies(test_server "rclcpp")
-        install(TARGETS 
+        install(TARGETS
             test_server
             DESTINATION lib/${PROJECT_NAME})
-        install(DIRECTORY 
+        install(DIRECTORY
             tools/test_server/config
             tools/test_server/launch
             DESTINATION share/${PROJECT_NAME})
