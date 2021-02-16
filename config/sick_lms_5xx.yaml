@@ -1,6 +1,6 @@
 sick_scan2: # configuration for sick_scan2_lms_5xx: For compatibility with ros versions previous to foxy, node and parameter name changed to sick_scan2 for all supported scanner. The type of scanner is configured by scanner_name only.
   ros__parameters:
-    hostname : "192.168.0.1"
+    hostname : "192.168.254.26"
     frame_id : "cloud"
     scanner_name : "sick_lms_5xx"
     port : 2112

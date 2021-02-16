@@ -2,7 +2,7 @@ sick_scan2: # configuration for sick_scan2_ldmrs: For compatibility with ros ver
   ros__parameters:
     # ros parameters
     hostname : "192.168.0.1"
-    frame_id : "ldmrs"
+    frame_id : "cloud"
     scanner_name : "sick_ldmrs"
     # port : 12002
     # min_ang : -1.047197
@@ -10,7 +10,7 @@ sick_scan2: # configuration for sick_scan2_ldmrs: For compatibility with ros ver
     # Measurement parameters
     start_angle             :  0.872664  # gen.add("start_angle",           double_t, 0, "The angle of the first range measurement [rad].",                              1600 * tics2rad, -1918 * tics2rad, 1600 * tics2rad)   # 50  deg
     end_angle               : -1.047197  # gen.add("end_angle",             double_t, 0, "The angle of the last range measurement [rad].",                              -1920 * tics2rad, -1920 * tics2rad, 1598 * tics2rad)   # -60 deg
-    scan_frequency          :  0         # gen.add("scan_frequency",        int_t,    0, "Scan frequency, 0 = 12.5Hz, 1 = 25 Hz, 2 = 50 Hz",                             0,                0,               2, edit_method=scan_freq_enum)
+    scan_frequency          :  2         # gen.add("scan_frequency",        int_t,    0, "Scan frequency, 0 = 12.5Hz, 1 = 25 Hz, 2 = 50 Hz",                             0,      0,               2, edit_method=scan_freq_enum)
     sync_angle_offset       :  0.000000  # gen.add("sync_angle_offset",     double_t, 0, "Angle under which the LD-MRS measures at the time of the sync pulse [rad].",   0,               -5760 * tics2rad, 5759 * tics2rad)   # -180...179.96 deg
     angular_resolution_type :  1         # gen.add("angular_resolution_type", int_t,  0, "Angular resolution type: 0 = focused, 1 = constant, 2 = flexible",             1,                0,               2, edit_method=angular_res_enum)
     layer_range_reduction   :  0         # gen.add("layer_range_reduction", int_t,    0, "0: Full range, 1: lower 4 reduced, 2: upper 4 reduced, 3: all reduced",        0,                0,               3, edit_method=range_reduction_enum)

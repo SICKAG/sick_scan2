@@ -21,6 +21,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(BUILD_WITH_LDMRS_SUPPORT true)
 
 #uncomment this lines and change path accordingly
 set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include)
@@ -32,7 +33,8 @@ set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
 
 # find_package(Boost REQUIRED COMPONENTS system thread)
 find_package(ament_cmake REQUIRED)
-# find_package(diagnostic_updater REQUIRED)
+find_package(diagnostic_updater REQUIRED)
+find_package(pcl_conversions REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -96,6 +98,8 @@ ament_target_dependencies(
         sick_scan2_lib
         "Boost"
         "rclcpp"
+        "pcl_conversions"
+        "diagnostic_updater"
         "sensor_msgs"
         "std_msgs"
         "geometry_msgs"
@@ -111,7 +115,8 @@ add_executable(sick_generic_caller
 ament_target_dependencies(
         sick_generic_caller
         "Boost"
-        # "diagnostic_updater"
+        "pcl_conversions"
+        "diagnostic_updater"
         "rclcpp"
         "sensor_msgs"
         "std_msgs"
