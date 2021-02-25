@@ -38,3 +38,11 @@ quat_test
 sick_generic_caller
 
 sick_scan2.cbp
+
+doc/field_setup/field_event_telegramm.png
+
+doc/field_setup/set_field_config.md
+
+doc/field_setup/set_field_config_manual.pdf
+
+doc/field_setup/set_fields_packet_log.pcapng
