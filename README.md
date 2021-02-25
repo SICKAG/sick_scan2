@@ -5,6 +5,7 @@ This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the fo
 - [Supported Hardware](#supported-hardware)
 - [Start node](#start-node)
 - [Bugs and feature requests](#bugs-and-feature-requests)
+- [Timestamping](doc/timestamping.md)
 - [Creators](#creators)
 
 This stack provides a ROS2 driver for the SICK laser scanners
@@ -40,9 +41,10 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 |                    |                                                                                                                                  | Scan-Rate: 50 Hz, 4x12.5 Hz            |                 |
 | LMS1104            | [1092445](https://www.sick.com/ag/en/detection-and-ranging-solutions/2d-lidar-sensors/lms1000/c/g387151)                         | 1 layer max. range: 64 m, ang. resol. 0.25 [deg] |  ✔ [stable]|
 |                    |                                                                                                                                  | Scan-Rate: 150 Hz, 4x37.5 Hz   | 
-| LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.125/0.25/0.5 [deg] | ✔ [development]|
-|       |   | Scan-Rate: 12.5-50 Hz Hz | |
-
+| LDMRS |   | 4 or 8 layer, max. range: 50/320 m, ang. resol. 0.025°/.../0.25 [deg] | ✔ [development]|
+|       |   | Scan-Rate: 12.5-50 Hz | |
+| LRS4000 |   | 1 layer, max. range: 130 m, ang. resol. 0.125/0.25/0.5 [deg]  | ✔ [development]|
+|       |   | Scan-Rate: 12.5-25 Hz | |
 
 
 ##  Start Node
@@ -189,6 +191,11 @@ For LDMRS:
 ros2 launch sick_scan2 sick_ldmrs.launch.py
 ```
 
+For LRS4000:
+```
+ros2 launch sick_scan2 sick_lrs4000.launch.py
+```
+
 Start a second terminal window
 ```
 cd ~/sick_scan_ws
@@ -303,6 +310,7 @@ LMS1104
 MRS1xxx
 LMS1xxx
 LDMRS
+LRS4000
 
 ## Creators
 
