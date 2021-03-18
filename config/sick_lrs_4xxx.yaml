@@ -4,7 +4,6 @@ sick_scan2: # configuration for sick_scan2_lrs_4xxx: For compatibility with ros 
     frame_id : "cloud"
     scanner_name : "sick_lrs_4xxx"
     port : 2112
-    # min_ang and max_ang are given relative to device axis orientation.
-    min_ang : -4.71238898
-    max_ang : 1.57079632
+    min_ang : -4.71238898 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
+    max_ang : 1.57079632 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
     

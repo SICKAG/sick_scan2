@@ -5,5 +5,5 @@ sick_scan2: # configuration for sick_scan2_lms_1xxx: For compatibility with ros 
     imu_frame_id : "test"
     scanner_name : "sick_lms_1xxx"
     port : 2112
-    min_ang : -2.35619449
-    max_ang : 2.35619449
+    min_ang : -2.35619449 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
+    max_ang : 2.35619449 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png

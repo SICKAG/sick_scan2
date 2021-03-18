@@ -4,5 +4,5 @@ sick_scan2: # configuration for sick_scan2_tim_7xx: For compatibility with ros v
     frame_id : "cloud"
     scanner_name : "sick_tim_7xx"
     port : 2112
-    min_ang : -2.35619449
-    max_ang : 2.35619449
+    min_ang : -2.35619449 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
+    max_ang : 2.35619449 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
