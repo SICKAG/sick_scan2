@@ -147,7 +147,7 @@ Attention: Replace the ip address for "__hostname" with your scanner ip address.
 Default ip address of scanner is 192.168.0.1.
 In this example we use the ip address 192.168.0.71
 
-Via the program argument __frame_id the frame of the laserscan messages can be changed. Default is "laser".
+Via the program argument __frame_id the frame of the laserscan messages can be changed. Default is "cloud".
 
 For TiM240:
 ```
@@ -200,7 +200,7 @@ Start a second terminal window
 ```
 cd ~/sick_scan_ws
 source ./install/setup.bash
-ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 world laser
+ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 world cloud
 ```
 Start a third terminal window
 ```
@@ -238,7 +238,7 @@ sick_lms_1xx.yaml, sick_lms_5xx.yaml or sick_mrs_1xxx.yaml, and run the followin
 cd ~/sick_scan_ws
 source ./install/setup.bash
 ros2 run sick_scan2 test_server --ros-args --params-file src/sick_scan2/tools/test_server/config/test_server_cola.yaml
-ros2 run sick_scan2 sick_generic_caller --ros-args --params-file src/sick_scan2/config/$yaml_file -p "hostname:=127.0.0.1" -p "port:=2112"
+ros2 run sick_scan2 sick_generic_caller --ros-args --params-file src/sick_scan2/config/$yaml_file -p "hostname:=127.0.0.1" -p "port:=2112" -p "sw_pll_only_publish:=false"
 ros2 run rviz2 rviz2 -d ./src/sick_scan2/launch/rviz/sick_cola.rviz
 ```
 
