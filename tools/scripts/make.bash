@@ -24,7 +24,7 @@ if [ 1 == 0 ] ; then
   unset BUILD_WITH_LDMRS_SUPPORT
   unset BUILD_WITH_TEST_SERVER
   if [ -f ./build_std/sick_scan2/sick_generic_caller ] ; then rm -f ./build_std/sick_scan2/sick_generic_caller ; fi
-  colcon build --symlink-install --event-handlers console_direct+
+  colcon build --event-handlers console_direct+
   # colcon build --build-base ./build_std --install-base ./install_std --symlink-install --event-handlers console_direct+ # --cmake-args " -DCMAKE_BUILD_TYPE=$BUILDTYPE"
   echo -e "colcon build warnings and errors (LDMRS and test support disabled):" >> ./log/sick_scan2_build_errors.log
   cat ./log/latest_build/*.* ./log/latest_build/*/*.* | grep -i "warning:"      >> ./log/sick_scan2_build_errors.log
@@ -40,7 +40,7 @@ if [ 1 == 1 ] ; then
   export BUILD_WITH_LDMRS_SUPPORT=True
   export BUILD_WITH_TEST_SERVER=True
   if [ -f ./build/sick_scan2/sick_generic_caller ] ; then rm -f ./build/sick_scan2/sick_generic_caller ; fi
-  colcon build --symlink-install --event-handlers console_direct+ --cmake-args " -DBUILD_WITH_LDMRS_SUPPORT=$BUILD_WITH_LDMRS_SUPPORT" " -DBUILD_WITH_TEST_SERVER=$BUILD_WITH_TEST_SERVER" # " -DCMAKE_BUILD_TYPE=$BUILDTYPE"
+  colcon build --event-handlers console_direct+ --cmake-args " -DBUILD_WITH_LDMRS_SUPPORT=$BUILD_WITH_LDMRS_SUPPORT" " -DBUILD_WITH_TEST_SERVER=$BUILD_WITH_TEST_SERVER" # " -DCMAKE_BUILD_TYPE=$BUILDTYPE"
   echo -e "colcon build warnings and errors (LDMRS and test support enabled):" >> ./log/sick_scan2_build_errors.log
   cat ./log/latest_build/*.* ./log/latest_build/*/*.* | grep -i "warning:"     >> ./log/sick_scan2_build_errors.log
   cat ./log/latest_build/*.* ./log/latest_build/*/*.* | grep -i "error:"       >> ./log/sick_scan2_build_errors.log
