@@ -160,6 +160,10 @@ install(TARGETS
   sick_generic_caller
   DESTINATION lib/${PROJECT_NAME})
 
+install(TARGETS
+  sick_scan2_lib
+  DESTINATION lib)
+
 # Install launch files.
 install(DIRECTORY
         launch

@@ -115,7 +115,7 @@ mkdir -p ~/sick_scan_ws/src/
 cd ~/sick_scan_ws/src/
 git clone https://github.com/SICKAG/sick_scan2.git
 cd ..
-colcon build --symlink-install
+colcon build
 source ~/sick_scan_ws/install/setup.bash
 ```
 
@@ -130,7 +130,7 @@ git clone https://github.com/SICKAG/libsick_ldmrs.git
 git clone https://github.com/SICKAG/sick_scan2.git
 cd ..
 export BUILD_WITH_LDMRS_SUPPORT=True
-colcon build --symlink-install --cmake-args " -DBUILD_WITH_LDMRS_SUPPORT=$BUILD_WITH_LDMRS_SUPPORT"
+colcon build --cmake-args " -DBUILD_WITH_LDMRS_SUPPORT=$BUILD_WITH_LDMRS_SUPPORT"
 source ~/sick_scan_ws/install/setup.bash
 ```
 
