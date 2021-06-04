@@ -13,7 +13,7 @@ def generate_launch_description():
     node=Node(
         package='sick_scan2',
         name = 'sick_scan2', # 'sick_scan2_tim_5xx', # For compatibility with ros versions previous to foxy, node name changed to sick_scan2 for all supported scanner. The type of scanner is configured by scanner_name in the yaml config file.
-        node_executable='sick_generic_caller',       # ROS versions eloquent and earlier require "node_executable", ROS foxy and later use "executable".
+        executable='sick_generic_caller',       # ROS versions eloquent and earlier require "node_executable", ROS foxy and later use "executable".
         # executable='sick_generic_caller',          # Please use executable='sick_generic_caller', if ROS2 can't launch sick_generic_caller.
         output='screen',
         parameters = [config]
