@@ -354,8 +354,15 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
         }
 
         result = s->init();
-
-        runState = scanner_run; // after initialising switch to run state
+        if (result == sick_scan::ExitError || result == sick_scan::ExitFatal)
+        {
+          RCLCPP_ERROR(node->get_logger(),"init failed: %d. shutting down", result);
+          return result;
+        }
+        else
+        {
+          runState = scanner_run; // after initialising switch to run state
+        }
         break;
 
       case scanner_run:
