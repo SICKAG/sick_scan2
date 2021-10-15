@@ -3,6 +3,7 @@ This stack provides a ROS2 driver for the SICK lidar sensors mentioned in the fo
 ## Table of contents
 
 - [Supported Hardware](#supported-hardware)
+- [Requirements](#requirements)
 - [Start node](#start-node)
 - [Bugs and feature requests](#bugs-and-feature-requests)
 - [Timestamping](doc/timestamping.md)
@@ -46,6 +47,10 @@ ROS Device Driver for SICK lidar sensors - supported scanner types:
 | LRS4000 |   | 1 layer, max. range: 130 m, ang. resol. 0.125/0.25/0.5 [deg]  | ✔ [development]|
 |       |   | Scan-Rate: 12.5-25 Hz | |
 
+
+## Requirements
+
+sick_scan2 has been developed and tested using Linux ROS-2 Foxy. It should be compatible with other ROS-2 versions (but not fully tested).
 
 ##  Start Node
 
