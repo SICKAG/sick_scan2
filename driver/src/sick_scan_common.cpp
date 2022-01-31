@@ -2971,8 +2971,8 @@ namespace sick_scan
               {
                 msg.header.stamp = recvTimeStamp;
 
-                msg.range_min = 0.0f;
-                msg.range_max = 100.0f;
+                //msg.range_min = 0.0f;
+                //msg.range_max = 100.0f;
                 pub_->publish(msg);
               }
 #else
