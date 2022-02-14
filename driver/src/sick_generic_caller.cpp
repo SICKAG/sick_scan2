@@ -191,6 +191,8 @@ int main(int argc, char **argv)
   int port = 2112;
   double min_ang=-M_PI;
   double max_ang=M_PI;
+  double min_range = 0.05;
+  double max_range = 100.0;
   bool imu_enable=false;
   bool use_software_pll=true;
   int skip=0;
@@ -205,6 +207,8 @@ int main(int argc, char **argv)
   node->declare_parameter<int>("port", port);
   node->declare_parameter<double>("min_ang", min_ang);
   node->declare_parameter<double>("max_ang", max_ang);
+  node->declare_parameter<double>("min_range", min_range);
+  node->declare_parameter<double>("max_range", max_range);
   node->declare_parameter<bool>("imu_enable", imu_enable);
   node->declare_parameter<int>("skip", skip);
   node->declare_parameter<bool>("use_software_pll", use_software_pll);
@@ -267,6 +271,8 @@ int main(int argc, char **argv)
   node->get_parameter("port", port);
   node->get_parameter("min_ang", min_ang);
   node->get_parameter("max_ang", max_ang);
+  node->get_parameter("min_range", min_range);
+  node->get_parameter("max_range", max_range);
   node->get_parameter("imu_enable", imu_enable);
   node->get_parameter("skip", skip);
   node->get_parameter("use_software_pll", use_software_pll);
