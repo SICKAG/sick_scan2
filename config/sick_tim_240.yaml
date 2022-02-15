@@ -6,3 +6,4 @@ sick_scan2: # configuration for sick_scan2_tim_240: For compatibility with ros v
     port : 2111
     min_ang : -2.094395102 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
     max_ang : +2.094395102 #in lidar cordinate frame  see ../doc/3d_coordinate_system_comp.png
+    max_range : 10.0 #in meters

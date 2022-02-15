@@ -200,12 +200,16 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
   int port = 2112;
   double min_ang=-M_PI;
   double max_ang=M_PI;
+  double min_range = 0.05;
+  double max_range = 100.0;
   node->get_parameter("frame_id", frameId);
   node->get_parameter("hostname", hostName);
   node->get_parameter("scanner_name", scannerName);
   node->get_parameter("port", port);
   node->get_parameter("min_ang", min_ang);
   node->get_parameter("max_ang", max_ang);
+  node->get_parameter("min_range", min_range);
+  node->get_parameter("max_range", max_range);
   int timelimit = 5;
 #if TODO
   if (nhPriv.getParam("hostname", hostname))
@@ -256,7 +260,8 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName)
     RCLCPP_ERROR(node->get_logger(), "Scanner \"%s\" not supported, exception \"%s\". Please check your sick_scan2 configuration and launch file.", scannerName.c_str(), e.what());
     return sick_scan::ExitError;
   }
-  
+  parser->set_range_min(min_range);
+  parser->set_range_max(max_range);
 
   double param;
   char colaDialectId = 'A'; // A or B (Ascii or Binary)
