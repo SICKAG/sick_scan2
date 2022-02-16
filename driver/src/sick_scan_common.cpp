@@ -2029,7 +2029,7 @@ namespace sick_scan
             }
             if(i==(maxWaitForDeviceStateReady-1))
             {
-              RCLCPP_INFO(node->get_logger(), "TIMEOUT WHILE STARTING SCANNER", i);
+              RCLCPP_INFO(node->get_logger(), "TIMEOUT WHILE STARTING SCANNER (%d [sec])", i);
               return ExitError;
             }
           }
@@ -3597,6 +3597,3 @@ namespace sick_scan
   // SopasProtocol m_protocolId;
 
 } /* namespace sick_scan */
-
-
-
