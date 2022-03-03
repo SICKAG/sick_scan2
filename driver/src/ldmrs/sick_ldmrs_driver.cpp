@@ -127,6 +127,10 @@ void SickLDMRS::produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper 
 
 void SickLDMRS::setData(BasicData &data)
 {
+  // Read the time stamp as soon as possible to minimize the time stamp delay to actual data acquisition
+  // Not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
+  auto data_stamp = s_rclcpp_clock.now();
+
   std::string datatypeStr;
   std::string sourceIdStr;
 
@@ -150,8 +154,6 @@ void SickLDMRS::setData(BasicData &data)
 
       PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
       cloud->header.frame_id = config_.frame_id;
-      // not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
-      cloud->header.stamp = s_rclcpp_clock.now().nanoseconds(); // (ros::Time::now().toSec() - 1 / expected_frequency_) * 1e6;
 
       cloud->height = 1;
       cloud->width = scan->size();
@@ -171,6 +173,9 @@ void SickLDMRS::setData(BasicData &data)
 
       sensor_msgs::msg::PointCloud2 msg;
       pcl::toROSMsg(*cloud, msg);
+      
+      //Assign the ROS timestamp because the pcl::PCLHeader::stamp allows only microseconds accuracy
+      msg.header.stamp = data_stamp;
       if(diagnosticPub_)
         diagnosticPub_->publish(msg);
     }
