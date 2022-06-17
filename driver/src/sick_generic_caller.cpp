@@ -198,6 +198,7 @@ int main(int argc, char **argv)
   int skip=0;
   bool sw_pll_only_publish=true;
   bool intensity=true;
+  double time_offset = 0.0;
 
   // Declare default parameters
   node->declare_parameter<std::string>("frame_id", "world");
@@ -214,6 +215,7 @@ int main(int argc, char **argv)
   node->declare_parameter<bool>("use_software_pll", use_software_pll);
   node->declare_parameter<bool>("sw_pll_only_publish", sw_pll_only_publish);
   node->declare_parameter<bool>("intensity",intensity);
+  node->declare_parameter<double>("time_offset",intensity);
 
 #if 0
   //handling if params had been defined before

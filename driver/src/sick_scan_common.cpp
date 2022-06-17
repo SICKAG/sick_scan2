@@ -395,7 +395,7 @@ namespace sick_scan
       node->get_parameter("use_software_pll", cfg.use_software_pll);
       node->get_parameter("sw_pll_only_publish",cfg.sw_pll_only_publish);
       node->get_parameter("intensity",cfg.intensity);
-      node->get_parameter("time_offest",cfg.time_offset);
+      node->get_parameter("time_offset",cfg.time_offset);
       update_config(cfg);
     }
 #if 0
@@ -2972,7 +2972,7 @@ namespace sick_scan
               if (sendMsg & outputChannelFlagId)  // publish only configured channels - workaround for cfg-bug MRS1104
               {
                 msg.header.stamp = recvTimeStamp;
-
+                // RCLCPP_INFO(getMainNode()->get_logger(), "time_offset : %f", config_.time_offset);
                 //msg.range_min = 0.0f;
                 //msg.range_max = 100.0f;
                 pub_->publish(msg);
