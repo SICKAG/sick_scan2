@@ -25,7 +25,7 @@ namespace sick_scan
       int skip;
       bool use_software_pll;
       bool sw_pll_only_publish;
-
+      double time_offset;
   };
 }
 

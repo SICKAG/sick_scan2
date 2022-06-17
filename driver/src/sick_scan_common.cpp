@@ -395,6 +395,7 @@ namespace sick_scan
       node->get_parameter("use_software_pll", cfg.use_software_pll);
       node->get_parameter("sw_pll_only_publish",cfg.sw_pll_only_publish);
       node->get_parameter("intensity",cfg.intensity);
+      node->get_parameter("time_offest",cfg.time_offset);
       update_config(cfg);
     }
 #if 0
@@ -2397,6 +2398,7 @@ namespace sick_scan
 
                 bRet = SoftwarePLL::instance().getCorrectedTimeStamp(&recvTimeStamp,
                                                                      SystemCountScan);
+                recvTimeStamp = rclcpp::Time(recvTimeStamp) + rclcpp::Duration::from_nanoseconds(this->config_.time_offset);
                 double timestampfloat_coor = recvTimeStamp.sec + recvTimeStamp.nanosec * 1e-9;
                 double DeltaTime = timestampfloat - timestampfloat_coor;
                 //ROS_INFO("%F,%F,%u,%u,%F",timestampfloat,timestampfloat_coor,SystemCountTransmit,SystemCountScan,DeltaTime);
