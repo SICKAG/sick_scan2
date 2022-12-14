@@ -291,8 +291,8 @@ void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
   for (int i = 0; i < objects.size(); i++)
   {
     oa.objects[i].id = objects[i].getObjectId();
-    oa.objects[i].tracking_time = s_rclcpp_clock.now() - rclcpp::Duration(objects[i].getObjectAge() / expected_frequency_); // ros::Time::now() - ros::Duration(objects[i].getObjectAge() / expected_frequency_);
-    oa.objects[i].last_seen = s_rclcpp_clock.now() - rclcpp::Duration(objects[i].getHiddenStatusAge() / expected_frequency_); // ros::Time::now() - ros::Duration(objects[i].getHiddenStatusAge() / expected_frequency_);
+    oa.objects[i].tracking_time = s_rclcpp_clock.now() - rclcpp::Duration(0, objects[i].getObjectAge() / expected_frequency_); // ros::Time::now() - ros::Duration(objects[i].getObjectAge() / expected_frequency_);
+    oa.objects[i].last_seen = s_rclcpp_clock.now() - rclcpp::Duration(0, objects[i].getHiddenStatusAge() / expected_frequency_); // ros::Time::now() - ros::Duration(objects[i].getHiddenStatusAge() / expected_frequency_);
     oa.objects[i].velocity.twist.linear.x = objects[i].getAbsoluteVelocity().getX();
     oa.objects[i].velocity.twist.linear.y = objects[i].getAbsoluteVelocity().getY();
     oa.objects[i].velocity.twist.linear.x = objects[i].getAbsoluteVelocity().getX();
