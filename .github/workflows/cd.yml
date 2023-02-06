@@ -1,0 +1,77 @@
+name: CD
+on:
+  push:
+    branch: [ master ]
+    # tags:
+    #   - v*
+
+jobs:
+  ecr_setting:
+    # if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, '/deploy')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: AWS Mfa login
+        uses: ./.github/actions/aws-mfa-login
+        with:
+          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mfa_key: ${{ secrets.MFA_KEY }}
+          mfa_arn: ${{ secrets.MFA_ARN }}
+        
+      - id: get_ecr_password
+        name: Get ECR password
+        run: |
+          PROIFLE_REGION=$(aws configure get region)
+          ECR_PASSWORD=$(aws ecr get-login-password --region $PROIFLE_REGION)
+          echo "ECR_PASSWORD=$ECR_PASSWORD" >> $GITHUB_OUTPUT
+    outputs:
+      ecr_password: ${{ steps.get_ecr_password.outputs.ECR_PASSWORD }}
+
+  debian_build:
+    needs: ecr_setting
+    runs-on: ubuntu-latest
+    container:
+      image: 557571393534.dkr.ecr.ap-northeast-2.amazonaws.com/floom
+      credentials:
+        username: AWS
+        password: ${{ needs.ecr_setting.outputs.ecr_password }}
+    steps:
+      - name: Update dist
+        run: sudo apt update
+
+      - uses: actions/checkout@v3
+        with:
+          path: 'flody_ws/etc/'
+      
+      - name: AWS Mfa login
+        uses: ./flody_ws/etc/.github/actions/aws-mfa-login
+        with:
+          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mfa_key: ${{ secrets.MFA_KEY }}
+          mfa_arn: ${{ secrets.MFA_ARN }}
+
+      - name: PPA server access
+        uses: ./flody_ws/etc/.github/actions/floatic-ppa-access
+        with:
+          target_group_name: ${{ secrets.SECURITY_GROUP_NAME }}
+
+      - name: Checkout submodules
+        run: |
+          cd flody_ws/etc
+          git submodule update --init --recursive
+      
+      - name: Generate debian file
+        run: |
+          source /opt/floatic/debian/ros/humble/setup.bash
+          cd flody_ws/etc
+          floom-generate rosdebian
+          ls ../*.deb
+        shell: bash
+      
+      - name: Upload to S3
+        run: |
+          aws s3 cp $(ls flody_ws/*.deb) s3://robotics-workflow-archive/navigation2/
