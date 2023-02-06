@@ -74,4 +74,4 @@ jobs:
       
       - name: Upload to S3
         run: |
-          aws s3 cp $(ls flody_ws/*.deb) s3://robotics-workflow-archive/navigation2/
+          aws s3 cp $(ls flody_ws/*.deb) s3://robotics-workflow-archive/sick_scan2/
