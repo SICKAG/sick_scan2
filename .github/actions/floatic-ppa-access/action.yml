@@ -1,0 +1,31 @@
+name: floatic-ppa-access
+author: kein@floatic.io
+description: ppa server inbound setting
+
+inputs:
+  target_group_name:
+    description: "aws ec2 scurity group name"
+    required: true
+  
+  protocol:
+    description: "inbound protocol"
+    required: true
+    default: tcp
+  
+  port:
+    description: "inbound port"
+    required: true
+    default: 443
+
+runs:
+  using: "composite"
+  steps:
+    - id: get_public_ip
+      uses: haythem/public-ip@v1.2
+
+    - run: aws ec2 authorize-security-group-ingress --group-name ${{ inputs.target_group_name }} --protocol ${{ inputs.protocol }} --port ${{ inputs.port }} --cidr ${{ steps.get_public_ip.outputs.ipv4 }}/32
+      shell: bash
+      
+    - uses: webiny/action-post-run@3.0.0
+      with:
+        run: aws ec2 revoke-security-group-ingress --group-name ${{ inputs.target_group_name }} --protocol ${{ inputs.protocol }} --port ${{ inputs.port }} --cidr ${{ steps.get_public_ip.outputs.ipv4 }}/32
