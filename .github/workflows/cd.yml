@@ -1,9 +1,8 @@
 name: CD
 on:
   push:
-    branch: [ master ]
-    # tags:
-    #   - v*
+    tags:
+      - v*
 
 jobs:
   ecr_setting:
