@@ -2975,6 +2975,13 @@ namespace sick_scan
                 // RCLCPP_INFO(getMainNode()->get_logger(), "time_offset : %f", config_.time_offset);
                 //msg.range_min = 0.0f;
                 //msg.range_max = 100.0f;
+                for (auto & d : msg.ranges){
+                  if(d > msg.range_max || d <= 0.0001){
+                    d = std::numeric_limits<float>::infinity();
+                  } else if(d <= msg.range_min){
+                    d = msg.range_min;
+                  }
+                }
                 pub_->publish(msg);
               }
 #else
