@@ -1,0 +1,49 @@
+name: aws-mfa-login
+author: dev@floatic.io
+description: mfa login for aws
+
+inputs:
+  access_key_id: 
+    description: 'AWS access key id'
+    required: true
+  secret_access_key:
+    description: 'AWS access secret key'
+    required: true
+  mfa_key:
+    description: 'MFA Key'
+    required: true
+  mfa_arn:
+    description: 'MFA arn'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: sudo apt install awscli -y
+      shell: bash
+      
+    - run: sudo -S -k apt-get install -y oathtool jq
+      shell: bash
+
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.access_key_id }}
+        aws-secret-access-key: ${{ inputs.secret_access_key }}
+        aws-region: ap-northeast-2
+
+    - run: |
+        token=$(oathtool -b --totp ${{ inputs.mfa_key }})
+        aws sts get-session-token --duration-seconds 36000 --serial-number ${{ inputs.mfa_arn }} --token-code $token  > mfa-temp.json
+        accessKeyId=$(cat mfa-temp.json | jq -r .Credentials.AccessKeyId)
+        secretAccessKey=$(cat mfa-temp.json | jq -r .Credentials.SecretAccessKey)
+        sessionToken=$(cat mfa-temp.json | jq -r .Credentials.SessionToken)
+        echo ${accessKeyId}
+        echo ${secretAccessKey}
+        echo ${sessionToken}
+        aws configure set aws_access_key_id $accessKeyId
+        aws configure set aws_secret_access_key $secretAccessKey
+        aws configure set aws_session_token $sessionToken
+        aws configure set region ap-northeast-2
+      shell: bash
+    - run: aws sts get-caller-identity
+      shell: bash
